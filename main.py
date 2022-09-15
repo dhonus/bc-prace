@@ -1,8 +1,11 @@
 from expressions.Nodes import Node, Impl
 
 """
-    RDP https://www.youtube.com/watch?v=SToUyjAsaFk
+    RECURSIVE DESCENT PARSING
+        https://www.youtube.com/watch?v=SToUyjAsaFk
         https://www.codeproject.com/Articles/318667/Mathematical-Expression-Parser-Using-Recursive-Des
+    REMOVING LEFT RECURSION FORMULA
+        https://www.csd.uwo.ca/~mmorenom/CS447/Lectures/Syntax.html/node8.html
 """
 
 """
@@ -19,11 +22,22 @@ SYMBOLS:
 THE GRAMMAR:
     S -> Q[E]
     Q -> ∀V | ∃V
-    E -> EOE | (E) | F
+    E -> EOE | FOF | (E)
     V -> {a..z}
-    W -> {A..Z}
-    F -> W(V)
-    O -> > | <> | & | ~ | v | *
+    W -> {Aa..Zz}
+    F -> W(V) | ~F | (F)
+    O -> > | <> | & | v | *
+
+THE GRAMMAR WITH LEFT RECURSION REMOVED:
+    S -> Q[E]
+    Q -> ∀V | ∃V
+    E -> FOF | GOG | (E)
+    G -> FG' | (G) | (GOG) | F
+    G'-> OGG' | epsilon
+    V -> {a..z}
+    W -> {Aa..Zz}
+    F -> W(V) | ~F | (F)
+    O -> > | <> | & | v | *
 """
 
 
