@@ -1,4 +1,4 @@
-from expressions.Nodes import Node, Parser, EmptyInputException
+from expressions.Nodes import  Parser, EmptyInputException, InvalidExpressionException
 
 """
     RECURSIVE DESCENT PARSING
@@ -43,18 +43,22 @@ THE GRAMMAR WITH LEFT RECURSION REMOVED:
 
 def main() -> None:
     try:
-        expr = "∀x[R(x) & S(x) > C(x)]"
+        expr = "∀x[R(y) & S(x) > C(x)]"
         print(f"{expr}:")
         p = Parser(expr)
-        re = p.s()
+        re = p.s_rule()
         re.print()
-        expr = "∃x[ V(x) & K(x)"
+        expr = "∃x[Auto(x) v Clovek(x) & Objekt(x)]"
         print(f"\n{expr}:")
         p = Parser(expr)
-        re = p.s()
+        re = p.s_rule()
         re.print()
     except EmptyInputException:
         pass
+    except ValueError as e:
+        print("Error:", e)
+    except InvalidExpressionException as iee:
+        print(iee)
 
 
 if __name__ == '__main__':
