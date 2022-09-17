@@ -1,4 +1,4 @@
-from expressions.Nodes import Node, Impl
+from expressions.Nodes import Node, Parser, EmptyInputException
 
 """
     RECURSIVE DESCENT PARSING
@@ -9,12 +9,12 @@ from expressions.Nodes import Node, Impl
 """
 
 """
-SYMBOLS:
-    IMPL:   >
-    BICON:  <>
-    AND:    &
-    OR:     v
-    NOT:    ~
+SYMBOLS:        PRECEDENCE
+    NOT:    ~   1
+    AND:    &   2  
+    OR:     v   3
+    IMPL:   >   4
+    BICON:  <>  5
     UNI:    A
     EXI:    E
     ABS:    #
@@ -26,49 +26,36 @@ THE GRAMMAR:
     V -> {a..z}
     W -> {Aa..Zz}
     F -> W(V) | ~F | (F)
-    O -> > | <> | & | v | *
+    O -> > | <> | & | v
 
 THE GRAMMAR WITH LEFT RECURSION REMOVED:
     S -> Q[E]
     Q -> ∀V | ∃V
-    E -> FOF | GOG | (E)
+    E -> GOG | (E)
     G -> FG' | (G) | (GOG) | F
     G'-> OGG' | epsilon
     V -> {a..z}
     W -> {Aa..Zz}
     F -> W(V) | ~F | (F)
-    O -> > | <> | & | v | *
+    O -> > | <> | & | v
 """
 
 
-def recursive_descent_parse():
-    pass
-
-
-def parse(input_string: str) -> Node:
-    """ parse the input and break up into tokens """
-    input_string = input_string.replace(' ', '')
-    if not input_string:
-        return Node()
-    match input_string[0]:
-        case '∃':
-            pass
-        case '∀':
-            pass
-        case _:
-            pass
-
-    n = Node
-    return n
-
-
-def del_f():
-    node = Node()
-    print(node.get_value())
-
-    p1 = "∀x[R(x) ⊃ S(x)]"
-    parse(p1)
+def main() -> None:
+    try:
+        expr = "∀x[R(x) & S(x) > C(x)]"
+        print(f"{expr}:")
+        p = Parser(expr)
+        re = p.s()
+        re.print()
+        expr = "∃x[ V(x) & K(x)"
+        print(f"\n{expr}:")
+        p = Parser(expr)
+        re = p.s()
+        re.print()
+    except EmptyInputException:
+        pass
 
 
 if __name__ == '__main__':
-    del_f()
+    main()
