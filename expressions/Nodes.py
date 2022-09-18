@@ -1,5 +1,12 @@
 from typing import Generator
 
+"""
+TBA:
+    operator precedence -> add rules to grammar to reflect valid logic
+    bracket support and parity check
+    bracket negation
+    expression parsing unit tests
+"""
 
 class Node:
     def __init__(self, left, right, value: str):
@@ -36,13 +43,21 @@ class Set(Node):
         return f"({self.value}({self.variable}))"
 
 
+class Neg(Node):
+    def __init__(self, left, right, value: str):
+        super().__init__(left, right, value)
+
+    def print(self):
+        return f"( not ({self.left.print()}))"
+
+
 class Operation(Node):
     """ an operation node """
     def __init__(self, left: Node | None, right: Node | None, operation: str):
         super().__init__(left, right, operation)
 
     def print(self):
-        return f"({self.left.print()} {self.value} {self.right.print()})"
+        return f"'{self.left.print()}' {self.value} .{self.right.print()}."
 
 
 def lexer(string: str) -> Generator[str, None, None]:
@@ -62,13 +77,13 @@ class Parser:
             raise EmptyInputException
         self.expression_generator = lexer(string)  # create python generator for the parser to iterate over
         self.current = next(self.expression_generator)  # set current char to next in generator
-        self.position = 0
+        self.position = 0  # position within the string being parsed.
 
     def accept(self, char: str) -> bool:
         """ check next char in generator """
         if self.current == char:
             self.current = next(self.expression_generator)
-            self.position += 1
+            self.advance()
             return True
         return False
 
@@ -77,8 +92,11 @@ class Parser:
         if self.current == char:
             self.current = next(self.expression_generator)
             return True
-        print(f"Error: expected {char}. Happened at position: {self.position}")
+        print(f"Error: expected '{char}', but got '{self.current}' instead. Happened at position: {self.position}")
         return False
+
+    def advance(self, amount=1):
+        self.position += amount
 
     def quantifier(self) -> Quantifier:
         """ each quantifier different rules """
@@ -89,20 +107,22 @@ class Parser:
             case '∃':
                 variable = self.current
                 self.current = next(self.expression_generator)
-                self.position += 2
+                self.advance(2)
                 return Quantifier(value='∃', variable=variable, tree=None)
             case '∀':
                 variable = self.current
                 self.current = next(self.expression_generator)
-                self.position += 2
+                self.advance(2)
                 return Quantifier(value='∀', variable=variable, tree=None)
             case _:
                 raise ValueError('No quantifier found. The input must be a closed formula.')
 
     # S -> Q[E]
     def s_rule(self) -> Quantifier | None:
+        print("S:")
         expr = self.quantifier()
         if self.accept('['):
+            self.advance()
             tree = self.e_rule()
             if not tree:
                 return None
@@ -111,20 +131,19 @@ class Parser:
 
     # E -> GOG | (E)
     def e_rule(self) -> Operation | None:
-        g = self.g_rule()
-        if not g:
+        print("E:")
+        left = self.g_rule()
+        if not left:
             return None
-        op = self.o_rule(g)
+        op = self.o_rule(left)
         if not op:
-            return g
-        right = g
-        if not right:
-            return None
-        op.right = right
+            return left
+        op.right = self.g_rule()
         return op
 
-    # G -> FG' | (G) | (GOG) | F
+    # G -> !G | FG' | (G) | (GOG)  | F
     def g_rule(self) -> Node | None:
+        print("G:")
         # print("calling g")
         left = self.f_rule()
         if not left:
@@ -134,20 +153,26 @@ class Parser:
             # print("found final expression")
             return left
 
-        gg = self.gg_rule(left)
-        if not gg:
-            raise ValueError("Malformed input: Missing ending ']' parenthesis")
-        return gg
+        op = self.gg_rule(left)
+        if not op:
+            raise ValueError(f"Malformed input: Missing ending ']' parenthesis at position {self.position}")
+        print("returning op ", type(op.left), op.value, type(op.right))
+        return op
 
     # G'-> OGG' | epsilon
     def gg_rule(self, left: Node) -> Node | None:
+        print("G':")
         op = self.o_rule(left)
         if not op:
-            return None
+            return left
         g = self.g_rule()
         if not g:
             return None
         op.right = g
+        next_it = self.gg_rule(op)
+        if not next_it:
+            return op
+        """
         next_operation = self.o_rule(op)
         if not next_operation:
             return op
@@ -156,26 +181,47 @@ class Parser:
             return None
         next_operation.right = right
         return next_operation
+        """
+        return next_it
 
-    # F -> W(V) | ~F | (F)
-    def f_rule(self) -> Set | None:
+    # F -> W(V) | !F | (F)
+    def f_rule(self) -> Set | Neg | None:
+        print("F:")
+        if self.accept('!'):
+            left = self.f_rule()
+            if not left:
+                return None
+            return Neg(left, None, "not")
+        set_name_length_limit = 15
         elem = self.current
         self.current = next(self.expression_generator)
         if not elem.isupper():
             return None
-        while not self.accept('('):
+        len = 0
+        while not self.accept('(') :
+            if not self.current.islower():
+                raise ValueError(f"Illegal character ({self.current}) within set name.")
             elem += self.current
-            self.position += 1
+            self.advance()
             self.current = next(self.expression_generator)
+            len += 1
+            if len == set_name_length_limit:
+                raise ValueError(f"The maximum length of a set name is {set_name_length_limit} characters. "
+                                 f"Exceeded, or no opening parenthesis found.")
+        if not self.current.islower():
+            raise ValueError(f"Expected lowercase variable in parentheses at position {self.position}, but got '{self.current}' instead.")
         variable = self.current
         self.current = next(self.expression_generator)
         self.expect(')')
+        print(elem)
         return Set(None, None, elem, variable)
 
     # O -> > | <> | & | v
     def o_rule(self, left: Node) -> Operation | None:
+        print("O:")
         operation = self.current
         self.current = next(self.expression_generator)
+        print(operation)
         match operation:
             case '>':
                 return Operation(left, None, 'implies')
