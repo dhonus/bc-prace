@@ -1,4 +1,5 @@
-from expressions.Nodes import  Parser, EmptyInputException, InvalidExpressionException
+from expressions.Parser import Parser, EmptyInputException, InvalidExpressionException
+import logging
 
 """
     RECURSIVE DESCENT PARSING
@@ -22,44 +23,32 @@ SYMBOLS:        PRECEDENCE
 THE GRAMMAR:
     S -> Q[E]
     Q -> ∀V | ∃V
-    E -> EOE | FOF | (E)
+    E -> B | (E)
+    B -> I | I <> B
+    I -> D | D > I
+    D -> C | C "|" D
+    C -> N | N & C
+    N -> F | !F
+    F = W(V)
     V -> {a..z}
     W -> {Aa..Zz}
-    F -> W(V) | !F | (F)
-    O -> > | <> | & | v
-
-THE GRAMMAR WITH LEFT RECURSION REMOVED:
-    S -> Q[E]
-    Q -> ∀V | ∃V
-    E -> GOG | (E)
-    G -> FG' | (G) | (GOG) | !G | F
-    G'-> OGG' | epsilon
-    V -> {a..z}
-    W -> {Aa..Zz}
-    F -> W(V) | !F | (F)
-    O -> > | <> | & | v
 """
 
 
 def main() -> None:
+    logging.root.setLevel(logging.INFO)
     try:
-        expr = "∀x[S(x) > C(x) & A(x) v X(x)]"
+        expr = "∀x[!(S(x) > C(x)) & V(x)]"
         print(f"{expr}:")
         p = Parser(expr)
-        re = p.s_rule()
-        # print((re.tree.value))
-        re.print()
-        expr = "∃x[Auto(x) v N(x) & Clovek(x) & Objekt(x)]"
-        print(f"\n{expr}:")
-        p = Parser(expr)
-        re = p.s_rule()
-        re.print()
+        print(p.s_rule().print())
+
     except EmptyInputException:
         pass
     except InvalidExpressionException as iee:
-        print(iee)
+        logging.warning(iee)
     except ValueError as e:
-        print("Error:", e)
+        logging.warning("Error:", e)
 
 
 if __name__ == '__main__':
