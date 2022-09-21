@@ -1,14 +1,11 @@
-import logging
+# remove when this becomes default in python (python 3.11)
+# used for type annotations in constructor
+from __future__ import annotations
 from typing import Generator
-
-"""
-TBA:
-    expression parsing unit tests
-"""
 
 
 class Node:
-    def __init__(self, left, right, value: str):
+    def __init__(self, left: Node, right: Node, value: str):
         self.value = value
         self.left = left
         self.right = right

@@ -1,4 +1,4 @@
-from expressions.Nodes import Node, Quantifier, Set, Neg, Operation, lexer
+from expressions.Nodes import Quantifier, Set, Neg, Operation, lexer
 import logging
 
 
@@ -21,17 +21,18 @@ class Parser:
             return True
         return False
 
-    def require(self, req: str) -> bool:
+    def require(self, req: str) -> bool | ValueError:
         """ mostly used for bracket parity """
         if self.current == req:
             self.current = next(self.expression_generator)
             return True
+
         if req == ')':
-            print(f"Error: '{req}' required, but got '{self.current}' instead."
+            raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead."
                   f" Probably a missing closing bracket. Happened at position: {self.position}")
         else:
-            print(f"Error: '{req}' required, but got '{self.current}' instead. Happened at position: {self.position}")
-        return False
+            raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead. Happened at position: {self.position}")
+
 
     def advance(self, amount=1):
         self.position += amount
@@ -85,7 +86,7 @@ class Parser:
             if self.require('>'):
                 self.advance()
                 right = self.b_rule()
-                if right is not None:
+                if right:
                     return Operation(left, right, '<>')
             return None
         return left
@@ -98,7 +99,7 @@ class Parser:
         if self.accept('>'):
             self.advance()
             right = self.i_rule()
-            if right is not None:
+            if right:
                 return Operation(left, right, '>')
         return left
 
@@ -110,7 +111,7 @@ class Parser:
         if self.accept('|'):
             self.advance()
             right = self.d_rule()
-            if right is not None:
+            if right:
                 return Operation(left, right, 'or')
         return left
 
@@ -122,7 +123,7 @@ class Parser:
         if self.accept('&'):
             self.advance()
             right = self.c_rule()
-            if right is not None:
+            if right:
                 return Operation(left, right, '&')
         return left
 
@@ -157,8 +158,8 @@ class Parser:
         length = 0
         while not self.accept('(') :
             if not self.current.islower():
-                logging.warning("f_rule bracket")
-                raise ValueError(f"Illegal character ({self.current}) within set name.")
+                logging.warning("f_rule uppercase")
+                raise ValueError(f"Illegal character '{self.current}' within set name. All capital letters required.")
             elem += self.current
             self.advance()
             self.current = next(self.expression_generator)
