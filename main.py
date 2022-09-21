@@ -47,9 +47,9 @@ def main() -> None:
         print(f"{expr}:")
         p = Parser(expr)
         re = p.s_rule()
-        print((re.tree.value))
+        # print((re.tree.value))
         re.print()
-        expr = "∃x[Auto(x) v Neco(x) & Clovek(x) & Objekt(x)]"
+        expr = "∃x[Auto(x) v N(x) & Clovek(x) & Objekt(x)]"
         print(f"\n{expr}:")
         p = Parser(expr)
         re = p.s_rule()

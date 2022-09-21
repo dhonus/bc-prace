@@ -8,6 +8,7 @@ TBA:
     expression parsing unit tests
 """
 
+
 class Node:
     def __init__(self, left, right, value: str):
         self.value = value
@@ -119,7 +120,6 @@ class Parser:
 
     # S -> Q[E]
     def s_rule(self) -> Quantifier | None:
-        print("S:")
         expr = self.quantifier()
         if self.accept('['):
             self.advance()
@@ -131,7 +131,6 @@ class Parser:
 
     # E -> GOG | (E)
     def e_rule(self) -> Operation | None:
-        print("E:")
         left = self.g_rule()
         if not left:
             return None
@@ -143,7 +142,6 @@ class Parser:
 
     # G -> !G | FG' | (G) | (GOG)  | F
     def g_rule(self) -> Node | None:
-        print("G:")
         # print("calling g")
         left = self.f_rule()
         if not left:
@@ -161,7 +159,6 @@ class Parser:
 
     # G'-> OGG' | epsilon
     def gg_rule(self, left: Node) -> Node | None:
-        print("G':")
         op = self.o_rule(left)
         if not op:
             return left
@@ -186,7 +183,6 @@ class Parser:
 
     # F -> W(V) | !F | (F)
     def f_rule(self) -> Set | Neg | None:
-        print("F:")
         if self.accept('!'):
             left = self.f_rule()
             if not left:
@@ -213,15 +209,12 @@ class Parser:
         variable = self.current
         self.current = next(self.expression_generator)
         self.expect(')')
-        print(elem)
         return Set(None, None, elem, variable)
 
     # O -> > | <> | & | v
     def o_rule(self, left: Node) -> Operation | None:
-        print("O:")
         operation = self.current
         self.current = next(self.expression_generator)
-        print(operation)
         match operation:
             case '>':
                 return Operation(left, None, 'implies')
