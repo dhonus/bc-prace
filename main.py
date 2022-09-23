@@ -1,26 +1,23 @@
 from expressions.Parser import Parser, EmptyInputException, InvalidExpressionException
 import logging
 
-"""
-
-"""
-
 
 def main() -> None:
     logging.root.setLevel(logging.INFO)
     predicates = [
-        "∀x[!(S(x) > C(x)) & V(x)]",
-        "∀x[(S(x) & B(x)) > V(x)]",
-        "∃x[S(x) | B(x) & C(x) & V(x)]"
+        "∀x[!(S(x) <> C(x)) & V(x)]",
+        "∀x[(S(x) & (B(x)) > V(x))]",
+        "∃x[S(x) | B(x) & C(x) & A(x)]"
     ]
+
     predicates = [p.replace(" ", "") for p in predicates]
 
+    p_index = 1
     try:
-        p_index = 1
         for predicate in predicates:
             print(f"{predicate}:")
             p = Parser(predicate)
-            print(p.s_rule().print())
+            print(p.parse().print())
             p_index += 1
 
     except EmptyInputException:

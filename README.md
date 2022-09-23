@@ -36,7 +36,7 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
     THE GRAMMAR:
         S -> Q[E]
         Q -> ∀V | ∃V
-        E -> B | (E)
+        E -> B
         B -> I | I <> B
         I -> D | D > I
         D -> C | C '|' D

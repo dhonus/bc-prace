@@ -14,7 +14,7 @@ class Node:
         return f"({self.left.value})"
 
 
-class Quantifier(Node):
+class ExpressionTree(Node):
     """ main node which holds the quantifier of a premise and the full subtree """
     def __init__(self, value: str, variable: str, tree: Node | None):
         super().__init__(None, None, value)
@@ -31,7 +31,7 @@ class Quantifier(Node):
 
 class Set(Node):
     """ a single set. X(y) """
-    def __init__(self, left, right, value: str, variable: str):
+    def __init__(self, left: Node, right: Node, value: str, variable: str):
         super().__init__(left, right, value)
         self.variable = variable
 
@@ -40,6 +40,7 @@ class Set(Node):
 
 
 class Neg(Node):
+    """ a negation node """
     def __init__(self, left: Node):
         super().__init__(left, None, "not")
 
@@ -56,7 +57,7 @@ class Operation(Node):
         return f"( {self.left.print()} {self.value} {self.right.print()} )"
 
 
-def lexer(string: str) -> Generator[str, None, None]:
+def expression_generator(string: str) -> Generator[str, None, None]:
     """ python generator for us to iterate over an expression """
     for char in string:
         yield char

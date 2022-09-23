@@ -1,4 +1,4 @@
-from expressions.Nodes import Quantifier, Set, Neg, Operation, lexer
+from expressions.Nodes import ExpressionTree, Set, Neg, Operation, expression_generator
 import logging
 
 
@@ -9,11 +9,12 @@ class Parser:
         string = string.replace(" ", "")  # remove whitespace
         if not string:
             raise EmptyInputException
-        self.expression_generator = lexer(string)  # create python generator for the parser to iterate over
+        self.expression_generator = expression_generator(string)  # create generator for the parser to iterate over
         self.current = next(self.expression_generator)  # set current char to next in generator
         self.position = 0  # position within the string being parsed.
+        self.pedantic = True  # forces usage of stricter syntax
 
-    def accept(self, char: str) -> bool:
+    def match(self, char: str) -> bool:
         """ check next char in generator """
         if self.current == char:
             self.current = next(self.expression_generator)
@@ -29,37 +30,23 @@ class Parser:
 
         if req == ')':
             raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead."
-                  f" Probably a missing closing bracket. Happened at position: {self.position}")
+                  f" Probably a missing closing bracket. Occurred at position: {self.position}")
         else:
             raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead. Happened at position: {self.position}")
-
 
     def advance(self, amount=1):
         self.position += amount
 
-    def quantifier(self) -> Quantifier:
-        """ each quantifier different rules """
-        """ to be implemented """
-        elem = self.current
-        self.current = next(self.expression_generator)
-        match elem:
-            case '∃':
-                variable = self.current
-                self.current = next(self.expression_generator)
-                self.advance(2)
-                return Quantifier(value='∃', variable=variable, tree=None)
-            case '∀':
-                variable = self.current
-                self.current = next(self.expression_generator)
-                self.advance(2)
-                return Quantifier(value='∀', variable=variable, tree=None)
-            case _:
-                raise ValueError('No quantifier found. The input must be a closed formula.')
+    def parse(self) -> ExpressionTree:
+        parsed = self.s_rule()
+        if not parsed:
+            raise ValueError('Unknown error occurred while parsing expression.')
+        return parsed
 
     # S -> Q[E]
-    def s_rule(self) -> Quantifier | None:
-        expr = self.quantifier()
-        if self.accept('['):
+    def s_rule(self) -> ExpressionTree | None:
+        expr = self.q_rule()
+        if self.match('['):
             self.advance()
             tree = self.e_rule()
             if not tree:
@@ -68,10 +55,34 @@ class Parser:
             self.require(']')
         return expr
 
-    # E -> B | (E)
+    # Q -> ∀V | ∃V
+    def q_rule(self) -> ExpressionTree:
+        """ each quantifier different rules """
+        """ to be implemented """
+        elem = self.current
+        self.current = next(self.expression_generator)
+        match elem:
+            case '∃':
+                variable = self.current
+                if not variable.islower() and self.pedantic:
+                    raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
+                self.current = next(self.expression_generator)
+                self.advance(2)
+                return ExpressionTree(value='∃', variable=variable, tree=None)
+            case '∀':
+                variable = self.current
+                if not variable.islower() and self.pedantic:
+                    raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
+                self.current = next(self.expression_generator)
+                self.advance(2)
+                return ExpressionTree(value='∀', variable=variable, tree=None)
+            case _:
+                raise ValueError('No quantifier found. The input must be a closed formula.')
+
+    # E -> B # this is done because we can only have one expression
     def e_rule(self) -> Operation | None:
-        left = self.b_rule()
         self.advance()
+        left = self.b_rule()
         if not left:
             return None
         return left
@@ -81,7 +92,7 @@ class Parser:
         left = self.i_rule()
         if not left:
             return None
-        if self.accept('<'):
+        if self.match('<'):
             self.advance()
             if self.require('>'):
                 self.advance()
@@ -96,19 +107,19 @@ class Parser:
         left = self.d_rule()
         if not left:
             return None
-        if self.accept('>'):
+        if self.match('>'):
             self.advance()
             right = self.i_rule()
             if right:
                 return Operation(left, right, '>')
         return left
 
-    # D -> C | C "|" D
+    # D -> C | C '|' D
     def d_rule(self) -> Operation | None:
         left = self.c_rule()
         if not left:
             return None
-        if self.accept('|'):
+        if self.match('|'):
             self.advance()
             right = self.d_rule()
             if right:
@@ -120,7 +131,7 @@ class Parser:
         left = self.neg_rule()
         if not left:
             return None
-        if self.accept('&'):
+        if self.match('&'):
             self.advance()
             right = self.c_rule()
             if right:
@@ -129,7 +140,7 @@ class Parser:
 
     # N -> F | !F
     def neg_rule(self) -> Set | Neg | None:
-        if self.accept('!'):
+        if self.match('!'):
             self.advance()
             left = self.f_rule()
             if not left:
@@ -140,7 +151,7 @@ class Parser:
 
     # F = W(V)
     def f_rule(self) -> Set | None:
-        if self.accept('('):
+        if self.match('('):
             self.advance()
             right = self.b_rule()
             if self.require(')'):
@@ -154,11 +165,11 @@ class Parser:
         elem = self.current
         self.current = next(self.expression_generator)
         if not elem.isupper():
-            return None
+            raise ValueError(f"Failed to identify token '{elem}' at position {self.position}. Expected a literal.")
         length = 0
-        while not self.accept('(') :
+        while not self.match('('):
             if not self.current.islower():
-                logging.warning("f_rule uppercase")
+                logging.warning("f_rule violated uppercase")
                 raise ValueError(f"Illegal character '{self.current}' within set name. All capital letters required.")
             elem += self.current
             self.advance()
@@ -168,8 +179,11 @@ class Parser:
                 raise ValueError(f"The maximum length of a set name is {set_name_length_limit} characters. "
                                  f"Exceeded, or no opening parenthesis found.")
         if not self.current.islower():
-            raise ValueError(f"required lowercase variable in parentheses at position {self.position}, but got '{self.current}' instead.")
-        variable = self.current
+            logging.warning("f_rule violated lowercase")
+            if self.pedantic:
+                raise ValueError(f"Pedantic: Required lowercase variable in parentheses at position {self.position}, "
+                                 f"but got '{self.current}' instead.")
+        variable = self.current.lower()
         self.current = next(self.expression_generator)
         self.require(')')
         logging.debug(f"returning set {elem}({variable})")
@@ -177,7 +191,7 @@ class Parser:
 
 
 class InvalidExpressionException(Exception):
-    """ raised when the lexer fails to produce a valid expression """
+    """ raised when the expression_generator fails to produce a valid expression """
     pass
 
 
