@@ -40,7 +40,7 @@ class Parser:
     def parse(self) -> ExpressionTree:
         parsed = self.s_rule()
         if not parsed:
-            raise ValueError('Unknown error occurred while parsing expression.')
+            raise Exception('Unknown error occurred while parsing expression.')
         return parsed
 
     # S -> Q[E]
@@ -127,7 +127,7 @@ class Parser:
         return left
 
     # C -> N | N & C
-    def c_rule(self) -> Operation | None:
+    def c_rule(self) -> Operation | Set | Neg | None:
         left = self.neg_rule()
         if not left:
             return None
@@ -165,7 +165,7 @@ class Parser:
         elem = self.current
         self.current = next(self.expression_generator)
         if not elem.isupper():
-            raise ValueError(f"Failed to identify token '{elem}' at position {self.position}. Expected a literal.")
+            raise TypeError(f"Failed to identify token '{elem}' at position {self.position}. Expected a literal.")
         length = 0
         while not self.match('('):
             if not self.current.islower():
@@ -187,7 +187,8 @@ class Parser:
         self.current = next(self.expression_generator)
         self.require(')')
         logging.debug(f"returning set {elem}({variable})")
-        return Set(None, None, elem, variable)
+
+        return Set(elem, variable)
 
 
 class InvalidExpressionException(Exception):

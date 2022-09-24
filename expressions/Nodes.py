@@ -5,7 +5,7 @@ from typing import Generator
 
 
 class Node:
-    def __init__(self, left: Node, right: Node, value: str):
+    def __init__(self, left: Node | None, right: Node | None, value: str):
         self.value = value
         self.left = left
         self.right = right
@@ -24,15 +24,15 @@ class ExpressionTree(Node):
     def print(self):
         match self.value:
             case '∃':
-                return f"Exists {self.variable} for which {self.tree.print()} is true"
+                return f"Exists {self.variable} for which {self.tree.print()}"
             case '∀':
                 return f"For all {self.variable} applies {self.tree.print()}"
 
 
 class Set(Node):
     """ a single set. X(y) """
-    def __init__(self, left: Node, right: Node, value: str, variable: str):
-        super().__init__(left, right, value)
+    def __init__(self, value: str, variable: str):
+        super().__init__(None, None, value)
         self.variable = variable
 
     def print(self):
@@ -45,7 +45,7 @@ class Neg(Node):
         super().__init__(left, None, "not")
 
     def print(self):
-        return f"( not ({self.left.print()}))"
+        return f" not " + '{' +  f"{self.left.print()}" + '}'
 
 
 class Operation(Node):
@@ -54,7 +54,7 @@ class Operation(Node):
         super().__init__(left, right, operation)
 
     def print(self):
-        return f"( {self.left.print()} {self.value} {self.right.print()} )"
+        return f"[ {self.left.print()} {self.value} {self.right.print()} ]"
 
 
 def expression_generator(string: str) -> Generator[str, None, None]:
