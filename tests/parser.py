@@ -1,5 +1,5 @@
 import unittest
-from expressions.Parser import Parser, EmptyInputException, InvalidExpressionException
+from core.Parser import Parser, EmptyInputException, InvalidExpressionException
 
 
 class MyTestCase(unittest.TestCase):

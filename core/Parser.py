@@ -1,4 +1,4 @@
-from expressions.Nodes import ExpressionTree, Set, Neg, Operation, expression_generator
+from core.Nodes import ExpressionTree, Set, Neg, Operation, expression_generator
 import logging
 
 

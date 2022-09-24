@@ -1,5 +1,5 @@
-from expressions.Parser import Parser, EmptyInputException, InvalidExpressionException
-from expressions.Evaluator import Evaluator
+from core.Parser import Parser, EmptyInputException, InvalidExpressionException
+from core.Evaluator import Evaluator
 import logging
 from typing import List
 

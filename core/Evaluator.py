@@ -1,6 +1,6 @@
 import logging
 
-from expressions.Nodes import ExpressionTree, Node, Set, Operation, Neg
+from core.Nodes import ExpressionTree, Node, Set, Operation, Neg
 from typing import List
 
 

@@ -1,4 +1,4 @@
-from expressions.Nodes import ExpressionTree
+from core.Nodes import ExpressionTree
 
 
 class Venn3:
