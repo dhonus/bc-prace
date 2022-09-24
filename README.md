@@ -63,3 +63,8 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
 * zadání na elogice, přepnout si ročník 
 * **do konce listopadu!**
 * ~26. zář. další konzultace
+
+
+npm install -g @vue/cli
+pip install "fastapi[all]" # test removing all at the end
+pip install "uvicorn[standard]"
