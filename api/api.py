@@ -29,6 +29,7 @@ async def send_expression(item: Item):
     item.description = item.description + "hi"
     return item
 
+
 @app.get("/")
 def home():
-    return "Hello, World!"
+    return "FastAPI GET"
