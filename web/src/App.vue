@@ -4,6 +4,10 @@
   </div>
 </template>
 
+<style lang="scss">
+@import "assets/style.sass";
+</style>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

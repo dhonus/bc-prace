@@ -66,9 +66,15 @@ class Evaluator:
         pass
 
     def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> List[str]:
+        existential_validate = 0
         for tree in trees:
+            if tree.value == '∃':
+                existential_validate += 1
             self.__get_sets(tree)
         self.__get_sets(conclusion_tree)
+
+        if existential_validate == 0 and conclusion_tree.value == '∃':
+            raise LogicException('Nesprávný úsudek. Příklad Bertranda Russella. Všeobecné premisy nemohou implikovat existenci.')
 
         if len(self.__variables) > self.__sets:  # +1 for quantifier
             raise Exception(f'The maximum amount of sets in Venn is {self.__sets}.\n'
@@ -88,7 +94,7 @@ class Evaluator:
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
             else:
-                raise ValueError('This should not have happened.')
+                raise ValueError('Internal error. Refresh the page.')
 
             print(self.__sets_dict)
 
@@ -99,3 +105,6 @@ class Evaluator:
         for i, t in enumerate(self.__truthtable):
             print(f" -> {i + 1}: {t}")
 
+
+class LogicException(Exception):
+    pass

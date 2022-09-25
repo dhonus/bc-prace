@@ -1,3 +1,5 @@
+<!-- https://axios-http.com/docs/post_example -->
+
 <template>
   <div>
     <p>{{ msg }}</p>
@@ -24,6 +26,10 @@ export default {
           console.error(error);
         });
     },
+    change() {
+      this.optional = !this.optional
+      console.log(this.optional)
+    }
   },
   created() {
     this.getMessage();

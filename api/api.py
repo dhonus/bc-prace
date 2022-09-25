@@ -2,7 +2,7 @@
 # https://fastapi.tiangolo.com/tutorial/body/
 from fastapi import FastAPI
 from pydantic import BaseModel
-# this is required to be able to access the server from other ports/ips...
+# this is required to be able to access the fastapi server from VUE.js on another port
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 
-@app.post("/api")
+@app.get("/api")
 async def send_expression(item: Item):
     item.description = item.description + "hi"
     return item

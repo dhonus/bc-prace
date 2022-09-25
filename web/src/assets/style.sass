@@ -1,0 +1,82 @@
+.input_wrapper
+  display: flex
+  flex-direction: row
+  flex-wrap: wrap
+  width: 80%
+  margin: auto
+  gap: 3rem
+  .predicates
+    display: flex
+    flex-direction: column
+    flex: 1
+    input
+      margin: .5rem 0 .5rem 0
+      padding-left: 1rem
+      line-height: 2.5rem
+      background-color: #e9e9ed
+      border-color: transparent
+      transition: all .4s ease
+      border-radius: 5px
+      &:focus-visible
+        outline: none
+        background-color: #c4c9cf
+    .button_container
+      display: flex
+      flex-direction: row
+      align-items: center
+    .button_plus
+      background: #e5e5e5
+      color: #424242
+      height: 2.5rem
+      width: 2.5rem
+      border: solid #d6d6d6
+      border-radius: 50%
+      transition: all 0.4s ease
+      margin-left: .5rem
+      font-size: 1.25em
+      &:hover
+        background: #c4c4c4
+      &:active
+        background: #909090
+
+  .keyboard
+    display: flex
+    flex-wrap: wrap
+    flex-direction: row
+    gap: .5rem
+    margin: 0 0.5rem
+    height: 15em
+    width: 15em
+    padding: 2em
+    position: relative
+    button
+      flex: 1 0 30%
+      border-color: transparent
+      font-size: large
+      border-radius: 5px
+      transition: background-color .4s ease
+      &:active
+        background-color: #b4babd
+
+.v-enter-active,
+.v-leave-active
+  transition: opacity 0.4s ease
+
+
+.v-enter-from,
+.v-leave-to
+  opacity: 0
+
+.accept_button
+  line-height: 2.5rem
+  color: #333333
+  background-color: #dbdbdd
+  border: none
+  border-radius: 5px
+  margin: .5rem 0 .5rem 0
+  transition: background-color .3s ease
+  &:hover
+    background-color: #c3c3c9
+  &:active
+    background-color: #a3a3ab
+

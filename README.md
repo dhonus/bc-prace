@@ -69,3 +69,4 @@ npm install -g @vue/cli
 pip install "fastapi[all]" # test removing all at the end
 pip install "uvicorn[standard]"
 npm install axios
+npm install --save-dev node-sass sass-loader
