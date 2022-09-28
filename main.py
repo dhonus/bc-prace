@@ -47,10 +47,44 @@ def main(predicates: List[str], conclusion: str) -> None:
 
 if __name__ == '__main__':
     p = [
-        "∀x[!(S(x) <> X(x)) & V(x)]",
-        "∃x[S(x) | V(x) & X(x) & V(x)]",
-        "∀x[(S(x) & (X(x)) > V(x))]",
-        "∃x[V(x) & !(V(x) & !S(x))]"
+        "∀x[A(x) > (B(x) | C(x))]",
     ]
-    c = "∃x[S(x) & V(x)]"
+    # "∃x[s(x) | v(x) & x(x) & v(x)]",
+    #         "∀x[(s(x) & (x(x)) > v(x))]",
+    #         "∃x[v(x) & !(v(x) & !s(x))]"
+    c = "∃x[A(x) > (B(x) | C(x))]"
     main(p, c)
+
+    #  (a(x) & b(x)) > b(x)
+    a = {
+        "a",
+        "ab",
+        "ac",
+        "abc"
+    }
+    b = {
+        "b",
+        "ab",
+        "bc",
+        "abc"
+    }
+    c = {
+        "c",
+        "ac",
+        "bc",
+        "abc"
+    }
+    states = {
+        "a": "crossed",
+    }
+
+    tmp = b.union(c)
+    print(tmp)
+    tmp = a.intersection(tmp)
+    print(tmp)
+
+    print(b.union(c)) # disjunction
+    print(b.intersection(b)) # conjunction
+    print(a.difference(b)) # implication
+    print(a.symmetric_difference(b)) # biconditional
+    print(states)

@@ -2,6 +2,7 @@ import logging
 
 from core.Nodes import ExpressionTree, Node, Set, Operation, Neg
 from typing import List
+from core.Venn import *
 
 
 class Evaluator:
@@ -34,7 +35,9 @@ class Evaluator:
 
     def __universal_solve(self, node):
         logging.info("universal")
+        venn = Venn3(node, self.__variables)
 
+        """
         # ∀x[!(S(x) <> X(x)) & V(x)]:
         match node:
             case None:
@@ -47,20 +50,23 @@ class Evaluator:
             case Neg():
                 print("no", node.left.value)
                 left = self.__universal_solve(node.left)
-                self.__variables.append('!' + left)
+                if '!' + left not in self.__variables:
+                    self.__variables.append('!' + left)
                 return '!' + left
             case Operation():
                 print("oper", node.value)
                 left = self.__universal_solve(node.left)
                 right = self.__universal_solve(node.right)
                 print(f"{left}{node.value}{right}")
-                self.__variables.append(f"{left}{node.value}{right}")
+                if '{left}{node.value}{right}' not in self.__variables:
+                    self.__variables.append(f"{left}{node.value}{right}")
                 self.__print_truthtable()
 
                 for row in self.__truthtable:
                     row.append(0)
 
                 return f"{left}{node.value}{right}"
+        """
 
     def __existential_solve(self, expr_tree: ExpressionTree):
         pass
@@ -73,7 +79,7 @@ class Evaluator:
             self.__get_sets(tree)
         self.__get_sets(conclusion_tree)
 
-        if existential_validate == 0 and conclusion_tree.value == '∃':
+        if existential_validate == 0 and conclusion_tree.value == '∃' and False:
             raise LogicException('Nesprávný úsudek. Příklad Bertranda Russella. Všeobecné premisy nemohou implikovat existenci.')
 
         if len(self.__variables) > self.__sets:  # +1 for quantifier
@@ -84,7 +90,7 @@ class Evaluator:
 
         print(self.__variables)
 
-        self.__print_truthtable()
+        # self.__print_truthtable()
 
         for expr_tree in trees:
             self.__sets_dict = {}
