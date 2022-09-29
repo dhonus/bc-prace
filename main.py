@@ -42,18 +42,22 @@ def main(predicates: List[str], conclusion: str) -> None:
     except Exception as e:
         logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
 
-    print("----------")
-
 
 if __name__ == '__main__':
+    # final = {'AB', 'ABC', 'AC'}
+    # final = {'A', 'B', 'C', 'BC'}
+
     p = [
-        "∀x[A(x) > (B(x) | C(x))]",
+        "∀x[!A(x) & (B(x) | C(x))]",
+        "∀x[A(x) | (B(x) & C(x))]",
     ]
     # "∃x[s(x) | v(x) & x(x) & v(x)]",
     #         "∀x[(s(x) & (x(x)) > v(x))]",
     #         "∃x[v(x) & !(v(x) & !s(x))]"
-    c = "∃x[A(x) > (B(x) | C(x))]"
+    c = "∃x[A(x) & (B(x) | C(x))]"
     main(p, c)
+
+    print("\n-- testing sets --")
 
     #  (a(x) & b(x)) > b(x)
     a = {

@@ -37,37 +37,6 @@ class Evaluator:
         logging.info("universal")
         venn = Venn3(node, self.__variables)
 
-        """
-        # ∀x[!(S(x) <> X(x)) & V(x)]:
-        match node:
-            case None:
-                logging.info("none")
-                return
-            case Set():
-                print("set ", node.value)
-                self.__sets_dict[node.value] = "_"
-                return node.value
-            case Neg():
-                print("no", node.left.value)
-                left = self.__universal_solve(node.left)
-                if '!' + left not in self.__variables:
-                    self.__variables.append('!' + left)
-                return '!' + left
-            case Operation():
-                print("oper", node.value)
-                left = self.__universal_solve(node.left)
-                right = self.__universal_solve(node.right)
-                print(f"{left}{node.value}{right}")
-                if '{left}{node.value}{right}' not in self.__variables:
-                    self.__variables.append(f"{left}{node.value}{right}")
-                self.__print_truthtable()
-
-                for row in self.__truthtable:
-                    row.append(0)
-
-                return f"{left}{node.value}{right}"
-        """
-
     def __existential_solve(self, expr_tree: ExpressionTree):
         pass
 
@@ -88,14 +57,12 @@ class Evaluator:
 
         self.__truthtable = self.__generate_truthtable(len(self.__variables))
 
-        print(self.__variables)
-
-        # self.__print_truthtable()
+        print(f"variables for the entire diagram: {self.__variables}")
 
         for expr_tree in trees:
             self.__sets_dict = {}
             if expr_tree.value == '∀':
-                print(f"solving {expr_tree.value}")
+                print(f"\nsolving {expr_tree.value}")
                 self.__universal_solve(expr_tree.tree)
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
