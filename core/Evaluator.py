@@ -1,7 +1,7 @@
 import logging
 
 from core.Nodes import ExpressionTree, Node, Set, Operation, Neg
-from typing import List
+from typing import List, Set as tSet
 from core.Venn import *
 
 
@@ -11,6 +11,7 @@ class Evaluator:
         self.__truthtable = []
         self.__sets = 4  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
         self.__sets_dict = {}
+        self.__unis = set()  # the universtal statement result
 
     def __get_sets(self, tree: ExpressionTree | Node):
         match tree:
@@ -35,12 +36,13 @@ class Evaluator:
 
     def __universal_solve(self, node):
         logging.info("universal")
-        venn = Venn3(node, self.__variables)
+        venn = Venn3(self.__variables)
+        return venn.solve(node)
 
     def __existential_solve(self, expr_tree: ExpressionTree):
         pass
 
-    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> List[str]:
+    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> tSet[str]:
         existential_validate = 0
         for tree in trees:
             if tree.value == '∃':
@@ -63,15 +65,18 @@ class Evaluator:
             self.__sets_dict = {}
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
-                self.__universal_solve(expr_tree.tree)
+                solution = self.__universal_solve(expr_tree.tree)
+                print(solution, "aha")
+                self.__unis = self.__unis.union(solution)
+                print(self.__unis)
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
             else:
                 raise ValueError('Internal error. Refresh the page.')
 
             print(self.__sets_dict)
-
-        return self.__variables
+        print(self.__unis)
+        return self.__unis
 
     def __print_truthtable(self):
         print(self.__variables)

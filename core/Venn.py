@@ -7,13 +7,12 @@ from typing import Set as tSet
 
 
 class Venn:
-    def __init__(self, tree: ExpressionTree, variables: List[str]):
+    def __init__(self, variables: List[str]):
         self.dict = {}
         self.variables = variables
         for var in self.variables:
             self.dict[var] = " "
         print(self.dict)
-        self.tree = tree
 
         self.sets = [set(), set(), set()]
         area_combinations = []
@@ -39,10 +38,13 @@ class Venn:
     def __solve(self, node) -> tSet[str]:
         pass
 
+    def solve(self, tree: ExpressionTree) -> tSet[str]:
+        pass
+
 
 class Venn2(Venn):
-    def __init__(self, tree: ExpressionTree, variables: List[str]):
-        super().__init__(tree, variables)
+    def __init__(self, variables: List[str]):
+        super().__init__(variables)
         if len(self.sets) != 2:
             raise Exception('Error while generating sets.')
 
@@ -51,13 +53,15 @@ class Venn2(Venn):
 
 
 class Venn3(Venn):
-    def __init__(self, tree: ExpressionTree, variables: List[str]):
-        super().__init__(tree, variables)
+    def __init__(self, variables: List[str]):
+        super().__init__(variables)
         if len(self.sets) != 3:
             raise Exception('Unknown error while generating sets. Too many found.')
         print(self.variables)
         print(self.sets)
-        print(f"final = {self.__solve(tree)}")
+
+    def solve(self, tree: ExpressionTree) -> tSet[str]:
+        return self.__solve(tree)
 
     def __solve(self, node: Node) -> tSet[str]:
         match node:

@@ -4,58 +4,7 @@ import logging
 from typing import List
 
 
-def main(predicates: List[str], conclusion: str) -> None:
-    logging.root.setLevel(logging.DEBUG)
-
-    predicates = [predicate.replace(" ", "") for predicate in predicates]
-
-    p_index = 1
-    try:
-        trees = []
-        for predicate in predicates:
-            print(f"{predicate}:")
-            parser = Parser(predicate)
-            tree = parser.parse()
-            trees.append(tree)
-            print(tree.print())
-            print()
-
-        parser = Parser(conclusion)
-        conclusion_tree = parser.parse()
-
-        trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
-
-        evaluator = Evaluator()
-        evaluator.eval(trees, conclusion_tree)
-
-        """
-        for tree in trees:
-            evaluator = Evaluator()
-            evaluator.eval(tree, conclusion_tree)
-        """
-        p_index += 1
-
-    except EmptyInputException:
-        pass
-    except InvalidExpressionException as iee:
-        print(iee)
-    except Exception as e:
-        logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
-
-
-if __name__ == '__main__':
-    # final = {'AB', 'ABC', 'AC'}
-    # final = {'A', 'B', 'C', 'BC'}
-
-    p = [
-        "∀x[A(x) & (B(x) | C(x))]",
-        "∀x[A(x) | (B(x) & C(x))]",
-    ]
-    # "∃x[s(x) | v(x) & x(x) & v(x)]",
-    #         "∀x[(s(x) & (x(x)) > v(x))]",
-    #         "∃x[v(x) & !(v(x) & !s(x))]"
-    c = "∃x[A(x) & (B(x) | C(x))]"
-    main(p, c)
+def testing_sets():
 
     print("\n-- testing sets --")
 
@@ -92,3 +41,57 @@ if __name__ == '__main__':
     print(a.difference(b)) # implication
     print(a.symmetric_difference(b)) # biconditional
     print(states)
+
+
+def main(predicates: List[str], conclusion: str) -> None:
+    logging.root.setLevel(logging.DEBUG)
+
+    predicates = [predicate.replace(" ", "") for predicate in predicates]
+
+    p_index = 1
+    try:
+        trees = []
+        for predicate in predicates:
+            print(f"{predicate}:")
+            parser = Parser(predicate)
+            tree = parser.parse()
+            trees.append(tree)
+            print(tree.print())
+            print()
+
+        parser = Parser(conclusion)
+        conclusion_tree = parser.parse()
+
+        trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
+
+        evaluator = Evaluator()
+        print(f"----------\nsolution: {evaluator.eval(trees, conclusion_tree)}")
+
+        """
+        for tree in trees:
+            evaluator = Evaluator()
+            evaluator.eval(tree, conclusion_tree)
+        """
+        p_index += 1
+
+    except EmptyInputException:
+        pass
+    except InvalidExpressionException as iee:
+        print(iee)
+    except Exception as e:
+        logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
+
+
+if __name__ == '__main__':
+    # final = {'AB', 'ABC', 'AC'}
+    # final = {'A', 'B', 'C', 'BC'}
+
+    p = [
+        "∀x[P(x) > !S(x)]",
+        "∀x[P(x) > S(x)]",
+    ]
+    # "∃x[s(x) | v(x) & x(x) & v(x)]",
+    #         "∀x[(s(x) & (x(x)) > v(x))]",
+    #         "∃x[v(x) & !(v(x) & !s(x))]"
+    c = "∃x[P(x) & R(x)]"
+    main(p, c)

@@ -47,24 +47,6 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
         V' -> VV' | eps
         W -> [A..Z] V'
 
-* 4 predikáty limit
-* hloubka stromu cca 3
-* uzavřené formule
-* bez funkcí, jedna proměnná
-* kvantifikátory kalkulačka/kbd input
-* převod do int formy; gramatika na validaci vstupu
-* export zadání do txt
-* export výsledku do pdf
-* výsl. diagram libovolně; pref klas. venn
-* rozkliknutelné články ve výsl. diagramu + odůvodnění
-* při chybě zápisu vypsat důvod
-* odkrokovat vč. změny diagramu při každém kroku
-* řešení z obou stran ( uživatel zadá výsledek -> kontrola )
-* zadání na elogice, přepnout si ročník 
-* **do konce listopadu!**
-* ~26. zář. další konzultace
-
-
 npm install -g @vue/cli
 pip install "fastapi[all]" # test removing all at the end
 pip install "uvicorn[standard]"
