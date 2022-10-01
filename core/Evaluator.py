@@ -35,9 +35,21 @@ class Evaluator:
         return [row + [v] for row in sub for v in [0, 1]]
 
     def __universal_solve(self, node):
-        logging.info("universal")
-        venn = Venn3(self.__variables)
-        return venn.solve(node)
+        match len(self.__variables):
+            case 1:
+                pass
+            case 2:
+                logging.info("universal 2")
+                venn = Venn2(self.__variables)
+                return venn.solve(node)
+            case 3:
+                logging.info("universal 3")
+                venn = Venn3(self.__variables)
+                return venn.solve(node)
+            case 4:
+                pass
+            case _:
+                raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
     def __existential_solve(self, expr_tree: ExpressionTree):
         pass
@@ -55,7 +67,7 @@ class Evaluator:
 
         if len(self.__variables) > self.__sets:  # +1 for quantifier
             raise Exception(f'The maximum amount of sets in Venn is {self.__sets}.\n'
-                             f'Exceeded by {len(self.__variables) - self.__sets}. Sets: {self.__variables[1:]}')
+                             f'Exceeded by {len(self.__variables) - self.__sets}. Sets: {self.__variables}')
 
         self.__truthtable = self.__generate_truthtable(len(self.__variables))
 
@@ -66,7 +78,7 @@ class Evaluator:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
                 solution = self.__universal_solve(expr_tree.tree)
-                print(solution, "aha")
+                print(solution, "is the solution for current tree")
                 self.__unis = self.__unis.union(solution)
                 print(self.__unis)
             elif expr_tree.value == '∃':

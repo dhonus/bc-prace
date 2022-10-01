@@ -87,11 +87,11 @@ if __name__ == '__main__':
     # final = {'A', 'B', 'C', 'BC'}
 
     p = [
-        "∀x[P(x) > !S(x)]",
-        "∀x[P(x) > S(x)]",
+        "∀x[(P(x) & V(x) | (S(x)) > !S(x)) ]",
+        "∀x[P(x) > !Z(x)]",
     ]
     # "∃x[s(x) | v(x) & x(x) & v(x)]",
     #         "∀x[(s(x) & (x(x)) > v(x))]",
     #         "∃x[v(x) & !(v(x) & !s(x))]"
-    c = "∃x[P(x) & R(x)]"
+    c = "∃x[P(x) & Z(x)]"
     main(p, c)
