@@ -69,11 +69,12 @@ class Venn3(Venn):
                 for sets in self.sets:
                     negation = negation.union(sets)
                 negation = negation.difference(left)
+                print(f'Staged negation {negation}')
                 return negation
             case Operation() as op:
                 left = self.__solve(op.left)
                 right = self.__solve(op.right)
-                print(f"returned 2 sets {left} and {right}")
+                print(f"staged 2 sets {left} and {right}")
                 match op.value:
                     case 'or':
                         return left.union(right)

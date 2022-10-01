@@ -5,7 +5,7 @@ from typing import List
 
 
 def main(predicates: List[str], conclusion: str) -> None:
-    logging.root.setLevel(logging.INFO)
+    logging.root.setLevel(logging.DEBUG)
 
     predicates = [predicate.replace(" ", "") for predicate in predicates]
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # final = {'A', 'B', 'C', 'BC'}
 
     p = [
-        "∀x[!A(x) & (B(x) | C(x))]",
+        "∀x[A(x) & (B(x) | C(x))]",
         "∀x[A(x) | (B(x) & C(x))]",
     ]
     # "∃x[s(x) | v(x) & x(x) & v(x)]",
