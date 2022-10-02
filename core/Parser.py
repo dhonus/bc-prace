@@ -49,7 +49,7 @@ class Parser:
                              f"\n{self.__pretty_error(self.expression, self.position)}")
 
     def advance(self, amount=1):
-        print(f"advanced {self.expression[self.position]}")
+        # print(f"advanced {self.expression[self.position]}")
         self.position += amount
 
     def parse(self) -> ExpressionTree:

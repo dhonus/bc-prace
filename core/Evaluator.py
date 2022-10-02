@@ -11,7 +11,7 @@ class Evaluator:
         self.__truthtable = []
         self.__sets = 4  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
         self.__sets_dict = {}
-        self.__unis = set()  # the universtal statement result
+        self.__unis = []  # the universtal statement result
 
     def __get_sets(self, tree: ExpressionTree | Node):
         match tree:
@@ -45,7 +45,7 @@ class Evaluator:
             case 3:
                 logging.info("universal 3")
                 venn = Venn3(self.__variables)
-                return venn.solve(node)
+                return venn.better_solve(node)
             case 4:
                 pass
             case _:
@@ -74,21 +74,15 @@ class Evaluator:
         print(f"variables for the entire diagram: {self.__variables}")
 
         for expr_tree in trees:
-            self.__sets_dict = {}
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
-                solution = self.__universal_solve(expr_tree.tree)
-                print(solution, "is the solution for current tree")
-                self.__unis = self.__unis.union(solution)
-                print(self.__unis)
+                self.__unis += self.__universal_solve(expr_tree.tree)
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
             else:
                 raise ValueError('Internal error. Refresh the page.')
 
-            print(self.__sets_dict)
-        print(self.__unis)
-        return self.__unis
+        return set(self.__unis)  # remove duplicates
 
     def __print_truthtable(self):
         print(self.__variables)

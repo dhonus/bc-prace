@@ -65,13 +65,8 @@ def main(predicates: List[str], conclusion: str) -> None:
         trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
 
         evaluator = Evaluator()
-        print(f"----------\nsolution: {evaluator.eval(trees, conclusion_tree)}")
+        print(f"\n\n----------\nsolution: {evaluator.eval(trees, conclusion_tree)}\n----------")
 
-        """
-        for tree in trees:
-            evaluator = Evaluator()
-            evaluator.eval(tree, conclusion_tree)
-        """
         p_index += 1
 
     except EmptyInputException:
@@ -83,15 +78,11 @@ def main(predicates: List[str], conclusion: str) -> None:
 
 
 if __name__ == '__main__':
-    # final = {'AB', 'ABC', 'AC'}
-    # final = {'A', 'B', 'C', 'BC'}
 
     p = [
-        "∀x[(P(x) & V(x) | (S(x)) > !S(x)) ]",
-        "∀x[P(x) > !Z(x)]",
+        "∀x[A(x) > D(x)]",
+        "∀x[A(x) > V(x)]",
     ]
-    # "∃x[s(x) | v(x) & x(x) & v(x)]",
-    #         "∀x[(s(x) & (x(x)) > v(x))]",
-    #         "∃x[v(x) & !(v(x) & !s(x))]"
-    c = "∃x[P(x) & Z(x)]"
+
+    c = "∃x[D(x) & V(x)]"
     main(p, c)
