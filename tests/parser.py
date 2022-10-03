@@ -7,13 +7,13 @@ class MyTestCase(unittest.TestCase):
         expr = "∀x[!(S(x) > C(x)) & V(x)]"
         expected = "For all x applies [  not {[ (S(x)) > (C(x)) ]} & (V(x)) ]"
         p = Parser(expr)
-        self.assertEqual(expected, p.s_rule().print())
+        self.assertEqual(expected, p.__s_rule().print())
 
     def test_existential(self):
         expr = "∃x[Auto(x) | N(x) & Clovek(x) & Objekt(x)]"
         p = Parser(expr)
         expected = "Exists x for which [ (Auto(x)) or [ (N(x)) & [ (Clovek(x)) & (Objekt(x)) ] ] ]"
-        self.assertEqual(expected, p.s_rule().print())
+        self.assertEqual(expected, p.__s_rule().print())
 
 
 if __name__ == '__main__':

@@ -45,7 +45,7 @@ class Neg(Node):
         super().__init__(left, None, "not")
 
     def print(self):
-        return f" not " + '{' +  f"{self.left.print()}" + '}'
+        return f" not " + '{' + f"{self.left.print()}" + '}'
 
 
 class Operation(Node):

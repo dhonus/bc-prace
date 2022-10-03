@@ -4,45 +4,6 @@ import logging
 from typing import List
 
 
-def testing_sets():
-
-    print("\n-- testing sets --")
-
-    #  (a(x) & b(x)) > b(x)
-    a = {
-        "a",
-        "ab",
-        "ac",
-        "abc"
-    }
-    b = {
-        "b",
-        "ab",
-        "bc",
-        "abc"
-    }
-    c = {
-        "c",
-        "ac",
-        "bc",
-        "abc"
-    }
-    states = {
-        "a": "crossed",
-    }
-
-    tmp = b.union(c)
-    print(tmp)
-    tmp = a.intersection(tmp)
-    print(tmp)
-
-    print(b.union(c)) # disjunction
-    print(b.intersection(b)) # conjunction
-    print(a.difference(b)) # implication
-    print(a.symmetric_difference(b)) # biconditional
-    print(states)
-
-
 def main(predicates: List[str], conclusion: str) -> None:
     logging.root.setLevel(logging.DEBUG)
 
@@ -81,8 +42,8 @@ if __name__ == '__main__':
 
     p = [
         "∀x[A(x) > D(x)]",
-        "∀x[A(x) > V(x)]",
+        "∀x[A(x) > C(x)]",
     ]
 
-    c = "∃x[D(x) & V(x)]"
+    c = "∃x[A(x) & X(x)]"
     main(p, c)

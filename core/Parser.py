@@ -9,13 +9,15 @@ class Parser:
         string = string.replace(" ", "")  # remove whitespace
         if not string:
             raise EmptyInputException
-        self.expression = string
-        self.expression_generator = expression_generator(string)  # create generator for the parser to iterate over
-        self.current = next(self.expression_generator)  # set current char to next in generator
-        self.position = 0  # position within the string being parsed.
-        self.pedantic = True  # forces usage of stricter syntax
+        self.__expression = string
+        self.__expression_generator = expression_generator(string)  # create generator for the parser to iterate over
+        self.__current = next(self.__expression_generator)  # set current char to next in generator
+        self.__position = 0  # position within the string being parsed.
+        self.__pedantic = True  # forces usage of stricter syntax
 
-    def __pretty_error(self, predicate: str, p_index: int) -> str:
+    @staticmethod
+    def __pretty_error(predicate: str, p_index: int) -> str:
+        """ print error including a ^ to indicate the position at which it had occurred """
         pos_indicator = ""
         for i, char in enumerate(predicate):
             if i == p_index - 1:
@@ -24,181 +26,181 @@ class Parser:
             pos_indicator += " "
         return predicate + '\n' + pos_indicator
 
-
-    def match(self, char: str) -> bool:
+    def __match(self, char: str) -> bool:
         """ check next char in generator """
-        if self.current == char:
-            self.current = next(self.expression_generator)
-            self.advance()
+        if self.__current == char:
+            self.__current = next(self.__expression_generator)
+            self.__advance()
             return True
         return False
 
-    def require(self, req: str) -> bool | ValueError:
+    def __require(self, req: str) -> bool | ValueError:
         """ mostly used for bracket parity """
-        if self.current == req:
-            self.current = next(self.expression_generator)
+        if self.__current == req:
+            self.__current = next(self.__expression_generator)
             return True
 
         if req == ')':
-            print(self.__pretty_error(self.expression, self.position))
-            raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead."
-                  f" Probably a missing closing bracket. Occurred at position: {self.position}"
-                             f"\n{self.__pretty_error(self.expression, self.position)}")
+            print(self.__pretty_error(self.__expression, self.__position))
+            raise ValueError(f"Error: '{req}' required, but got '{self.__current}' instead."
+                  f" Probably a missing closing bracket. Occurred at position: {self.__position}"
+                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
         else:
-            raise ValueError(f"Error: '{req}' required, but got '{self.current}' instead. Happened at position: {self.position}"
-                             f"\n{self.__pretty_error(self.expression, self.position)}")
+            raise ValueError(f"Error: '{req}' required, but got '{self.__current}' instead. Happened at position: {self.__position}"
+                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
-    def advance(self, amount=1):
+    def __advance(self, amount=1):
         # print(f"advanced {self.expression[self.position]}")
-        self.position += amount
+        self.__position += amount
+        return
 
     def parse(self) -> ExpressionTree:
-        parsed = self.s_rule()
+        parsed = self.__s_rule()
         if not parsed:
             raise Exception('Unknown error occurred while parsing expression.')
         return parsed
 
     # S -> Q[E]
-    def s_rule(self) -> ExpressionTree | None:
-        expr = self.q_rule()
-        if self.match('['):
-            tree = self.e_rule()
+    def __s_rule(self) -> ExpressionTree | None:
+        expr = self.__q_rule()
+        if self.__match('['):
+            tree = self.__e_rule()
             if not tree:
                 return None
             expr.tree = tree
-            self.require(']')
+            self.__require(']')
         return expr
 
     # Q -> ∀V | ∃V
-    def q_rule(self) -> ExpressionTree:
+    def __q_rule(self) -> ExpressionTree:
         """ each quantifier different rules """
         """ to be implemented """
-        elem = self.current
-        self.current = next(self.expression_generator)
+        elem = self.__current
+        self.__current = next(self.__expression_generator)
         match elem:
             case '∃':
-                variable = self.current
-                if not variable.islower() and self.pedantic:
+                variable = self.__current
+                if not variable.islower() and self.__pedantic:
                     raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
-                self.current = next(self.expression_generator)
-                self.advance(2)
+                self.__current = next(self.__expression_generator)
+                self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
             case '∀':
-                variable = self.current
-                if not variable.islower() and self.pedantic:
+                variable = self.__current
+                if not variable.islower() and self.__pedantic:
                     raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
-                self.current = next(self.expression_generator)
-                self.advance(2)
+                self.__current = next(self.__expression_generator)
+                self.__advance(2)
                 return ExpressionTree(value='∀', variable=variable, tree=None)
             case _:
                 raise ValueError('No quantifier found. The input must be a closed formula.')
 
     # E -> B # this is done because we can only have one expression
-    def e_rule(self) -> Operation | None:
-        left = self.b_rule()
+    def __e_rule(self) -> Operation | None:
+        left = self.__b_rule()
         if not left:
             return None
         return left
 
     #  B -> I | I <> B
-    def b_rule(self) -> Operation | None:
-        left = self.i_rule()
+    def __b_rule(self) -> Operation | None:
+        left = self.__i_rule()
         if not left:
             return None
-        if self.match('<'):
-            if self.require('>'):
-                self.advance()
-                right = self.b_rule()
+        if self.__match('<'):
+            if self.__require('>'):
+                self.__advance()
+                right = self.__b_rule()
                 if right:
                     return Operation(left, right, '<>')
             return None
         return left
 
     # I -> D | D > I
-    def i_rule(self) -> Operation | None:
-        left = self.d_rule()
+    def __i_rule(self) -> Operation | None:
+        left = self.__d_rule()
         if not left:
             return None
-        if self.match('>'):
-            right = self.i_rule()
+        if self.__match('>'):
+            right = self.__i_rule()
             if right:
                 return Operation(left, right, '>')
         return left
 
     # D -> C | C '|' D
-    def d_rule(self) -> Operation | None:
-        left = self.c_rule()
+    def __d_rule(self) -> Operation | None:
+        left = self.__c_rule()
         if not left:
             return None
-        if self.match('|'):
-            right = self.d_rule()
+        if self.__match('|'):
+            right = self.__d_rule()
             if right:
                 return Operation(left, right, 'or')
         return left
 
     # C -> N | N & C
-    def c_rule(self) -> Operation | Set | Neg | None:
-        left = self.neg_rule()
+    def __c_rule(self) -> Operation | Set | Neg | None:
+        left = self.__neg_rule()
         if not left:
             return None
-        if self.match('&'):
-            right = self.c_rule()
+        if self.__match('&'):
+            right = self.__c_rule()
             if right:
                 return Operation(left, right, '&')
         return left
 
     # N -> F | !F
-    def neg_rule(self) -> Set | Neg | None:
-        if self.match('!'):
-            left = self.f_rule()
+    def __neg_rule(self) -> Set | Neg | None:
+        if self.__match('!'):
+            left = self.__f_rule()
             if not left:
                 return None
             return Neg(left)
-        self.advance()
-        left = self.f_rule()
+        self.__advance()
+        left = self.__f_rule()
         return left
 
     # F = W(V)
-    def f_rule(self) -> Set | None:
-        if self.match('('):
-            right = self.b_rule()
-            if self.require(')'):
-                self.advance()
+    def __f_rule(self) -> Set | None:
+        if self.__match('('):
+            right = self.__b_rule()
+            if self.__require(')'):
+                self.__advance()
                 return right
             return None
 
-        self.advance()
+        self.__advance()
 
         set_name_length_limit = 15
-        elem = self.current
-        self.current = next(self.expression_generator)
+        elem = self.__current
+        self.__current = next(self.__expression_generator)
         if not elem.isupper():
             if elem.islower():
-                raise TypeError(f"Lowercase literal. Failed to identify token '{elem}' at position {self.position}."
-                                f"\n{self.__pretty_error(self.expression, self.position)}")
-            raise TypeError(f"Failed to identify token '{elem}' at position {self.position}. Expected a literal."
-                            f"\n{self.__pretty_error(self.expression, self.position)}")
+                raise TypeError(f"Lowercase literal. Failed to identify token '{elem}' at position {self.__position}."
+                                f"\n{self.__pretty_error(self.__expression, self.__position)}")
+            raise TypeError(f"Failed to identify token '{elem}' at position {self.__position}. Expected a literal."
+                            f"\n{self.__pretty_error(self.__expression, self.__position)}")
         length = 0
-        while not self.match('('):
-            if not self.current.islower():
+        while not self.__match('('):
+            if not self.__current.islower():
                 logging.warning("f_rule violated uppercase")
-                raise ValueError(f"Illegal character '{self.current}' within set name. All capital letters required."
-                                 f"\n{self.__pretty_error(self.expression, self.position)}")
-            elem += self.current
-            self.advance()
-            self.current = next(self.expression_generator)
+                raise ValueError(f"Illegal character '{self.__current}' within set name. All capital letters required."
+                                 f"\n{self.__pretty_error(self.__expression, self.__position)}")
+            elem += self.__current
+            self.__advance()
+            self.__current = next(self.__expression_generator)
             length += 1
             if length == set_name_length_limit:
                 raise ValueError(f"The maximum length of a set name is {set_name_length_limit} characters. "
-                                 f"Exceeded, or no opening parenthesis found.\n{self.__pretty_error(self.expression, self.position)}")
-        if not self.current.islower():
+                                 f"Exceeded, or no opening parenthesis found.\n{self.__pretty_error(self.__expression, self.__position)}")
+        if not self.__current.islower():
             logging.warning("f_rule violated lowercase")
-            if self.pedantic:
-                raise ValueError(f"Pedantic: Required lowercase variable in parentheses at position {self.position}, "
-                                 f"but got '{self.current}' instead.\n{self.__pretty_error(self.expression, self.position)}")
-        variable = self.current.lower()
-        self.current = next(self.expression_generator)
-        self.require(')')
+            if self.__pedantic:
+                raise ValueError(f"Pedantic: Required lowercase variable in parentheses at position {self.__position}, "
+                                 f"but got '{self.__current}' instead.\n{self.__pretty_error(self.__expression, self.__position)}")
+        variable = self.__current.lower()
+        self.__current = next(self.__expression_generator)
+        self.__require(')')
         logging.debug(f"returning set {elem}({variable})")
 
         return Set(elem, variable)

@@ -41,13 +41,15 @@ class Evaluator:
             case 2:
                 logging.info("universal 2")
                 venn = Venn2(self.__variables)
-                return venn.solve(node)
+                return venn.better_solve(node)
             case 3:
                 logging.info("universal 3")
                 venn = Venn3(self.__variables)
                 return venn.better_solve(node)
             case 4:
-                pass
+                logging.info("universal 4")
+                venn = Venn4(self.__variables)
+                return venn.better_solve(node)
             case _:
                 raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
