@@ -87,5 +87,4 @@ async def send_expression(item: Thing):
 def home():
     repo = git.Repo(search_parent_directories=True)
     sha = repo.head.object.hexsha
-    print(repo.head)
-    return f"Připojeno. Aktivní verze HASH: {sha}; COMMIT: {repo.commit('main').message}"
+    return f"Připojeno. Hash aktivní verze: {sha}."
