@@ -1,3 +1,9 @@
+html, body
+  background-color: #121212
+  color: white
+p
+  color: gainsboro
+
 .input_wrapper
   display: flex
   flex-direction: row
@@ -13,31 +19,40 @@
       margin: .5rem 0 .5rem 0
       padding-left: 1rem
       line-height: 2.5rem
-      background-color: #e9e9ed
+      background-color: #1d1d1d
+      color: white
       border-color: transparent
       transition: all .4s ease
       border-radius: 5px
+      width: 100%
+      box-sizing: border-box
       &:focus-visible
         outline: none
-        background-color: #c4c9cf
+        background-color: #323131
     .button_container
       display: flex
       flex-direction: row
       align-items: center
     .button_plus
-      background: #e5e5e5
-      color: #424242
+      background: #3a2d49
+      color: white
       height: 2.5rem
       width: 2.5rem
-      border: solid #d6d6d6
+      border: solid #26202d
       border-radius: 50%
       transition: all 0.4s ease
       margin-left: .5rem
       font-size: 1.25em
       &:hover
-        background: #c4c4c4
+        background: #26202d
       &:active
-        background: #909090
+        background: #26202d
+  .left_section
+    .guide
+      text-align: left
+      table
+        width: 100%
+        color: gainsboro
 
   .keyboard
     display: flex
@@ -54,9 +69,11 @@
       border-color: transparent
       font-size: large
       border-radius: 5px
-      transition: background-color .4s ease
+      transition: background-color .2s ease
+      background-color: #1D1D1D
+      color: white
       &:active
-        background-color: #b4babd
+        background-color: #171616
 
 .v-enter-active,
 .v-leave-active
@@ -69,14 +86,14 @@
 
 .accept_button
   line-height: 2.5rem
-  color: #333333
-  background-color: #dbdbdd
+  color: white
+  background-color: #3A2D49
   border: none
   border-radius: 5px
   margin: .5rem 0 .5rem 0
   transition: background-color .3s ease
   &:hover
-    background-color: #c3c3c9
+    background-color: #30273B
   &:active
-    background-color: #a3a3ab
+    background-color: #221B2A
 

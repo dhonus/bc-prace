@@ -32,8 +32,6 @@ def main(predicates: List[str], conclusion: str) -> None:
 
         p_index += 1
 
-    except EmptyInputException:
-        pass
     except InvalidExpressionException as iee:
         print(iee)
     except Exception as e:
@@ -43,8 +41,10 @@ def main(predicates: List[str], conclusion: str) -> None:
 if __name__ == '__main__':
 
     p = [
+        "∀x[A(x)]",
         "∀x[A(x) > !B(x)]",
+        ""
     ]
 
-    c = "∃x[A(x)]"
+    c = "∃x[C(x)]"
     main(p, c)

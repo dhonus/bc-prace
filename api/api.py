@@ -1,6 +1,8 @@
 # https://fastapi.tiangolo.com/tutorial/bigger-applications/
 # https://fastapi.tiangolo.com/tutorial/body/
 from fastapi import FastAPI, Query
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 # this is required to be able to access the fastapi server from VUE.js on another port
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,13 +12,19 @@ from core.Evaluator import Evaluator
 import logging
 from typing import List
 import main
+import git
 
 
 class Item(BaseModel):
-    existential: dict
-    universal: dict
-    universe: str
-    notes: str
+    existential: List[str] = []
+    universal: List[str] = []
+    universe: str | None = None
+    notes: str = ""
+
+
+class Thing(BaseModel):
+    predicates: List[str]
+    conclusion: str
 
 
 app = FastAPI()
@@ -30,12 +38,11 @@ app.add_middleware(
 )
 
 
-@app.post("/api")
-async def send_expression(item: Item, conclusion: str,  predicates: List[str] = Query(None)):
-
+@app.post("/api", response_model=Item)
+async def send_expression(item: Thing):
     logging.root.setLevel(logging.DEBUG)
 
-    predicates = [predicate.replace(" ", "") for predicate in predicates]
+    predicates = [predicate.replace(" ", "") for predicate in item.predicates]
 
     p_index = 1
     try:
@@ -48,7 +55,7 @@ async def send_expression(item: Item, conclusion: str,  predicates: List[str] = 
             print(tree.print())
             print()
 
-        parser = Parser(conclusion)
+        parser = Parser(item.conclusion)
         conclusion_tree = parser.parse()
 
         trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
@@ -59,19 +66,26 @@ async def send_expression(item: Item, conclusion: str,  predicates: List[str] = 
 
         p_index += 1
 
-    except EmptyInputException:
-        pass
     except InvalidExpressionException as iee:
         print(iee)
     except Exception as e:
         logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
-    item.existential = solution.get('Exists within')
-    item.universal = solution.get('Crossed out')
-    item.universe = "none"
-    item.notes = "OK"
-    return item
+        responseItem = Item()
+        responseItem.notes = f"{type(e).__name__}: In predicate {p_index}: {e}"
+        return responseItem
+
+    responseItem = Item()
+    responseItem.existential = list(solution.get('Exists within'))
+    responseItem.universal = list(solution.get('Crossed out'))
+    responseItem.universe = "none"
+    responseItem.notes = "OK"
+
+    return responseItem
 
 
 @app.get("/")
 def home():
-    return f"Připojeno. Aktivní verze {main.ACTIVE_VERSION_ID}"
+    repo = git.Repo(search_parent_directories=True)
+    sha = repo.head.object.hexsha
+    print(repo.head)
+    return f"Připojeno. Aktivní verze HASH: {sha}; COMMIT: {repo.commit('main').message}"
