@@ -87,4 +87,7 @@ async def send_expression(item: Thing):
 def home():
     repo = git.Repo(search_parent_directories=True)
     sha = repo.head.object.hexsha
-    return f"Připojeno. Hash aktivní verze: {sha}."
+    import time
+    time.asctime(time.gmtime(repo.head.object.committed_date))
+    tim = time.strftime("%D %H:%M", time.gmtime(repo.head.object.committed_date))
+    return f"Připojeno. Hash aktivní verze z {tim} je {sha}."
