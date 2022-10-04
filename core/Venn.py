@@ -23,9 +23,8 @@ class Venn:
         self.area_combinations = []
 
         for i, the_set in enumerate(self.variables):
-            for elem in itertools.combinations(self.variables, i):
+            for elem in itertools.combinations(self.variables, i+1):
                 self.area_combinations.append("".join(elem))
-        self.area_combinations.remove('')
 
         print(self.area_combinations, "aaa")
 
@@ -53,6 +52,7 @@ class Venn:
             for elem in value:
                 if elem not in to_negate:
                     new_values.append(elem)
+        print(f"negated to {new_values}")
         return new_values
 
     def __better_solve(self, node) -> List[str]:

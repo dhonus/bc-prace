@@ -3,6 +3,8 @@ from core.Evaluator import Evaluator
 import logging
 from typing import List
 
+ACTIVE_VERSION_ID = "04/11/22_build001"
+
 
 def main(predicates: List[str], conclusion: str) -> None:
     logging.root.setLevel(logging.DEBUG)
@@ -41,8 +43,7 @@ def main(predicates: List[str], conclusion: str) -> None:
 if __name__ == '__main__':
 
     p = [
-        "∀x[A(x)]",
-        "∀x[A(x) > B(x)]",
+        "∀x[A(x) > !B(x)]",
     ]
 
     c = "∃x[A(x)]"

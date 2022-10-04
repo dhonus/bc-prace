@@ -35,7 +35,7 @@ class Evaluator:
         return [row + [v] for row in sub for v in [0, 1]]
 
     def __universal_solve(self, node: Node) -> list[str]:
-        if len(self.__variables) < self.__sets_count_limit:
+        if len(self.__variables) <= self.__sets_count_limit:
                 logging.info(f"universal {len(self.__variables)}")
                 venn = Venn(self.__variables)
                 return venn.better_solve(node)
@@ -66,13 +66,15 @@ class Evaluator:
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
-                self.__universal_solved += self.__universal_solve(expr_tree.tree)
+                adding = self.__universal_solve(expr_tree.tree)
+                print("adding", adding)
+                self.__universal_solved += adding
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
             else:
                 raise ValueError('Internal error. Refresh the page.')
 
-        return {"Existential": {}, "Universal": set(self.__universal_solved)}
+        return {"Exists within": {}, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
 
     def __print_truthtable(self):
         print(self.__variables)
