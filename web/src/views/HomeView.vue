@@ -5,7 +5,7 @@
       <div class="predicates">
         <div v-for="key in count" :key="key">
           <Transition>
-            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. Predikát'" :id="'predicate'+key" >
+            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. predikát'" :id="'predicate'+key" >
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
@@ -25,6 +25,8 @@
         <p style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
         <h4>{{ logicResponseExistential }}</h4>
         <h4>{{ logicResponseUniversal }}</h4>
+
+        <img src="../assets/venn3_example.png" width="600">
 
       </div>
       <div class="left_section">
