@@ -1,7 +1,7 @@
 import logging
 
 from core.Nodes import ExpressionTree, Node, Set, Operation, Neg
-from typing import List, Set as tSet
+from typing import List, Set as tSet, Dict, Any, Set
 from core.Venn import *
 
 
@@ -9,9 +9,9 @@ class Evaluator:
     def __init__(self):
         self.__variables = []
         self.__truthtable = []
-        self.__sets = 4  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
+        self.__sets_count_limit = 4  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
         self.__sets_dict = {}
-        self.__unis = []  # the universtal statement result
+        self.__universal_solved = []  # the universtal statement result
 
     def __get_sets(self, tree: ExpressionTree | Node):
         match tree:
@@ -34,29 +34,17 @@ class Evaluator:
         sub = self.__generate_truthtable(size - 1)
         return [row + [v] for row in sub for v in [0, 1]]
 
-    def __universal_solve(self, node):
-        match len(self.__variables):
-            case 1:
-                pass
-            case 2:
-                logging.info("universal 2")
-                venn = Venn2(self.__variables)
+    def __universal_solve(self, node: Node) -> list[str]:
+        if len(self.__variables) < self.__sets_count_limit:
+                logging.info(f"universal {len(self.__variables)}")
+                venn = Venn(self.__variables)
                 return venn.better_solve(node)
-            case 3:
-                logging.info("universal 3")
-                venn = Venn3(self.__variables)
-                return venn.better_solve(node)
-            case 4:
-                logging.info("universal 4")
-                venn = Venn4(self.__variables)
-                return venn.better_solve(node)
-            case _:
-                raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
+        raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
-    def __existential_solve(self, expr_tree: ExpressionTree):
+    def __existential_solve(self, expr_tree: Node):
         pass
 
-    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> tSet[str]:
+    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, set[str]]:
         existential_validate = 0
         for tree in trees:
             if tree.value == '∃':
@@ -67,9 +55,9 @@ class Evaluator:
         if existential_validate == 0 and conclusion_tree.value == '∃' and False:
             raise LogicException('Nesprávný úsudek. Příklad Bertranda Russella. Všeobecné premisy nemohou implikovat existenci.')
 
-        if len(self.__variables) > self.__sets:  # +1 for quantifier
-            raise Exception(f'The maximum amount of sets in Venn is {self.__sets}.\n'
-                             f'Exceeded by {len(self.__variables) - self.__sets}. Sets: {self.__variables}')
+        if len(self.__variables) > self.__sets_count_limit:  # +1 for quantifier
+            raise Exception(f'The maximum amount of sets in Venn is {self.__sets_count_limit}.\n'
+                             f'Exceeded by {len(self.__variables) - self.__sets_count_limit}. Sets: {self.__variables}')
 
         self.__truthtable = self.__generate_truthtable(len(self.__variables))
 
@@ -78,13 +66,13 @@ class Evaluator:
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
-                self.__unis += self.__universal_solve(expr_tree.tree)
+                self.__universal_solved += self.__universal_solve(expr_tree.tree)
             elif expr_tree.value == '∃':
                 self.__existential_solve(expr_tree.tree)
             else:
                 raise ValueError('Internal error. Refresh the page.')
 
-        return set(self.__unis)  # remove duplicates
+        return {"Existential": {}, "Universal": set(self.__universal_solved)}
 
     def __print_truthtable(self):
         print(self.__variables)

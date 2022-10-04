@@ -22,13 +22,21 @@ class Venn:
 
         self.area_combinations = []
 
-        # creates a list of all possible ways the given sets can interact
-        for area in itertools.product(self.variables, self.variables):
-            if area <= area[::-1]:
-                if area[0] == area[1]:
-                    self.area_combinations.append(area[0])
-                else:
-                    self.area_combinations.append(area[0] + area[1])
+        for i, the_set in enumerate(self.variables):
+            for elem in itertools.combinations(self.variables, i):
+                self.area_combinations.append("".join(elem))
+        self.area_combinations.remove('')
+
+        print(self.area_combinations, "aaa")
+
+        for i, var in enumerate(self.variables):
+            self.sets[var] = []
+            for area in self.area_combinations:
+                if var in area:
+                    self.sets[var].append(area)
+
+        for var in self.variables:
+            self.explanations[var] = []
 
     def better_solve(self, tree: ExpressionTree) -> list[str]:
         print(f"---------\nsets: {self.sets}")
@@ -77,60 +85,3 @@ class Venn:
 
     def get_sets(self):
         return self.sets
-
-
-class Venn2(Venn):
-    def __init__(self, variables: List[str]):
-        super().__init__(variables)
-
-        # construct the list of sets from the list of variables
-        for i, var in enumerate(self.variables):
-            self.sets[var] = []
-            for area in self.area_combinations:
-                if var in area:
-                    self.sets[var].append(area)
-
-        for var in self.variables:
-            self.explanations[var] = []
-
-
-class Venn3(Venn):
-    def __init__(self, variables: List[str]):
-        super().__init__(variables)
-
-        # add Set1Set2Set3 combination
-        self.area_combinations.append(self.variables[0] + self.variables[1] + self.variables[2])
-        print(" -> combinations", self.area_combinations)
-
-        # construct the list of sets from the list of variables
-        for i, var in enumerate(self.variables):
-            self.sets[var] = []
-            for area in self.area_combinations:
-                if var in area:
-                    self.sets[var].append(area)
-
-        for var in self.variables:
-            self.explanations[var] = []
-
-
-class Venn4(Venn):
-    def __init__(self, variables: List[str]):
-        super().__init__(variables)
-
-        # add Set1Set2Set3 combination
-        self.area_combinations.append(self.variables[0] + self.variables[1] + self.variables[2])
-        print(" -> combinations", self.area_combinations)
-
-        # construct the list of sets from the list of variables
-        for i, var in enumerate(self.variables):
-            self.sets[var] = []
-            for area in self.area_combinations:
-                if var in area:
-                    self.sets[var].append(area)
-
-        for var in self.variables:
-            self.explanations[var] = []
-
-        # add Set1Set2Set3 combination
-        self.area_combinations.append(self.variables[0] + self.variables[1] + self.variables[2])
-        print(" -> combinations", self.area_combinations)

@@ -41,9 +41,9 @@ def main(predicates: List[str], conclusion: str) -> None:
 if __name__ == '__main__':
 
     p = [
-        "∀x[A(x) > D(x)]",
-        "∀x[A(x) > C(x)]",
+        "∀x[A(x)]",
+        "∀x[A(x) > B(x)]",
     ]
 
-    c = "∃x[A(x) & X(x)]"
+    c = "∃x[A(x)]"
     main(p, c)
