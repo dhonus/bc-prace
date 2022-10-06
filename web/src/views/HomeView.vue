@@ -79,6 +79,11 @@
               <td>∀</td>
               <td>A</td>
             </tr>
+            <tr>
+              <td>Universum diskursu</td>
+              <td></td>
+              <td>μ</td>
+            </tr>
           </table>
 
           <h3>Příklad validního vstupu:</h3>
