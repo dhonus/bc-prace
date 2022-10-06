@@ -51,7 +51,7 @@
             </tr>
             <tr>
               <td>Ekvivalence</td>
-              <td>⊃</td>
+              <td>≡</td>
               <td>&lt;&gt;</td>
             </tr>
             <tr>
