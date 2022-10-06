@@ -11,6 +11,7 @@ class Venn:
         self.dict = {}
         self.explanations = {}
         self.variables = variables
+        self.variables.append('μ')
         self.sets = []
         for var in self.variables:
             self.dict[var] = " "
@@ -43,8 +44,18 @@ class Venn:
         sol = self.__better_solve(tree)
         print(f"solution:: {sol}")
         print(self.area_combinations)
-
-        return self.__negate(sol)
+        sol = self.__negate(sol)
+        sol_universum_accounted = list()
+        # remove universe symbol from all but just itself
+        # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
+        for item in sol:
+            if item == 'μ':
+                sol_universum_accounted.append(item)
+                continue
+            adding = item.replace("μ", "")
+            if adding:
+                sol_universum_accounted.append(adding)
+        return sol_universum_accounted
 
     def __negate(self, to_negate: List[str]):
         new_values = []
