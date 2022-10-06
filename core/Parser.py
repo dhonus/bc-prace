@@ -6,7 +6,13 @@ class Parser:
     """ this class implements a recursive descent algorithm """
     """ each production rule of the grammar is represented by its own method """
     def __init__(self, string: str):
-        string = string.replace(" ", "")  # remove whitespace
+        string = string.replace(" ", "")  # not ideal
+        string = string.replace("⊃", ">")
+        string = string.replace("≡", "<>")
+        string = string.replace("¬", "!")
+        string = string.replace("∧", "&")
+        string = string.replace("∨", "|")
+
         if not string:
             raise EmptyInputException
         self.__expression = string
@@ -78,14 +84,14 @@ class Parser:
         elem = self.__current
         self.__current = next(self.__expression_generator)
         match elem:
-            case '∃':
+            case '∃' | 'E':
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
-            case '∀':
+            case '∀' | 'A':
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
