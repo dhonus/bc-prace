@@ -69,6 +69,10 @@ async def send_expression(item: Thing):
 
     except InvalidExpressionException as iee:
         print(iee)
+    except EmptyInputException as e:
+        responseItem = Item()
+        responseItem.notes = "Prázdný vstup, nebo chybějící závěr."
+        return responseItem
     except Exception as e:
         logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
         responseItem = Item()
