@@ -26,13 +26,13 @@
         <h4>{{ logicResponseExistential }}</h4>
         <h4>{{ logicResponseUniversal }}</h4>
 
-        <img src="../assets/venn3_example.png" width="600">
+        <img src="@/assets/venn3_example.svg" width="600">
 
       </div>
       <div class="left_section">
         <div class="keyboard">
-          <button @click="type('')" rel="">⊃</button>
-          <button @click="type('')" rel="">≡</button>
+          <button @click="type('⊃')" rel="">⊃</button>
+          <button @click="type('≡')" rel="">≡</button>
           <button @click="type('¬')" rel="">¬</button>
           <button @click="type('∧')" rel="">∧</button>
           <button @click="type('∨')" rel="">∨</button>
@@ -154,8 +154,10 @@ export default {
       if (!this.focused){
         return;
       }
+      const [start, end] = [this.focused.selectionStart, this.focused.selectionEnd];
+      this.focused.setRangeText(value_to_enter, start, end, 'select');
+      this.focused.setSelectionRange(end+1,end+1);
       this.focused.focus();
-      this.focused.value = this.focused.value + value_to_enter;
     },
     async submit(){
       let predicates = []
