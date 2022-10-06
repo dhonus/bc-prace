@@ -5,7 +5,7 @@
       <div class="predicates">
         <div v-for="key in count" :key="key">
           <Transition>
-            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. predikát'" :id="'predicate'+key" >
+            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" >
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
