@@ -163,6 +163,7 @@ export default {
       this.focused.setRangeText(value_to_enter, start, end, 'end');
       this.focused.setSelectionRange(end+1,end+1);
       this.focused.focus();
+      this.focused.dispatchEvent(new Event('input')); // this is done because vue doesnt detect changes without an event
     },
     async submit(){
       let predicates = []
