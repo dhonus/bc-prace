@@ -163,6 +163,7 @@ export default {
       this.focused.setRangeText(value_to_enter, start, end, 'select');
       this.focused.setSelectionRange(end+1,end+1);
       this.focused.focus();
+      this.focused.value = this.focused.getText();
     },
     async submit(){
       let predicates = []
