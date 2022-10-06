@@ -26,7 +26,7 @@
         <h4>{{ logicResponseExistential }}</h4>
         <h4>{{ logicResponseUniversal }}</h4>
 
-        <img src="@/assets/venn3_example.svg" width="600">
+        <img src="@/assets/venn3_example.png" width="600">
 
       </div>
       <div class="left_section">

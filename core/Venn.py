@@ -19,7 +19,6 @@ class Venn:
 
         self.sets = {}
         print(" -> vars", self.variables)
-        # print(f"final = {self.__solve(tree)}")
 
         self.area_combinations = []
 
