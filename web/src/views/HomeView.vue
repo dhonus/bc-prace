@@ -23,7 +23,6 @@
         </div>
 
         <p style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
-        <!--<h4>{{ logicResponseExistential }}</h4>-->
         <h4>{{ logicResponseUniversal }}</h4>
 
         <img src="@/assets/venn3_example.png" width="600">
