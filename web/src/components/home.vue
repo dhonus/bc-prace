@@ -2,7 +2,7 @@
 
 <template>
   <div style="margin: 0 0 2rem 0; padding: 1rem; background: #1d1d1d;">
-    <p>{{ msg }}</p><br>
+    <p>{{ msg }}</p>
     <p><b style="color:#9981b4;">V případě chyby ve výsledku prosím o zaslání zadání na hon0102@vsb.cz včetně hash.</b></p>
   </div>
 </template>
