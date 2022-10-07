@@ -9,8 +9,8 @@
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
-          <button ref="buttonFour" class="button_plus" @click="addP" title="Přidat predikát">+</button>
-          <button ref="buttonFour" class="button_plus" @click="removeP" title="Odebrat poslední predikát">-</button>
+          <button ref="buttonFour" class="button_plus" @click="addP" title="Přidat premisu">+</button>
+          <button ref="buttonFour" class="button_plus" @click="removeP" title="Odebrat poslední premisu">-</button>
         </div>
         <input @focus="focusOnMe(-1)" ref="zaver" id="zaver" placeholder="Závěr" />
         <div class="button_container">
