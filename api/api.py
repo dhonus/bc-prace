@@ -77,7 +77,7 @@ async def send_expression(item: Thing):
     except Exception as e:
         logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
         responseItem = Item()
-        responseItem.notes = f"{type(e).__name__}: V {p_index} premise: {e}"
+        responseItem.notes = f"{type(e).__name__}: V {p_index}. premise: {e}"
         return responseItem
 
     responseItem = Item()
