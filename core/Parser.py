@@ -48,11 +48,11 @@ class Parser:
 
         if req == ')':
             print(self.__pretty_error(self.__expression, self.__position))
-            raise ValueError(f"Error: '{req}' required, but got '{self.__current}' instead."
-                  f" Probably a missing closing bracket. Occurred at position: {self.__position}"
+            raise ValueError(f"Očekáváno '{req}', na vstupu je ale '{self.__current}'"
+                  f" Pravděpodobně chybějící závorka na {self.__position}. pozici."
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
         else:
-            raise ValueError(f"Error: '{req}' required, but got '{self.__current}' instead. Happened at position: {self.__position}"
+            raise ValueError(f"Očekáváno '{req}', na vstupu je ale '{self.__current}'. Na pozici: {self.__position}"
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
     def __advance(self, amount=1):
@@ -63,7 +63,7 @@ class Parser:
     def parse(self) -> ExpressionTree:
         parsed = self.__s_rule()
         if not parsed:
-            raise Exception('Unknown error occurred while parsing expression.')
+            raise Exception('Při parsování vstupu nastala neznámá chyba.')
         return parsed
 
     # S -> Q[E]
@@ -87,19 +87,19 @@ class Parser:
             case '∃' | 'E':
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
+                    raise ValueError('Proměnná by měla být malým písmem.')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
             case '∀' | 'A':
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Pedantic: Lowercase variable expected to follow quantifier.')
+                    raise ValueError('Proměnná by měla být malým písmem.')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∀', variable=variable, tree=None)
             case _:
-                raise ValueError('No quantifier found. The input must be a closed formula.')
+                raise ValueError('Nenalezen kvantifikátor. Vstup musí být uzavřená formule.')
 
     # E -> B # this is done because we can only have one expression
     def __e_rule(self) -> Operation | None:
@@ -182,28 +182,28 @@ class Parser:
         self.__current = next(self.__expression_generator)
         if not elem.isupper():
             if elem.islower():
-                raise TypeError(f"Lowercase literal. Failed to identify token '{elem}' at position {self.__position}."
+                raise TypeError(f"Jméno objektu malým písmem. Neznámý znak '{elem}' na pozici {self.__position}."
                                 f"\n{self.__pretty_error(self.__expression, self.__position)}")
-            raise TypeError(f"Failed to identify token '{elem}' at position {self.__position}. Expected a literal."
+            raise TypeError(f"Nelze identifikovat znak '{elem}' na {self.__position}. pozici. Očekáván literál."
                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
         length = 0
         while not self.__match('('):
             if not self.__current.islower():
                 logging.warning("f_rule violated uppercase")
-                raise ValueError(f"Illegal character '{self.__current}' within set name. All capital letters required."
+                raise ValueError(f"Zakázaný znak '{self.__current}' uvnitř jména objektu. Očekáváno velké písmeno následováno pouze malými."
                                  f"\n{self.__pretty_error(self.__expression, self.__position)}")
             elem += self.__current
             self.__advance()
             self.__current = next(self.__expression_generator)
             length += 1
             if length == set_name_length_limit:
-                raise ValueError(f"The maximum length of a set name is {set_name_length_limit} characters. "
-                                 f"Exceeded, or no opening parenthesis found.\n{self.__pretty_error(self.__expression, self.__position)}")
+                raise ValueError(f"Maximální přípustná délka názvu objektu je {set_name_length_limit} znaků. "
+                                 f"Překročeno, nebo chybějící závorka.\n{self.__pretty_error(self.__expression, self.__position)}")
         if not self.__current.islower():
             logging.warning("f_rule violated lowercase")
             if self.__pedantic:
-                raise ValueError(f"Pedantic: Required lowercase variable in parentheses at position {self.__position}, "
-                                 f"but got '{self.__current}' instead.\n{self.__pretty_error(self.__expression, self.__position)}")
+                raise ValueError(f"Proměnná na pozici {self.__position} by měla být malým písmem, "
+                                 f"ale bylo nalezeno '{self.__current}'.\n{self.__pretty_error(self.__expression, self.__position)}")
         variable = self.__current.lower()
         self.__current = next(self.__expression_generator)
         self.__require(')')

@@ -9,7 +9,7 @@ class Evaluator:
     def __init__(self):
         self.__variables = []
         self.__truthtable = []
-        self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
+        self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram
         self.__sets_dict = {}
         self.__universal_solved = []  # the universtal statement result
         self.__existential_solved = []
@@ -47,22 +47,21 @@ class Evaluator:
             logging.info(f"universal {len(self.__variables)}")
             venn = Venn(self.__variables)
             return venn.existential(node)
-        raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
+        raise ValueError(f'Neočekávaný počet objektů {len(self.__variables)}. Zkontrolujte vstup.')
 
     def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, set[str]]:
         existential_validate = 0
         for tree in trees:
-            if tree.value == '∃':
+            if tree.value == '∃' or tree.value == 'E':
                 existential_validate += 1
             self.__get_sets(tree)
         self.__get_sets(conclusion_tree)
-
-        if existential_validate == 0 and conclusion_tree.value == '∃' and False:
-            raise LogicException('Nesprávný úsudek. Příklad Bertranda Russella. Všeobecné premisy nemohou implikovat existenci.')
+        if existential_validate == 0 and conclusion_tree.value == '∃':
+            raise LogicException('Nesprávný úsudek. Všeobecné premisy nemohou implikovat existenci.')
 
         if len(self.__variables) > self.__sets_count_limit:  # +1 for quantifier
-            raise Exception(f'The maximum amount of sets in Venn is {self.__sets_count_limit}.\n'
-                             f'Exceeded by {len(self.__variables) - self.__sets_count_limit}. Sets: {self.__variables}')
+            raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} objektů.\n'
+                             f'Překročeno o {len(self.__variables) - self.__sets_count_limit}. Objekty: {self.__variables}')
 
         self.__truthtable = self.__generate_truthtable(len(self.__variables))
 
@@ -78,7 +77,7 @@ class Evaluator:
                 adding = self.__existential_solve(expr_tree.tree)
                 self.__existential_solved += adding
             else:
-                raise ValueError('Internal error. Refresh the page.')
+                raise ValueError('Interní chyba. Obnovte stránku.')
 
         print(self.__existential_solved, "hi")
         return {"Exists within": set(self.__existential_solved), "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
