@@ -88,6 +88,13 @@ class Evaluator:
         for i, t in enumerate(self.__truthtable):
             print(f" -> {i + 1}: {t}")
 
+    def validity(self, solution: dict[str, set[str]]):
+        print(solution)
+        solution_candidates = (solution['Exists within'].difference(solution['Crossed out']))
+        if len(solution_candidates) != 1:
+            return False
+        return True
+
 
 class LogicException(Exception):
     pass

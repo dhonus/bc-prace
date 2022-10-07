@@ -28,7 +28,9 @@ def main(predicates: List[str], conclusion: str) -> None:
         trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
 
         evaluator = Evaluator()
-        print(f"\n\n----------\nsolution: {evaluator.eval(trees, conclusion_tree)}\n----------")
+        solution = evaluator.eval(trees, conclusion_tree)
+        print(f"\n\n----------\nsolution: {solution}\n----------")
+        print(evaluator.validity(solution))
 
         p_index += 1
 

@@ -18,7 +18,7 @@ import git
 class Item(BaseModel):
     existential: List[str] = []
     universal: List[str] = []
-    universe: str | None = None
+    valid: bool | None = None
     notes: str = ""
 
 
@@ -63,6 +63,7 @@ async def send_expression(item: Thing):
 
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
+        validity = evaluator.validity(solution)
         print(f"\n\n----------\nsolution: {solution}\n----------")
 
         p_index += 1
@@ -82,7 +83,7 @@ async def send_expression(item: Thing):
     responseItem = Item()
     responseItem.existential = list(solution.get('Exists within'))
     responseItem.universal = list(solution.get('Crossed out'))
-    responseItem.universe = "none"
+    responseItem.valid = validity
     responseItem.notes = "OK"
 
     return responseItem

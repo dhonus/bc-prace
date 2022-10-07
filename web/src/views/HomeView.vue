@@ -25,6 +25,8 @@
         <p style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
         <h4>{{ logicResponseExistential }}</h4>
         <h4>{{ logicResponseUniversal }}</h4>
+        <h4 v-if="validity === true" style="color:#129412;">Platný úsudek</h4>
+        <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
 
         <img src="@/assets/venn3_example.png" style="width:60%;">
 
@@ -124,6 +126,7 @@ export default {
       APIErrorMessage: '',
       logicResponseExistential: '',
       logicResponseUniversal: '',
+      validity: null
     }
   },
   methods: {
@@ -198,8 +201,9 @@ export default {
           else{
             this.APIErrorMessage = "";
           }
-          this.logicResponseExistential = 'Existenční: ' + response.data["existential"] + "TBA";
+          this.logicResponseExistential = 'Existenční: ' + response.data["existential"];
           this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
+          this.validity = response.data["valid"];
         }, (error) => {
           console.log(error);
         });
