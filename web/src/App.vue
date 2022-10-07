@@ -11,8 +11,8 @@
 
 <style>
 #app {
-    font-family: 'Noto Sans', sans-serif;
     font-family: 'Noto Sans Math', sans-serif;
+    font-family: 'Noto Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
