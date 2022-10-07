@@ -75,9 +75,9 @@ async def send_expression(item: Thing):
         responseItem.notes = "Prázdný vstup, nebo chybějící závěr."
         return responseItem
     except Exception as e:
-        logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
+        logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
         responseItem = Item()
-        responseItem.notes = f"{type(e).__name__}: In predicate {p_index}: {e}"
+        responseItem.notes = f"{type(e).__name__}: V {p_index} premise: {e}"
         return responseItem
 
     responseItem = Item()
