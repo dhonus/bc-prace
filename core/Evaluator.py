@@ -9,9 +9,10 @@ class Evaluator:
     def __init__(self):
         self.__variables = []
         self.__truthtable = []
-        self.__sets_count_limit = 4  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
+        self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram excluding the universe
         self.__sets_dict = {}
         self.__universal_solved = []  # the universtal statement result
+        self.__existential_solved = []
 
     def __get_sets(self, tree: ExpressionTree | Node):
         match tree:
@@ -36,13 +37,17 @@ class Evaluator:
 
     def __universal_solve(self, node: Node) -> list[str]:
         if len(self.__variables) <= self.__sets_count_limit:
-                logging.info(f"universal {len(self.__variables)}")
-                venn = Venn(self.__variables)
-                return venn.better_solve(node)
+            logging.info(f"universal {len(self.__variables)}")
+            venn = Venn(self.__variables)
+            return venn.better_solve(node)
         raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
-    def __existential_solve(self, expr_tree: Node):
-        pass
+    def __existential_solve(self, node: Node):
+        if len(self.__variables) <= self.__sets_count_limit:
+            logging.info(f"universal {len(self.__variables)}")
+            venn = Venn(self.__variables)
+            return venn.existential(node)
+        raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
     def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, set[str]]:
         existential_validate = 0
@@ -70,11 +75,13 @@ class Evaluator:
                 print("adding", adding)
                 self.__universal_solved += adding
             elif expr_tree.value == '∃':
-                self.__existential_solve(expr_tree.tree)
+                adding = self.__existential_solve(expr_tree.tree)
+                self.__existential_solved += adding
             else:
                 raise ValueError('Internal error. Refresh the page.')
 
-        return {"Exists within": {}, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
+        print(self.__existential_solved, "hi")
+        return {"Exists within": set(self.__existential_solved), "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
 
     def __print_truthtable(self):
         print(self.__variables)

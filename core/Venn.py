@@ -40,10 +40,28 @@ class Venn:
     def better_solve(self, tree: ExpressionTree) -> list[str]:
         print(f"---------\nsets: {self.sets}")
         print("explanations:", self.explanations)
-        sol = self.__better_solve(tree)
+        sol = self.__solver(tree)
         print(f"solution:: {sol}")
         print(self.area_combinations)
         sol = self.__negate(sol)
+        sol_universum_accounted = list()
+        # remove universe symbol from all but just itself
+        # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
+        for item in sol:
+            if item == 'μ':
+                sol_universum_accounted.append(item)
+                continue
+            adding = item.replace("μ", "")
+            if adding:
+                sol_universum_accounted.append(adding)
+        return sol_universum_accounted
+
+    def existential(self, tree: Node) -> list[str]:
+        print(f"---------\nexistential sets: {self.sets}")
+        print("explanations:", self.explanations)
+        sol = self.__solver(tree)
+        print(f"solution:: {sol}")
+        print(self.area_combinations)
         sol_universum_accounted = list()
         # remove universe symbol from all but just itself
         # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
@@ -65,19 +83,19 @@ class Venn:
         print(f"negated to {new_values}")
         return new_values
 
-    def __better_solve(self, node) -> List[str]:
+    def __solver(self, node) -> List[str]:
         match node:
             case Set() as s:
                 print(" -> set ", self.sets.get(s.value))
                 return self.sets.get(s.value)
             case Neg() as n:
                 # remove current from all possible and return new set
-                left = self.__better_solve(n.left)
+                left = self.__solver(n.left)
                 print(" -> neg", left)
                 return self.__negate(left)
             case Operation() as op:
-                left = self.__better_solve(op.left)
-                right = self.__better_solve(op.right)
+                left = self.__solver(op.left)
+                right = self.__solver(op.right)
                 print(f" -> staged 2 sets {left} and {right}")
                 match op.value:
                     case 'or':
