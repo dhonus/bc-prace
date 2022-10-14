@@ -16,7 +16,7 @@ import git
 
 
 class Item(BaseModel):
-    existential: List[str] = []
+    existential: dict[str, list[str]] = {}
     universal: List[str] = []
     valid: bool | None = None
     notes: str = ""
@@ -31,8 +31,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://10.0.0.117:8000", "http://130.162.49.62:8080"],  # frontend address
-    # allow_origins=['*'],  # frontend address
+    allow_origins=["http://localhost:8081", "http://10.0.0.117:8000", "http://130.162.49.62:8080"],  # frontend address
+    #allow_origins=['*'],  # frontend address
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,6 +58,7 @@ async def send_expression(item: Thing):
 
         parser = Parser(item.conclusion)
         conclusion_tree = parser.parse()
+        conclusion_tree.validate()
 
         trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
 
@@ -65,6 +66,7 @@ async def send_expression(item: Thing):
         solution = evaluator.eval(trees, conclusion_tree)
         validity = evaluator.validity(solution)
         print(f"\n\n----------\nsolution: {solution}\n----------")
+        print(validity)
 
         p_index += 1
 
@@ -81,7 +83,7 @@ async def send_expression(item: Thing):
         return responseItem
 
     responseItem = Item()
-    responseItem.existential = list(solution.get('Exists within'))
+    responseItem.existential = solution.get('Exists within')
     responseItem.universal = list(solution.get('Crossed out'))
     responseItem.valid = validity
     responseItem.notes = "OK"

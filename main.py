@@ -23,6 +23,7 @@ def main(predicates: List[str], conclusion: str) -> None:
 
         parser = Parser(conclusion)
         conclusion_tree = parser.parse()
+        conclusion_tree.validate()
 
         trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
 
@@ -42,10 +43,11 @@ def main(predicates: List[str], conclusion: str) -> None:
 if __name__ == '__main__':
 
     p = [
-        "∃x[!(S(x) > C(x)) & V(x)]",
-        "∃y[!(S(y) > C(y)) & V(y)]",
-        "∀x[S(x) > !C(x)]"
+        "∀y[A(y) > B(y)]",
+        "∀y[B(y) > A(y)]",
+        "∃y[B(y) | A(y)]",
     ]
 
-    c = "∃x[J(x) & N(x)]"
+
+    c = "∃y[B(y) | C(y)]"
     main(p, c)

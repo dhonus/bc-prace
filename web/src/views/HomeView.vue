@@ -201,7 +201,17 @@ export default {
           else{
             this.APIErrorMessage = "";
           }
-          this.logicResponseExistential = 'Existenční: ' + response.data["existential"];
+          this.logicResponseExistential = "Existenciální: "
+          //response.data["existential"].forEach(appendExistential);
+          for (const [key, value] of Object.entries(response.data["existential"])) {
+            console.log(key, value);
+            this.logicResponseExistential += key + " -> ";
+            for (const val of value){
+              this.logicResponseExistential += val + ", ";
+            }
+            this.logicResponseExistential += "\n";
+          }
+
           this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
           this.validity = response.data["valid"];
         }, (error) => {

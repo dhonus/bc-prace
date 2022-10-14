@@ -79,6 +79,8 @@ class Parser:
                 return None
             expr.tree = tree
             self.__require(']')
+        else:
+            raise Exception('Chybějící otevírací hranatá závorka')
         return expr
 
     # Q -> ∀V | ∃V
