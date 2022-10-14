@@ -28,6 +28,7 @@ class Evaluator:
                 self.__get_sets(tree.right)
             case _:
                 raise TypeError(f'Unknown type passed to evaluator: {type(tree).__name__}')
+        print(self.__variables, " :p ")
 
     def __generate_truthtable(self, size: int):
         if size < 1:
@@ -38,14 +39,16 @@ class Evaluator:
     def __universal_solve(self, node: Node) -> list[str]:
         if len(self.__variables) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__variables)}")
-            venn = Venn(self.__variables)
-            return venn.better_solve(node)
+            venn = Venn(self.__variables.copy())
+            return venn.universal(node)
         raise ValueError(f'Encountered unexpected variable count {len(self.__variables)}.')
 
     def __existential_solve(self, node: Node):
+
+        print(self.__variables, " :D ", self.__sets_count_limit)
         if len(self.__variables) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__variables)}")
-            venn = Venn(self.__variables)
+            venn = Venn(self.__variables.copy())
             return venn.existential(node)
         raise ValueError(f'Neočekávaný počet objektů {len(self.__variables)}. Zkontrolujte vstup.')
 
@@ -70,11 +73,12 @@ class Evaluator:
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
-                adding = self.__universal_solve(expr_tree.tree)
+                adding = self.__universal_solve(expr_tree)
                 print("adding", adding)
                 self.__universal_solved += adding
             elif expr_tree.value == '∃':
-                adding = self.__existential_solve(expr_tree.tree)
+                adding = self.__existential_solve(expr_tree)
+                print(adding, " :x ")
                 self.__existential_solved += adding
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')

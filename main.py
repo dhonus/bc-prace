@@ -16,6 +16,7 @@ def main(predicates: List[str], conclusion: str) -> None:
             print(f"{predicate}:")
             parser = Parser(predicate)
             tree = parser.parse()
+            tree.validate()
             trees.append(tree)
             print(tree.print())
             print()
@@ -41,7 +42,9 @@ def main(predicates: List[str], conclusion: str) -> None:
 if __name__ == '__main__':
 
     p = [
-        "∀x[J(x) > S(x)]",
+        "∃x[!(S(x) > C(x)) & V(x)]",
+        "∃y[!(S(y) > C(y)) & V(y)]",
+        "∀x[S(x) > !C(x)]"
     ]
 
     c = "∃x[J(x) & N(x)]"

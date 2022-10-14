@@ -13,6 +13,10 @@ class Node:
     def print(self):
         return f"({self.left.value})"
 
+    def validate(self, variable: str):
+        self.left.validate(variable)
+        self.right.validate(variable)
+
 
 class ExpressionTree(Node):
     """ main node which holds the quantifier of a premise and the full subtree """
@@ -28,6 +32,9 @@ class ExpressionTree(Node):
             case '∀':
                 return f"For all {self.variable} applies {self.tree.print()}"
 
+    def validate(self):
+        self.tree.validate(self.variable)
+
 
 class Set(Node):
     """ a single set. X(y) """
@@ -38,6 +45,10 @@ class Set(Node):
     def print(self):
         return f"({self.value}({self.variable}))"
 
+    def validate(self, variable: str):
+        if self.variable != variable:
+            raise Exception(f'Neshodují se proměnné {self.variable} a {variable}')
+
 
 class Neg(Node):
     """ a negation node """
@@ -46,6 +57,9 @@ class Neg(Node):
 
     def print(self):
         return f" not " + '{' + f"{self.left.print()}" + '}'
+
+    def validate(self, variable: str):
+        pass
 
 
 class Operation(Node):

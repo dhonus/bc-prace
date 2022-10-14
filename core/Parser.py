@@ -6,12 +6,16 @@ class Parser:
     """ this class implements a recursive descent algorithm """
     """ each production rule of the grammar is represented by its own method """
     def __init__(self, string: str):
-        string = string.replace(" ", "")  # not ideal
-        string = string.replace("⊃", ">")
-        string = string.replace("≡", "<>")
-        string = string.replace("¬", "!")
-        string = string.replace("∧", "&")
-        string = string.replace("∨", "|")
+        d = {
+            ' ': '',
+            '⊃': '>',
+            '≡': '<>',
+            '¬': '!',
+            '∧': '&',
+            '∨': '|'
+        }
+        for key, value in d.items():
+            string = string.replace(key, value)
 
         if not string:
             raise EmptyInputException
@@ -19,7 +23,7 @@ class Parser:
         self.__expression_generator = expression_generator(string)  # create generator for the parser to iterate over
         self.__current = next(self.__expression_generator)  # set current char to next in generator
         self.__position = 0  # position within the string being parsed.
-        self.__pedantic = True  # forces usage of stricter syntax
+        self.__pedantic = False  # forces usage of stricter syntax
 
     @staticmethod
     def __pretty_error(predicate: str, p_index: int) -> str:

@@ -7,6 +7,7 @@ class MyTestCase(unittest.TestCase):
         expr = "∀x[!(S(x) > C(x)) & V(x)]"
         expected = "For all x applies [  not {[ (S(x)) > (C(x)) ]} & (V(x)) ]"
         p = Parser(expr)
+        print(p.__s_rule().print())
         self.assertEqual(expected, p.__s_rule().print())
 
     def test_existential(self):

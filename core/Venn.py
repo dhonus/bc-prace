@@ -18,7 +18,7 @@ class Venn:
         print(self.dict)
 
         self.sets = {}
-        print(" -> vars", self.variables)
+        # print(" -> vars", self.variables)
 
         self.area_combinations = []
 
@@ -26,7 +26,7 @@ class Venn:
             for elem in itertools.combinations(self.variables, i+1):
                 self.area_combinations.append("".join(elem))
 
-        print(self.area_combinations, "aaa")
+        # print(self.area_combinations, "aaa")
 
         for i, var in enumerate(self.variables):
             self.sets[var] = []
@@ -37,10 +37,10 @@ class Venn:
         for var in self.variables:
             self.explanations[var] = []
 
-    def better_solve(self, tree: ExpressionTree) -> list[str]:
+    def universal(self, tree: ExpressionTree) -> list[str]:
         print(f"---------\nsets: {self.sets}")
         print("explanations:", self.explanations)
-        sol = self.__solver(tree)
+        sol = self.__solver(tree.tree)
         print(f"solution:: {sol}")
         print(self.area_combinations)
         sol = self.__negate(sol)
@@ -56,16 +56,19 @@ class Venn:
                 sol_universum_accounted.append(adding)
         return sol_universum_accounted
 
-    def existential(self, tree: Node) -> list[str]:
+    def existential(self, tree: ExpressionTree) -> list[str]:
         print(f"---------\nexistential sets: {self.sets}")
         print("explanations:", self.explanations)
-        sol = self.__solver(tree)
-        print(f"solution:: {sol}")
+
+        # deal with the tree
+        solution = self.__solver(tree.tree)
+
+        print(f"solution:: {solution}")
         print(self.area_combinations)
         sol_universum_accounted = list()
         # remove universe symbol from all but just itself
         # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
-        for item in sol:
+        for item in solution:
             if item == 'μ':
                 sol_universum_accounted.append(item)
                 continue
@@ -84,6 +87,7 @@ class Venn:
         return new_values
 
     def __solver(self, node) -> List[str]:
+        """ solver common for both existential and universal """
         match node:
             case Set() as s:
                 print(" -> set ", self.sets.get(s.value))
