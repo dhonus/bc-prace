@@ -96,6 +96,7 @@ def home():
     repo = git.Repo(search_parent_directories=True)
     sha = repo.head.object.hexsha
     import time
+
     time.asctime(time.gmtime(repo.head.object.committed_date))
-    tim = time.strftime("%d. %m. %Y %H:%M", time.gmtime(repo.head.object.committed_date))
-    return f"Připojeno. Hash aktivní verze z {tim} je {sha}."
+    tim = time.strftime("%d. %m. %Y %H:%M", (time.gmtime(repo.head.object.committed_date)))
+    return f"Připojeno. Hash aktivní verze z {tim} UTC je {sha}."
