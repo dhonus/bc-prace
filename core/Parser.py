@@ -60,7 +60,6 @@ class Parser:
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
     def __advance(self, amount=1):
-        # print(f"advanced {self.expression[self.position]}")
         self.__position += amount
         return
 

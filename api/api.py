@@ -97,5 +97,5 @@ def home():
     sha = repo.head.object.hexsha
     import time
     time.asctime(time.gmtime(repo.head.object.committed_date))
-    tim = time.strftime("%D %H:%M", time.gmtime(repo.head.object.committed_date))
+    tim = time.strftime("%d. %m. %Y %H:%M", time.gmtime(repo.head.object.committed_date))
     return f"Připojeno. Hash aktivní verze z {tim} je {sha}."

@@ -18,7 +18,6 @@ class Venn:
         print(self.dict)
 
         self.sets = {}
-        # print(" -> vars", self.variables)
 
         self.area_combinations = []
 
@@ -26,7 +25,6 @@ class Venn:
             for elem in itertools.combinations(self.variables, i+1):
                 self.area_combinations.append("".join(elem))
 
-        # print(self.area_combinations, "aaa")
 
         for i, var in enumerate(self.variables):
             self.sets[var] = []
