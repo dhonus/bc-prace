@@ -76,6 +76,4 @@ def expression_generator(string: str) -> Generator[str, None, None]:
     for char in string:
         yield char
     while True:
-        yield '\0'
-
-
+        yield None

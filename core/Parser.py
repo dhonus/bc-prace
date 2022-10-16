@@ -72,6 +72,14 @@ class Parser:
     # S -> Q[E]
     def __s_rule(self) -> ExpressionTree | None:
         expr = self.__q_rule()
+        if expr.variable is None:
+            # we assume this is a constant
+            constant = self.__f_rule()
+            expr.tree = constant
+            expr.variable = constant.variable
+            if self.__current:
+                raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
+            return expr
         if self.__match('['):
             tree = self.__e_rule()
             if not tree:
@@ -83,13 +91,13 @@ class Parser:
         return expr
 
     # Q -> ∀V | ∃V
-    def __q_rule(self) -> ExpressionTree:
+    def __q_rule(self) -> ExpressionTree | None:
         """ each quantifier different rules """
         """ to be implemented """
         elem = self.__current
-        self.__current = next(self.__expression_generator)
         match elem:
             case '∃' | 'E':
+                self.__current = next(self.__expression_generator)
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem.')
@@ -97,6 +105,7 @@ class Parser:
                 self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
             case '∀' | 'A':
+                self.__current = next(self.__expression_generator)
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem.')
@@ -104,7 +113,7 @@ class Parser:
                 self.__advance(2)
                 return ExpressionTree(value='∀', variable=variable, tree=None)
             case _:
-                raise ValueError('Nenalezen kvantifikátor. Vstup musí být uzavřená formule.')
+                return ExpressionTree(value='∃', variable=None, tree=None)
 
     # E -> B # this is done because we can only have one expression
     def __e_rule(self) -> Operation | None:
