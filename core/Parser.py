@@ -28,6 +28,7 @@ class Parser:
     @staticmethod
     def __pretty_error(predicate: str, p_index: int) -> str:
         """ print error including a ^ to indicate the position at which it had occurred """
+        """ problematic to pass with api. To be replaced """
         pos_indicator = ""
         for i, char in enumerate(predicate):
             if i == p_index - 1:
@@ -44,26 +45,28 @@ class Parser:
             return True
         return False
 
-    def __require(self, req: str) -> bool | ValueError:
+    def __require(self, required: str) -> bool | ValueError:
         """ mostly used for bracket parity """
-        if self.__current == req:
+        if self.__current == required:
             self.__current = next(self.__expression_generator)
             return True
 
-        if req == ')':
+        if required == ')':
             print(self.__pretty_error(self.__expression, self.__position))
-            raise ValueError(f"Očekáváno '{req}', na vstupu je ale '{self.__current}'"
+            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__current}'"
                   f" Pravděpodobně chybějící závorka na {self.__position}. pozici."
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
         else:
-            raise ValueError(f"Očekáváno '{req}', na vstupu je ale '{self.__current}'. Na pozici: {self.__position}"
+            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__current}'. Na pozici: {self.__position}"
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
     def __advance(self, amount=1):
+        """ move the position pointer """
         self.__position += amount
         return
 
     def parse(self) -> ExpressionTree:
+        """ this is the main method to get called on the expression to produce an expression tree """
         parsed = self.__s_rule()
         if not parsed:
             raise Exception('Při parsování vstupu nastala neznámá chyba.')
@@ -93,7 +96,6 @@ class Parser:
     # Q -> ∀V | ∃V
     def __q_rule(self) -> ExpressionTree | None:
         """ each quantifier different rules """
-        """ to be implemented """
         elem = self.__current
         match elem:
             case '∃' | 'E':

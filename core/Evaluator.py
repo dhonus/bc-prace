@@ -5,6 +5,11 @@ from typing import List, Set as tSet, Dict, Any, Set
 from core.Venn import *
 
 
+def deprecated(args):
+    print("This is an old function")
+    pass
+
+
 class Evaluator:
     def __init__(self):
         self.__objects = []
@@ -16,7 +21,8 @@ class Evaluator:
         self.__existential_solved = {}
         self.__conclusion_solved = {}
 
-    def __get_sets(self, tree: ExpressionTree | Node):
+    def __get_variables(self, tree: ExpressionTree | Node):
+        """ produces a list of variables in the expression tree """
         match tree:
             case None:
                 return
@@ -26,10 +32,10 @@ class Evaluator:
                 if tree.variable not in self.__variables:
                     self.__variables.append(tree.variable)
             case ExpressionTree():
-                self.__get_sets(tree.tree)
+                self.__get_variables(tree.tree)
             case Operation() | Neg():
-                self.__get_sets(tree.left)
-                self.__get_sets(tree.right)
+                self.__get_variables(tree.left)
+                self.__get_variables(tree.right)
             case _:
                 raise TypeError(f'Unknown type passed to evaluator: {type(tree).__name__}')
         print(self.__objects, " :p ")
@@ -41,6 +47,7 @@ class Evaluator:
         return [row + [v] for row in sub for v in [0, 1]]
 
     def __universal_solve(self, node: Node) -> list[str]:
+        """ solves a universal predicate and produces list of crossed out areas """
         if len(self.__objects) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__objects)}")
             venn = Venn(self.__objects.copy())
@@ -48,6 +55,7 @@ class Evaluator:
         raise ValueError(f'Encountered unexpected variable count {len(self.__objects)}.')
 
     def __existential_solve(self, node: Node):
+        """ solves an existential predicate; same alg as universal. Produces list of areas which contain elements """
         print(self.__objects, " :D ", self.__sets_count_limit)
         if len(self.__objects) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__objects)}")
@@ -56,15 +64,20 @@ class Evaluator:
         raise ValueError(f'Neočekávaný počet objektů {len(self.__objects)}. Zkontrolujte vstup.')
 
     def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, set[str]]:
+        """ takes all the predicates and sequentially produces lists of 'areas' of the imaginary venn diagram
+            read as: predicate -> 'is this area crossed out or does it contain an X?'. Solves universal first. """
         existential_validate = 0
+
+        # we must count up existential predicates to check for this basic logical error
         for tree in trees:
             if tree.value == '∃' or tree.value == 'E':
                 existential_validate += 1
-            self.__get_sets(tree)
-        self.__get_sets(conclusion_tree)
+            self.__get_variables(tree)
+        self.__get_variables(conclusion_tree)
         if existential_validate == 0 and conclusion_tree.value == '∃':
             raise LogicException('Nesprávný úsudek. Všeobecné premisy nemohou implikovat existenci.')
 
+        # there is a limit for how many objects we can draw. This checks if we have exceeded it.
         if len(self.__objects) > self.__sets_count_limit:  # +1 for quantifier
             raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} objektů.\n'
                              f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Objekty: {self.__objects}')
@@ -75,6 +88,7 @@ class Evaluator:
         for var in self.__variables:
             self.__existential_solved[var] = []
 
+        # universal predicates have priority
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
@@ -88,6 +102,7 @@ class Evaluator:
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
+        # since we have outputs for multiple different variables, we can store them in a dictionary
         esolved = {}
         for var in self.__existential_solved.keys():
             esolved[var] = set(self.__existential_solved[var])
@@ -99,16 +114,18 @@ class Evaluator:
 
         return {"Exists within": esolved, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
 
+    @deprecated
     def __print_truthtable(self):
         print(self.__objects)
         for i, t in enumerate(self.__truthtable):
             print(f" -> {i + 1}: {t}")
 
     def validity(self, solution: dict[str, set[str]]):
+        """ checks the validity of the entire problem using the parsed existential and universal results """
         variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
         print(solution)
         solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
-        print (len(solution_candidates))
+        print(len(solution_candidates))
         print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")
         print(solution_candidates.intersection(set(self.__conclusion_solved[variable])))
         if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
