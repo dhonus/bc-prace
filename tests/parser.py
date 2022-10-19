@@ -17,5 +17,5 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected, p.__s_rule().print())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

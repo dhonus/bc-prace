@@ -4,6 +4,7 @@ from fastapi import FastAPI, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
 # this is required to be able to access the fastapi server from VUE.js on another port
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,8 +32,13 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8081", "http://10.0.0.117:8000", "http://130.162.49.62:8080"],  # frontend address
-    #allow_origins=['*'],  # frontend address
+    allow_origins=[
+        "http://localhost:8081",
+        "http://10.0.0.117:8000",
+        "http://130.162.49.62:8080",
+    ],  # frontend address
+
+    # allow_origins=['*'],  # frontend address
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -60,7 +66,9 @@ async def send_expression(item: Thing):
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 
-        trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
+        trees = sorted(
+            trees, key=lambda tr: tr.value
+        )  # sort to have universal statements first
 
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
@@ -83,8 +91,8 @@ async def send_expression(item: Thing):
         return responseItem
 
     responseItem = Item()
-    responseItem.existential = solution.get('Exists within')
-    responseItem.universal = list(solution.get('Crossed out'))
+    responseItem.existential = solution.get("Exists within")
+    responseItem.universal = list(solution.get("Crossed out"))
     responseItem.valid = validity
     responseItem.notes = "OK"
 
@@ -98,5 +106,7 @@ def home():
     import time
 
     time.asctime(time.gmtime(repo.head.object.committed_date))
-    tim = time.strftime("%d. %m. %Y %H:%M", (time.gmtime(repo.head.object.committed_date)))
+    tim = time.strftime(
+        "%d. %m. %Y %H:%M", (time.gmtime(repo.head.object.committed_date))
+    )
     return f"Připojeno. Hash aktivní verze z {tim} UTC je {sha}."

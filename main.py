@@ -25,7 +25,9 @@ def main(predicates: List[str], conclusion: str) -> None:
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 
-        trees = sorted(trees, key=lambda tr: tr.value)  # sort to have universal statements first
+        trees = sorted(
+            trees, key=lambda tr: tr.value
+        )  # sort to have universal statements first
 
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
@@ -40,15 +42,9 @@ def main(predicates: List[str], conclusion: str) -> None:
         logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    p = [
-        "∀y[A(y) > B(y)]",
-        "∀y[B(y) > A(y)]",
-        "∃y[B(y) | A(y)]",
-        "B(x)"
-    ]
-
+    p = ["∀y[A(y) > B(y)]", "∀y[B(y) > A(y)]", "∃y[B(y) | A(y)]", "B(x)"]
 
     c = "∃y[B(y) | C(y)]"
     main(p, c)
