@@ -14,7 +14,6 @@ class Evaluator:
     def __init__(self):
         self.__objects = []
         self.__variables = []
-        self.__truthtable = []
         self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram
         self.__sets_dict = {}
         self.__universal_solved = []   # the universtal statement result
@@ -38,13 +37,7 @@ class Evaluator:
                 self.__get_variables(tree.right)
             case _:
                 raise TypeError(f'Unknown type passed to evaluator: {type(tree).__name__}')
-        print(self.__objects, " :p ")
-
-    def __generate_truthtable(self, size: int):
-        if size < 1:
-            return [[]]
-        sub = self.__generate_truthtable(size - 1)
-        return [row + [v] for row in sub for v in [0, 1]]
+        # print(self.__objects, " :p ")
 
     def __universal_solve(self, node: Node) -> list[str]:
         """ solves a universal predicate and produces list of crossed out areas """
@@ -52,7 +45,7 @@ class Evaluator:
             logging.info(f"universal {len(self.__objects)}")
             venn = Venn(self.__objects.copy())
             return venn.universal(node)
-        raise ValueError(f'Encountered unexpected variable count {len(self.__objects)}.')
+        raise ValueError(f'Neočekávaný počet objektů {len(self.__objects)}. Zkontrolujte vstup.')
 
     def __existential_solve(self, node: Node):
         """ solves an existential predicate; same alg as universal. Produces list of areas which contain elements """
@@ -77,12 +70,10 @@ class Evaluator:
         if existential_validate == 0 and conclusion_tree.value == '∃':
             raise LogicException('Nesprávný úsudek. Všeobecné premisy nemohou implikovat existenci.')
 
-        # there is a limit for how many objects we can draw. This checks if we have exceeded it.
+        # there is a limit to how many objects we can draw. This checks if we have exceeded said limit.
         if len(self.__objects) > self.__sets_count_limit:  # +1 for quantifier
             raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} objektů.\n'
                              f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Objekty: {self.__objects}')
-
-        self.__truthtable = self.__generate_truthtable(len(self.__objects))
 
         print(f"objects for the entire diagram: {self.__objects}")
         for var in self.__variables:
@@ -103,27 +94,21 @@ class Evaluator:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
         # since we have outputs for multiple different variables, we can store them in a dictionary
-        esolved = {}
+        existential_solved_final = {}
         for var in self.__existential_solved.keys():
-            esolved[var] = set(self.__existential_solved[var])
+            existential_solved_final[var] = set(self.__existential_solved[var])
 
         self.__conclusion_solved[conclusion_tree.variable] = self.__existential_solve(conclusion_tree)
         print()
         print(self.__existential_solved, "hi")
         print(self.__universal_solved, "hi")
 
-        return {"Exists within": esolved, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
-
-    @deprecated
-    def __print_truthtable(self):
-        print(self.__objects)
-        for i, t in enumerate(self.__truthtable):
-            print(f" -> {i + 1}: {t}")
+        return {"Exists within": existential_solved_final, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
 
     def validity(self, solution: dict[str, set[str]]):
         """ checks the validity of the entire problem using the parsed existential and universal results """
         variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
-        print(solution)
+        #print(solution)
         solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
         print(len(solution_candidates))
         print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")

@@ -12,16 +12,17 @@ def main(predicates: List[str], conclusion: str) -> None:
     p_index = 1
     try:
         trees = []
+        parser = Parser()
         for predicate in predicates:
-            print(f"{predicate}:")
-            parser = Parser(predicate)
+            #print(f"{predicate}:")
+            parser.attach(predicate)
             tree = parser.parse()
             tree.validate()
             trees.append(tree)
             print(tree.print())
             print()
 
-        parser = Parser(conclusion)
+        parser.attach(conclusion)
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 
@@ -39,12 +40,15 @@ def main(predicates: List[str], conclusion: str) -> None:
     except InvalidExpressionException as iee:
         print(iee)
     except Exception as e:
-        logging.critical(f"{type(e).__name__}: In predicate {p_index}: {e}")
+        logging.critical(f"{type(e).__name__}: V predikátu {p_index}: {e}")
 
 
 if __name__ == "__main__":
 
-    p = ["∀y[A(y) > B(y)]", "∀y[B(y) > A(y)]", "∃y[B(y) | A(y)]", "B(x)"]
+    p = ["∀x[A(x) > B(x)]",
+         "∀y[B(y) > A(y) | C(y)]",
+         "∃y[B(y) | A(y)]",
+         "B(x) & C(x)"]
 
     c = "∃y[B(y) | C(y)]"
     main(p, c)

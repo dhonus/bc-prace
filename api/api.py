@@ -52,15 +52,17 @@ async def send_expression(item: Thing):
     p_index = 1
     try:
         trees = []
+        parser = Parser()
         for predicate in predicates:
-            print(f"{predicate}:")
-            parser = Parser(predicate)
+            # print(f"{predicate}:")
+            parser.attach(predicate)
             tree = parser.parse()
+            tree.validate()
             trees.append(tree)
             print(tree.print())
             print()
 
-        parser = Parser(item.conclusion)
+        parser.attach(item.conclusion)
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 

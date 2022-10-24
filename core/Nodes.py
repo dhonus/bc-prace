@@ -24,6 +24,7 @@ class ExpressionTree(Node):
         super().__init__(None, None, value)
         self.variable = variable
         self.tree = tree
+        self.constant = False
 
     def print(self):
         match self.value:
@@ -37,7 +38,7 @@ class ExpressionTree(Node):
 
 
 class Set(Node):
-    """ a single set. X(y) """
+    """ a single set. e.g. X(y) """
     def __init__(self, value: str, variable: str):
         super().__init__(None, None, value)
         self.variable = variable

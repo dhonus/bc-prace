@@ -5,8 +5,8 @@ import logging
 class Parser:
     """ this class implements a recursive descent algorithm """
     """ each production rule of the grammar is represented by its own method """
-    def __init__(self, string: str):
-        d = {
+    def __init__(self):
+        self.d = {
             ' ': '',
             '⊃': '>',
             '≡': '<>',
@@ -14,21 +14,31 @@ class Parser:
             '∧': '&',
             '∨': '|'
         }
-        for key, value in d.items():
-            string = string.replace(key, value)
 
+        self.__expression = ""
+        self.__variable = ""
+        self.__expression_generator = None
+        self.__current = None
+        self.__position = 0
+        self.__pedantic = True
+        self.__parsed_count = 0
+
+    def attach(self, string: str):
+        """ this is the method supplying the parser with a string to parse """
+        for key, value in self.d.items():
+            string = string.replace(key, value)
         if not string:
             raise EmptyInputException
         self.__expression = string
+        self.__variable = ""
         self.__expression_generator = expression_generator(string)  # create generator for the parser to iterate over
         self.__current = next(self.__expression_generator)  # set current char to next in generator
         self.__position = 0  # position within the string being parsed.
-        self.__pedantic = False  # forces usage of stricter syntax
 
     @staticmethod
     def __pretty_error(predicate: str, p_index: int) -> str:
-        """ print error including a ^ to indicate the position at which it had occurred """
-        """ problematic to pass with api. To be replaced """
+        """ print error including an ^ to indicate the position at which it had occurred """
+        """ problematic to pass with api. To be replaced with a client-side solution """
         pos_indicator = ""
         for i, char in enumerate(predicate):
             if i == p_index - 1:
@@ -68,6 +78,7 @@ class Parser:
     def parse(self) -> ExpressionTree:
         """ this is the main method to get called on the expression to produce an expression tree """
         parsed = self.__s_rule()
+        self.__parsed_count += 1
         if not parsed:
             raise Exception('Při parsování vstupu nastala neznámá chyba.')
         return parsed
@@ -76,10 +87,13 @@ class Parser:
     def __s_rule(self) -> ExpressionTree | None:
         expr = self.__q_rule()
         if expr.variable is None:
-            # we assume this is a constant
-            constant = self.__f_rule()
+            # we assume that this is a constant
+            # form like B(x) instead of Ex[B(x)]
+            # constants behave differently to regular expressions
+            # a variable of constant is shared among other constants with the same variable
+            constant = self.__e_rule()
             expr.tree = constant
-            expr.variable = constant.variable
+            expr.variable = self.__variable
             if self.__current:
                 raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
             return expr
@@ -92,6 +106,17 @@ class Parser:
         else:
             raise Exception('Chybějící otevírací hranatá závorka')
         return expr
+
+    def __deduce_variable(self) -> str:
+        pass
+
+    def __set_variable(self, var: str):
+        if var == self.__variable:
+            return
+        if not self.__variable:
+            self.__variable = var
+            return
+        raise Exception(f"Nalezeny 2 různé proměnné ve výrazu -> '{self.__variable}' a '{var}'")
 
     # Q -> ∀V | ∃V
     def __q_rule(self) -> ExpressionTree | None:
@@ -221,6 +246,7 @@ class Parser:
                 raise ValueError(f"Proměnná na pozici {self.__position} by měla být malým písmem, "
                                  f"ale bylo nalezeno '{self.__current}'.\n{self.__pretty_error(self.__expression, self.__position)}")
         variable = self.__current.lower()
+        self.__set_variable(variable)
         self.__current = next(self.__expression_generator)
         self.__require(')')
         logging.debug(f"returning set {elem}({variable})")
