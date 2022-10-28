@@ -25,7 +25,6 @@ class Venn:
             for elem in itertools.combinations(self.variables, i+1):
                 self.area_combinations.append("".join(elem))
 
-
         for i, var in enumerate(self.variables):
             self.sets[var] = []
             for area in self.area_combinations:

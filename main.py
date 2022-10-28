@@ -45,10 +45,16 @@ def main(predicates: List[str], conclusion: str) -> None:
 
 if __name__ == "__main__":
 
-    p = ["∀x[A(x) > B(x)]",
+    """p = ["∀x[A(x) > B(x)]",
          "∀y[B(y) > A(y) | C(y)]",
          "∃y[B(y) | A(y)]",
-         "B(x) & C(x)"]
+         "B(x) & C(x)"]"""
+    p = [
+        "∀x[P(x) > Q(x)]",
+        "∀x[Q(x) > R(x)]",
+        "Ex[P(x)]"
+    ]
 
-    c = "∃y[B(y) | C(y)]"
+    # c = "∃y[B(y) | C(y)]"
+    c = "Ex[P(x) & R(x)]"
     main(p, c)

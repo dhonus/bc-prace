@@ -84,18 +84,27 @@ class Evaluator:
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value}")
                 adding = self.__universal_solve(expr_tree)
-                print("adding", adding)
                 self.__universal_solved += adding
+                self.__existential_solved[expr_tree.variable] = []
             elif expr_tree.value == '∃':
                 adding = self.__existential_solve(expr_tree)
-                print(adding, " :x ")
                 self.__existential_solved[expr_tree.variable] = self.__existential_solved[expr_tree.variable] + adding
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
+        constants = []
+        for expr_tree in trees:
+            if expr_tree.constant:
+                constants.append(expr_tree)
+
         # since we have outputs for multiple different variables, we can store them in a dictionary
         existential_solved_final = {}
+
+        # here we just add the existential output of constants to all other variables
         for var in self.__existential_solved.keys():
+            for constant in constants:
+                print(self.__existential_solved[constant.variable], "ggg")
+                self.__existential_solved[var] += self.__existential_solved[constant.variable]
             existential_solved_final[var] = set(self.__existential_solved[var])
 
         self.__conclusion_solved[conclusion_tree.variable] = self.__existential_solve(conclusion_tree)

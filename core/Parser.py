@@ -90,10 +90,11 @@ class Parser:
             # we assume that this is a constant
             # form like B(x) instead of Ex[B(x)]
             # constants behave differently to regular expressions
-            # a variable of constant is shared among other constants with the same variable
+            # a variable of constant is shared among other constants with any variable
             constant = self.__e_rule()
             expr.tree = constant
             expr.variable = self.__variable
+            expr.constant = True
             if self.__current:
                 raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
             return expr
