@@ -28,7 +28,10 @@
         <h4 v-if="validity === true" style="color:#129412;">Platný úsudek</h4>
         <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
 
-        <img src="@/assets/venn3_example.png" style="width:60%;">
+        <div id="venn">
+          <canvas id="myChart" width="400" height="400"></canvas>
+          <Bar />
+        </div>
 
       </div>
       <div class="left_section">
@@ -44,7 +47,7 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
-          <p>Následuje tabulka podporovaných symbolů<br> včetně jejich akceptovatelných variant.</p>
+          <p>Následuje tabulka <u>podporovaných symbolů</u><br> včetně jejich <u>akceptovatelných variant</u>.</p>
           <table>
             <tr>
               <td>Implikace</td>
@@ -88,14 +91,19 @@
             </tr>
           </table>
 
+          <p>Premisa musí být ohraničena <b><u>hranatými závorkami</u></b> a musí začínat kvantifikátorem a proměnnou:
+            <br>&nbsp;&nbsp;&nbsp;<b>∃x[A(x)]</b>
+            <br>&nbsp;&nbsp;&nbsp;<b>∀x[B(x)]</b></p>
+          <p><b><u>Konstanty</u></b> se zapisují bez hranatých závorek: <br><b>&nbsp;&nbsp;&nbsp;Q(a)<br>&nbsp;&nbsp;&nbsp;P(x)</b></p>
+
           <h3>Příklad validního vstupu:</h3>
           <p>
-            &nbsp;&nbsp;∀x[A(x) > !B(x)]<br>
-            &nbsp;&nbsp;∀x[A(x) > B(x)]<br>
+            P1: ∀x[A(x) > !B(x)]<br>
+            P2: ∀x[A(x) > B(x)]<br>
           </p>
           <hr>
           <p>
-            &nbsp;&nbsp;∃x[C(x)]
+            Z: ∃x[C(x)]
           </p>
         </div>
       </div>
@@ -109,6 +117,10 @@
 import HelloWorld from '@/components/home.vue'
 import axios from "axios";
 import qs from "qs";
+//import * as d3 from "d3";
+//import Chart from 'chart.js/auto'
+import { VennDiagramChart, extractSets } from 'chartjs-chart-venn';
+import { getRelativePosition } from 'chart.js/helpers';
 
 
 export default {
@@ -182,6 +194,8 @@ export default {
       ];*/
       //let conclusion = "∃x[C(x)]"
 
+
+
       let conclusion = this.$refs.zaver.value;
       let formdata = new FormData();
       formdata.append('conclusion', JSON.stringify(conclusion))
@@ -220,6 +234,7 @@ export default {
       } catch (err) {
         // uh oh, didn't work, time for plan B
       }
+
     },
     togg: function(){
       if (this.$refs.buttonFour.innerText == '+'){
@@ -234,6 +249,82 @@ export default {
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
+    const ctx = document.getElementById('myChart');
+    const myChart = new VennDiagramChart(ctx, {
+      type: 'venn',
+            label: 'Venn',
+            data: extractSets(
+                [
+                  { label: 'A', values: ["?"] },
+                  { label: 'B', values: [] },
+                  { label: 'C', values: [] },
+                ],
+
+                {
+                  label: 'Venn',
+                },
+            ),
+      options: {
+        title: {
+          display: false,
+        },
+        onClick: (e) => {
+          const canvasPosition = getRelativePosition(e, myChart);
+
+          // Substitute the appropriate scale IDs
+          const dataX = myChart.scales.x.getValueForPixel(canvasPosition.x);
+          const dataY = myChart.scales.y.getValueForPixel(canvasPosition.y);
+          console.log(dataX, dataY);
+        },
+        backgroundColor: [
+          'rgb(29 29 29)',
+          'rgb(29 29 29)',
+          'rgb(29 29 29)',
+          'rgb(64 64 64)',
+          'rgb(64 64 64)',
+          'rgb(64 64 64)',
+          'rgba(90 90 90)'
+        ],
+        scales: {
+          x: { // these are the set name colors
+            ticks: {
+            },
+          },
+          y: { // these are the numbers within? unused
+            ticks: {
+              color: "white",
+            }
+          }
+        }
+      },
+    });
+    myChart;
+    /*myChart.data = extractSets(
+        [
+          { label: 'A', values: [] },
+          { label: 'B', values: [] },
+          { label: 'C', values: [] },
+          { label: 'D', values: [] },
+        ],
+
+        {
+          label: 'Venn',
+        },
+    ),
+    myChart.options.backgroundColor = [
+      'rgb(29 29 29)',
+      'rgb(29 29 29)',
+      'rgb(29 29 29)',
+      'rgb(64 64 64)',
+      'rgb(64 64 64)',
+      'rgb(64 64 64)',
+      'rgba(90 90 90)',
+    ],*/
+    myChart.canvas.parentNode.style.height = '100%';
+    myChart.canvas.parentNode.style.width = '75%';
+    myChart.canvas.parentNode.style.margin = 'auto';
+    myChart.canvas.parentNode.style.color = 'white';
+
   },
 }
 </script>

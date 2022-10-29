@@ -117,7 +117,7 @@ class Evaluator:
     def validity(self, solution: dict[str, set[str]]):
         """ checks the validity of the entire problem using the parsed existential and universal results """
         variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
-        #print(solution)
+        print(solution)
         solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
         print(len(solution_candidates))
         print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")

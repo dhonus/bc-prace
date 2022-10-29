@@ -47,8 +47,10 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
         V' -> VV' | eps
         W -> [A..Z] V'
 
-npm install -g @vue/cli
-pip install "fastapi[all]" # test removing all at the end
-pip install "uvicorn[standard]"
-npm install axios
-npm install --save-dev node-sass sass-loader
+npm install -g @vue/cli  
+pip install "fastapi[all]" # test removing all at the end  
+pip install "uvicorn[standard]"  
+npm install axios  
+npm install --save-dev node-sass sass-loader  
+npm install --save chart.js chartjs-chart-venn  
+npm i vue-chartjs chart.js   

@@ -14,7 +14,6 @@ def main(predicates: List[str], conclusion: str) -> None:
         trees = []
         parser = Parser()
         for predicate in predicates:
-            #print(f"{predicate}:")
             parser.attach(predicate)
             tree = parser.parse()
             tree.validate()
