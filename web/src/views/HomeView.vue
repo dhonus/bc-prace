@@ -30,7 +30,7 @@
 
         <div id="venn">
           <canvas id="myChart" width="400" height="400"></canvas>
-          <Bar />
+          <br>
         </div>
 
       </div>
@@ -138,7 +138,8 @@ export default {
       APIErrorMessage: '',
       logicResponseExistential: '',
       logicResponseUniversal: '',
-      validity: null
+      validity: null,
+      myChart: null
     }
   },
   methods: {
@@ -228,6 +229,21 @@ export default {
 
           this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
           this.validity = response.data["valid"];
+
+          let theData = []
+          for (const element of response.data["sets"]) {
+            theData.push({ label: String(element), values: []})
+          }
+
+          console.log(theData);
+          console.log([
+            { label: 'A', values: [] },
+            { label: 'B', values: [] },
+            { label: 'C', values: [] },
+          ]);
+
+          this.myChart.destroy();
+          this.makeChart(theData)
         }, (error) => {
           console.log(error);
         });
@@ -245,86 +261,83 @@ export default {
       }
 
     },
+    makeChart(theData) {
+      const ctx = document.getElementById('myChart');
+      this.myChart = new VennDiagramChart(ctx, {
+        type: 'venn',
+        label: 'Venn',
+        data: extractSets(
+            theData,
+
+            {
+              label: 'Venn',
+            },
+        ),
+        options: {
+          title: {
+            display: false,
+          },
+          onClick: (e) => {
+            const canvasPosition = getRelativePosition(e, this.myChart);
+
+            // Substitute the appropriate scale IDs
+            const dataX = this.myChart.scales.x.getValueForPixel(canvasPosition.x);
+            const dataY = this.myChart.scales.y.getValueForPixel(canvasPosition.y);
+            console.log(dataX, dataY);
+          },
+          backgroundColor: [
+            'rgb(29 29 29)',
+            'rgb(29 29 29)',
+            'rgb(29 29 29)',
+            'rgb(64 64 64)',
+            'rgb(64 64 64)',
+            'rgb(64 64 64)',
+            'rgba(90 90 90)'
+          ],
+          scales: {
+            x: { // these are the set name colors
+              ticks: {
+                // Include a dollar sign in the ticks
+                callback: function(value, index, ticks) {
+                  index;
+                  ticks;
+                  return '$';
+                },
+                color: "red",
+                display: false
+              },
+            },
+            y: { // these are the numbers within? unused
+              ticks: {
+                color: "white",
+              }
+            }
+          }
+        },
+      });
+      this.myChart.options.backgroundColor = [
+        'rgb(29 29 29)',
+        'rgb(29 29 29)',
+        'rgb(29 29 29)',
+        'rgb(64 64 64)',
+        'rgb(64 64 64)',
+        'rgb(64 64 64)',
+        'rgba(90 90 90)',
+      ];
+      this.myChart.canvas.parentNode.style.height = '100%';
+      this.myChart.canvas.parentNode.style.width = '60%';
+      this.myChart.canvas.parentNode.style.margin = 'auto';
+      this.myChart.canvas.parentNode.style.color = 'white';
+    },
   },
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
-    const ctx = document.getElementById('myChart');
-    const myChart = new VennDiagramChart(ctx, {
-      type: 'venn',
-            label: 'Venn',
-            data: extractSets(
-                [
-                  { label: 'A', values: ["?"] },
-                  { label: 'B', values: [] },
-                  { label: 'C', values: [] },
-                ],
-
-                {
-                  label: 'Venn',
-                },
-            ),
-      options: {
-        title: {
-          display: false,
-        },
-        onClick: (e) => {
-          const canvasPosition = getRelativePosition(e, myChart);
-
-          // Substitute the appropriate scale IDs
-          const dataX = myChart.scales.x.getValueForPixel(canvasPosition.x);
-          const dataY = myChart.scales.y.getValueForPixel(canvasPosition.y);
-          console.log(dataX, dataY);
-        },
-        backgroundColor: [
-          'rgb(29 29 29)',
-          'rgb(29 29 29)',
-          'rgb(29 29 29)',
-          'rgb(64 64 64)',
-          'rgb(64 64 64)',
-          'rgb(64 64 64)',
-          'rgba(90 90 90)'
-        ],
-        scales: {
-          x: { // these are the set name colors
-            ticks: {
-            },
-          },
-          y: { // these are the numbers within? unused
-            ticks: {
-              color: "white",
-            }
-          }
-        }
-      },
-    });
-    myChart;
-    /*myChart.data = extractSets(
-        [
-          { label: 'A', values: [] },
-          { label: 'B', values: [] },
-          { label: 'C', values: [] },
-          { label: 'D', values: [] },
-        ],
-
-        {
-          label: 'Venn',
-        },
-    ),
-    myChart.options.backgroundColor = [
-      'rgb(29 29 29)',
-      'rgb(29 29 29)',
-      'rgb(29 29 29)',
-      'rgb(64 64 64)',
-      'rgb(64 64 64)',
-      'rgb(64 64 64)',
-      'rgba(90 90 90)',
-    ],*/
-    myChart.canvas.parentNode.style.height = '100%';
-    myChart.canvas.parentNode.style.width = '75%';
-    myChart.canvas.parentNode.style.margin = 'auto';
-    myChart.canvas.parentNode.style.color = 'white';
-
+    this.makeChart([
+      { label: 'A', values: [] },
+      { label: 'B', values: [] },
+      { label: 'C', values: [] },
+    ])
   },
 }
 </script>

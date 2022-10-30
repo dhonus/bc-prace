@@ -20,6 +20,9 @@ class Evaluator:
         self.__existential_solved = {}
         self.__conclusion_solved = {}
 
+    def get_sets(self):
+        return self.__objects
+
     def __get_variables(self, tree: ExpressionTree | Node):
         """ produces a list of variables in the expression tree """
         match tree:

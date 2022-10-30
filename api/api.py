@@ -19,6 +19,7 @@ import git
 class Item(BaseModel):
     existential: dict[str, list[str]] = {}
     universal: List[str] = []
+    sets: List[str] = []
     valid: bool | None = None
     notes: str = ""
 
@@ -51,6 +52,7 @@ async def send_expression(item: Thing):
 
     p_index = 1
     try:
+        responseItem = Item()
         trees = []
         parser = Parser()
         for predicate in predicates:
@@ -70,9 +72,14 @@ async def send_expression(item: Thing):
             trees, key=lambda tr: tr.value
         )  # sort to have universal statements first
 
+
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
+        responseItem.sets += evaluator.get_sets()
         validity = evaluator.validity(solution)
+        responseItem.sets += evaluator.get_sets()
+        responseItem.sets = list(set(responseItem.sets))
+        print(evaluator.get_sets(), "aaa")
         print(f"\n\n----------\nsolution: {solution}\n----------")
         print(validity)
 
@@ -90,7 +97,6 @@ async def send_expression(item: Thing):
         responseItem.notes = f"{type(e).__name__}: V {p_index}. premise: {e}"
         return responseItem
 
-    responseItem = Item()
     responseItem.existential = solution.get("Exists within")
     responseItem.universal = list(solution.get("Crossed out"))
     responseItem.valid = validity

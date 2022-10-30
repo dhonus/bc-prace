@@ -135,6 +135,7 @@ class Parser:
             case '∀' | 'A':
                 self.__current = next(self.__expression_generator)
                 variable = self.__current
+                print(variable)
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem.')
                 self.__current = next(self.__expression_generator)
