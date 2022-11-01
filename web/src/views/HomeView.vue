@@ -189,13 +189,6 @@ export default {
         predicates.push(this.values[key]);
       }
 
-      /*let predicates = [
-        "∀x[A(x) > !B(x)]",
-        "∀x[A(x) > !B(x)]"
-      ];*/
-      //let conclusion = "∃x[C(x)]"
-
-
 
       let conclusion = this.$refs.zaver.value;
       let formdata = new FormData();
@@ -244,6 +237,51 @@ export default {
 
           this.myChart.destroy();
           this.makeChart(theData)
+          console.log(theData.length)
+          switch(theData.length){
+            case 1:{
+              this.myChart.options.backgroundColor = [
+                'rgb(226,31,31)',
+                'rgb(226,31,31)',
+                'rgb(226,31,31)',
+                'rgb(226,31,31)',
+              ];
+              break;
+            }
+            case 2:{
+              this.myChart.options.backgroundColor = [
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(64 64 64)',
+              ];
+              break;
+            }
+            case 3:{
+              this.myChart.options.backgroundColor = [
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(64 64 64)',
+                'rgb(64 64 64)',
+                'rgb(64 64 64)',
+                'rgba(90 90 90)',
+              ];
+              break;
+            }
+            case 4:{
+              this.myChart.options.backgroundColor = [
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(29 29 29)',
+                'rgb(64 64 64)',
+                'rgb(64 64 64)',
+                'rgb(64 64 64)',
+                'rgba(90 90 90)',
+              ];
+              break;
+            }
+          }
         }, (error) => {
           console.log(error);
         });
@@ -253,7 +291,7 @@ export default {
 
     },
     togg: function(){
-      if (this.$refs.buttonFour.innerText == '+'){
+      if (this.$refs.buttonFour.innerText === '+'){
         this.$refs.buttonFour.innerText = "-";
       }
       else {
