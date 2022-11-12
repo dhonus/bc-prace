@@ -119,8 +119,6 @@ import axios from "axios";
 import qs from "qs";
 //import * as d3 from "d3";
 //import Chart from 'chart.js/auto'
-import { VennDiagramChart, extractSets } from 'chartjs-chart-venn';
-import { getRelativePosition } from 'chart.js/helpers';
 
 
 export default {
@@ -234,54 +232,6 @@ export default {
             { label: 'B', values: [] },
             { label: 'C', values: [] },
           ]);
-
-          this.myChart.destroy();
-          this.makeChart(theData)
-          console.log(theData.length)
-          switch(theData.length){
-            case 1:{
-              this.myChart.options.backgroundColor = [
-                'rgb(226,31,31)',
-                'rgb(226,31,31)',
-                'rgb(226,31,31)',
-                'rgb(226,31,31)',
-              ];
-              break;
-            }
-            case 2:{
-              this.myChart.options.backgroundColor = [
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(64 64 64)',
-              ];
-              break;
-            }
-            case 3:{
-              this.myChart.options.backgroundColor = [
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(64 64 64)',
-                'rgb(64 64 64)',
-                'rgb(64 64 64)',
-                'rgba(90 90 90)',
-              ];
-              break;
-            }
-            case 4:{
-              this.myChart.options.backgroundColor = [
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(29 29 29)',
-                'rgb(64 64 64)',
-                'rgb(64 64 64)',
-                'rgb(64 64 64)',
-                'rgba(90 90 90)',
-              ];
-              break;
-            }
-          }
         }, (error) => {
           console.log(error);
         });
@@ -299,73 +249,8 @@ export default {
       }
 
     },
-    makeChart(theData) {
-      const ctx = document.getElementById('myChart');
-      this.myChart = new VennDiagramChart(ctx, {
-        type: 'venn',
-        label: 'Venn',
-        data: extractSets(
-            theData,
+    makeChart() {
 
-            {
-              label: 'Venn',
-            },
-        ),
-        options: {
-          title: {
-            display: false,
-          },
-          onClick: (e) => {
-            const canvasPosition = getRelativePosition(e, this.myChart);
-
-            // Substitute the appropriate scale IDs
-            const dataX = this.myChart.scales.x.getValueForPixel(canvasPosition.x);
-            const dataY = this.myChart.scales.y.getValueForPixel(canvasPosition.y);
-            console.log(dataX, dataY);
-          },
-          backgroundColor: [
-            'rgb(29 29 29)',
-            'rgb(29 29 29)',
-            'rgb(29 29 29)',
-            'rgb(64 64 64)',
-            'rgb(64 64 64)',
-            'rgb(64 64 64)',
-            'rgba(90 90 90)'
-          ],
-          scales: {
-            x: { // these are the set name colors
-              ticks: {
-                // Include a dollar sign in the ticks
-                callback: function(value, index, ticks) {
-                  index;
-                  ticks;
-                  return '$';
-                },
-                color: "red",
-                display: false
-              },
-            },
-            y: { // these are the numbers within? unused
-              ticks: {
-                color: "white",
-              }
-            }
-          }
-        },
-      });
-      this.myChart.options.backgroundColor = [
-        'rgb(29 29 29)',
-        'rgb(29 29 29)',
-        'rgb(29 29 29)',
-        'rgb(64 64 64)',
-        'rgb(64 64 64)',
-        'rgb(64 64 64)',
-        'rgba(90 90 90)',
-      ];
-      this.myChart.canvas.parentNode.style.height = '100%';
-      this.myChart.canvas.parentNode.style.width = '60%';
-      this.myChart.canvas.parentNode.style.margin = 'auto';
-      this.myChart.canvas.parentNode.style.color = 'white';
     },
   },
   mounted: function() {
