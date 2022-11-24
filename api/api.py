@@ -17,8 +17,8 @@ import git
 
 
 class Item(BaseModel):
-    existential: dict[str, list[str]] = {}
-    universal: List[str] = []
+    existential: dict[str, set[tuple]] = {}
+    universal: set[tuple] = set()
     sets: List[str] = []
     valid: bool | None = None
     notes: str = ""

@@ -23,7 +23,8 @@ class Venn:
 
         for i, the_set in enumerate(self.variables):
             for elem in itertools.combinations(self.variables, i+1):
-                self.area_combinations.append("".join(elem))
+                self.area_combinations.append(elem)
+                print("===> ", self.area_combinations)
 
         for i, var in enumerate(self.variables):
             self.sets[var] = []
@@ -41,16 +42,23 @@ class Venn:
         print(f"solution:: {sol}")
         print(self.area_combinations)
         sol = self.__negate(sol)
+
         sol_universum_accounted = list()
         # remove universe symbol from all but just itself
         # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
         for item in sol:
-            if item == 'μ':
+            if item[0] == 'μ' and len(item) == 1:
                 sol_universum_accounted.append(item)
                 continue
-            adding = item.replace("μ", "")
+            try:
+                idx = item.index('μ')
+                item = item[:idx] + item[idx + 1:]
+            except ValueError:
+                pass # not in tuple
+            adding = item
             if adding:
                 sol_universum_accounted.append(adding)
+        print(sol_universum_accounted, ";)")
         return sol_universum_accounted
 
     def existential(self, tree: ExpressionTree) -> list[str]:
@@ -66,10 +74,15 @@ class Venn:
         # remove universe symbol from all but just itself
         # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
         for item in solution:
-            if item == 'μ':
+            if item[0] == 'μ' and len(item) == 1:
                 sol_universum_accounted.append(item)
                 continue
-            adding = item.replace("μ", "")
+            try:
+                idx = item.index('μ')
+                item = item[:idx] + item[idx + 1:]
+            except ValueError:
+                pass # not in tuple
+            adding = item
             if adding:
                 sol_universum_accounted.append(adding)
         return sol_universum_accounted

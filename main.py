@@ -31,6 +31,7 @@ def main(predicates: List[str], conclusion: str) -> None:
 
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
+        print(f" -- {evaluator.get_sets()} -- ")
         print(f"\n\n----------\nsolution: {solution}\n----------")
         print(evaluator.validity(solution))
 
@@ -49,9 +50,9 @@ if __name__ == "__main__":
          "∃y[B(y) | A(y)]",
          "B(x) & C(x)"]"""
     p = [
-        "∀x[P(x) > Q(x)]",
-        "∀x[Q(x) > R(x)]",
-        "Ex[P(x)]"
+        "Ax[P(x) > Q(x)]",
+        "Ax[Q(x) > R(x)]",
+        "Ex[P(x)]",
     ]
 
     # c = "∃y[B(y) | C(y)]"

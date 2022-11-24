@@ -88,6 +88,7 @@ class Evaluator:
                 print(f"\nsolving {expr_tree.value}")
                 adding = self.__universal_solve(expr_tree)
                 self.__universal_solved += adding
+                print(self.__universal_solved, ";)")
                 self.__existential_solved[expr_tree.variable] = []
             elif expr_tree.value == '∃':
                 adding = self.__existential_solve(expr_tree)
@@ -113,7 +114,7 @@ class Evaluator:
         self.__conclusion_solved[conclusion_tree.variable] = self.__existential_solve(conclusion_tree)
         print()
         print(self.__existential_solved, "hi")
-        print(self.__universal_solved, "hi")
+        print(self.__universal_solved, "hi2")
 
         return {"Exists within": existential_solved_final, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
 

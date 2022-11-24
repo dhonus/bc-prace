@@ -1,10 +1,10 @@
 html, body
-  background-color: #f7f7f7
+  background-color: #121212
   color: white
   margin: 0
   padding: 0
 p, h1, h2, h3, h4, h5, h6
-  color: #2c2c2c
+  color: gainsboro
 
 div.input_wrapper
   display: flex
@@ -21,8 +21,8 @@ div.input_wrapper
       margin: .5rem 0 .5rem 0
       padding-left: 1rem
       line-height: 2.5rem
-      background-color: #E2E2E2
-      color: black
+      background-color: #1d1d1d
+      color: white
       border-color: transparent
       transition: all .4s ease
       border-radius: 5px
@@ -31,26 +31,25 @@ div.input_wrapper
       font-size: 1rem
       &:focus-visible
         outline: none
-        background-color: #c9c9c9
+        background-color: #323131
     .button_container
       display: flex
       flex-direction: row
       align-items: center
     .button_plus
-      background: #9782ae
+      background: #3a2d49
       color: white
       height: 2.5rem
       width: 2.5rem
-      border: solid #8c74a6
+      border: solid #26202d
       border-radius: 5px
       transition: all 0.4s ease
       margin-left: .5rem
       font-size: 1.25em
-      cursor: pointer
       &:hover
-        background: #8c74a6
+        background: #26202d
       &:active
-        background: #8c74a6
+        background: #26202d
   .left_section
     .guide
       text-align: left
@@ -58,7 +57,7 @@ div.input_wrapper
       max-width: 21em
       table
         width: 100%
-        color: #2c2c2c
+        color: gainsboro
 
   .keyboard
     display: flex
@@ -76,13 +75,12 @@ div.input_wrapper
       font-size: large
       border-radius: 5px
       transition: background-color .15s ease
-      background-color: #E2E2E2
-      color: black
-      cursor: pointer
+      background-color: #1D1D1D
+      color: white
       &:hover
-        background-color: #c9c9c9
+        background-color: #242128
       &:active
-        background-color: #9272b7
+        background-color: #3A2D49
 
 .v-enter-active,
 .v-leave-active
@@ -96,21 +94,17 @@ div.input_wrapper
 .accept_button
   line-height: 2.5rem
   color: white
-  background-color: #9782AE
-  cursor: pointer
+  background-color: #3A2D49
   border: none
   border-radius: 5px
   margin: .5rem 0 .5rem 0
   transition: background-color .2s ease
-  p
-    color: whitesmoke
-    font-weight: 400
   &:hover
-    background-color: #806D98
+    background-color: #30273B
   &:active
-    background-color: #604e77
+    background-color: #221B2A
 .activated
-  background-color: #604e77
+  background-color: #221B2A
 
 circle
   fill: none
@@ -125,7 +119,7 @@ text
   padding: .5rem 1rem
   display: flex
   flex-direction: row
-  background-color: #e2e2e2
+  background-color: #1d1d1d
   margin: 1rem 0
   border-radius: 5px
   gap: 1rem
@@ -143,7 +137,7 @@ text
     justify-content: right
 
   .canvasButton
-    background-color: #cacaca
+    background-color: #1d1d1d
     padding: .3rem
     width: 2.5rem
     height: 2.5rem
@@ -152,20 +146,20 @@ text
     cursor: pointer
     border: 1px solid #ccc
     &:hover
-      background-color: #a2a2a2
+      background-color: #35313b
     img
       width: 2.5rem
       height: 2.5rem
-      filter: brightness(0.8)
+      filter: invert(1) brightness(0.8)
 
 .activeCanvasControls
-  background-color: #9782ae !important
-  box-shadow: 0px 0px 23px 0px #9782ae
+  background-color: #3a2d49 !important
+  box-shadow: 0px 0px 23px 0px #3a2d49
 
 .canvasWrapper
   margin: 0 0 2rem 0
   padding: 1rem
-  background: #e2e2e2
+  background: #1d1d1d
   border-radius: 5px
 
 @media screen and (max-width: 1600px)

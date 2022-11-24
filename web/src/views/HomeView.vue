@@ -29,8 +29,7 @@
         <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
 
         <div id="venn">
-          <canvas id="myChart" width="400" height="400"></canvas>
-          <br>
+          <VennVisualizer vennSize='3'/>
         </div>
 
       </div>
@@ -47,7 +46,7 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
-          <p>Následuje tabulka <u>podporovaných symbolů</u><br> včetně jejich <u>akceptovatelných variant</u>.</p>
+          <p>Následuje tabulka <b>podporovaných symbolů</b><br> včetně jejich <b>akceptovatelných variant</b>.</p>
           <table>
             <tr>
               <td>Implikace</td>
@@ -91,10 +90,10 @@
             </tr>
           </table>
 
-          <p>Premisa musí být ohraničena <b><u>hranatými závorkami</u></b> a musí začínat kvantifikátorem a proměnnou:
+          <p>Premisa musí být ohraničena <b>hranatými závorkami</b> a musí začínat kvantifikátorem a proměnnou:
             <br>&nbsp;&nbsp;&nbsp;<b>∃x[A(x)]</b>
             <br>&nbsp;&nbsp;&nbsp;<b>∀x[B(x)]</b></p>
-          <p><b><u>Konstanty</u></b> se zapisují bez hranatých závorek: <br><b>&nbsp;&nbsp;&nbsp;Q(a)<br>&nbsp;&nbsp;&nbsp;P(x)</b></p>
+          <p><b>Konstanty</b> se zapisují bez hranatých závorek: <br><b>&nbsp;&nbsp;&nbsp;Q(a)<br>&nbsp;&nbsp;&nbsp;P(x)</b></p>
 
           <h3>Příklad validního vstupu:</h3>
           <p>
@@ -111,20 +110,18 @@
   </div>
 </template>
 
-
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/home.vue'
+import HelloWorld from '@/components/home.vue';
 import axios from "axios";
 import qs from "qs";
-//import * as d3 from "d3";
-//import Chart from 'chart.js/auto'
-
+import VennVisualizer from "@/components/venn-visualize";
 
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld
+    VennVisualizer,
+    HelloWorld,
   },
   data() {
     return {
@@ -141,6 +138,7 @@ export default {
     }
   },
   methods: {
+    // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
       this.focused = key;
       if(key === -1){
@@ -149,18 +147,20 @@ export default {
       }
       this.focused = document.getElementById("predicate"+key);
     },
+    // adds a new input field 
     addP: function(){
       if (this.count < 4)
         this.count++;
     },
+    // removes the last input field
     removeP: function(){
       if (this.count > 1)
       this.count--;
     },
     remove: function () {
       this.count--;
-
     },
+    // submits the form on ctrl + enter 
     submitWithKey: function(){
       this.$refs.accept_button.classList.add("activated");
       this.submit();
@@ -169,6 +169,7 @@ export default {
       }, 250);
 
     },
+    // adds the symbol from the virtual keyboard to the active input field
     type: function(value_to_enter){
       if (!this.focused){
         return;
@@ -179,6 +180,7 @@ export default {
       this.focused.focus();
       this.focused.dispatchEvent(new Event('input')); // this is done because vue doesnt detect changes without an event
     },
+    // submits the form and requests the data from the API
     async submit(){
       let predicates = []
       for (var key of Object.keys(this.values)) {
@@ -186,7 +188,6 @@ export default {
         if (this.values[key].length !== 0)
         predicates.push(this.values[key]);
       }
-
 
       let conclusion = this.$refs.zaver.value;
       let formdata = new FormData();
@@ -256,11 +257,6 @@ export default {
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
-    this.makeChart([
-      { label: 'A', values: [] },
-      { label: 'B', values: [] },
-      { label: 'C', values: [] },
-    ])
   },
 }
 </script>
