@@ -1,4 +1,7 @@
 <template>
+  <div class="spinner" ref="spinner">
+    <img src="@/assets/spinner.gif" alt="Spinner" />
+  </div>
   <div class="home">
     <HelloWorld msg="Bc. Práce"/>
     <div class="input_wrapper" @keyup.ctrl.enter="submitWithKey">
@@ -29,7 +32,9 @@
         <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
 
         <div id="venn">
-          <VennVisualizer vennSize='3'/>
+        </div>
+
+        <div id="container">
         </div>
 
       </div>
@@ -116,11 +121,12 @@ import HelloWorld from '@/components/home.vue';
 import axios from "axios";
 import qs from "qs";
 import VennVisualizer from "@/components/venn-visualize";
+import { createApp } from 'vue'
+
 
 export default {
   name: 'HomeView',
   components: {
-    VennVisualizer,
     HelloWorld,
   },
   data() {
@@ -134,7 +140,8 @@ export default {
       logicResponseExistential: '',
       logicResponseUniversal: '',
       validity: null,
-      myChart: null
+      myChart: null,
+      resultVenn: null,
     }
   },
   methods: {
@@ -182,6 +189,14 @@ export default {
     },
     // submits the form and requests the data from the API
     async submit(){
+
+      //createApp with props
+      /*createApp(VennVisualizer, {
+        vennSize: 300,
+      }).mount('#container')
+*/
+
+
       let predicates = []
       for (var key of Object.keys(this.values)) {
         console.log(key + " -> " + this.values[key]);
@@ -193,10 +208,18 @@ export default {
       let formdata = new FormData();
       formdata.append('conclusion', JSON.stringify(conclusion))
       formdata.append('predicates',JSON.stringify(predicates));
-      try {
-        axios.post('/api', {
+      /*
+      axios.post('/api', {
             conclusion: conclusion,
             predicates: predicates,
+          paramsSerializer: params => {
+            return qs.stringify(params)
+          }
+      */
+      try {
+        axios.post('/api', {
+          conclusion: conclusion,
+          predicates: predicates,
           paramsSerializer: params => {
             return qs.stringify(params)
           }
@@ -227,18 +250,43 @@ export default {
             theData.push({ label: String(element), values: []})
           }
 
-          console.log(theData);
+          console.log(theData, "thedata");
           console.log([
             { label: 'A', values: [] },
             { label: 'B', values: [] },
             { label: 'C', values: [] },
           ]);
+
+          if (this.resultVenn != null){
+            this.resultVenn.unmount();
+          }
+          let universal_sorted = response.data["universal"];
+          // sort every array inside this.universal alphabetically
+          for (let i = 0; i < universal_sorted.length; i++) {
+            universal_sorted[i].sort();
+          }
+
+          this.resultVenn = createApp(VennVisualizer, {
+            vennSize: 3,
+            sets: response.data["sets"],
+            predicates: response.data["predicates"],
+            explanations: response.data["explanations"],
+            // solutions
+            existential: response.data["existential"],
+            universal: universal_sorted,
+          });
+          this.resultVenn.mount('#venn');
+
+
+
+
         }, (error) => {
           console.log(error);
         });
       } catch (err) {
         // uh oh, didn't work, time for plan B
       }
+
 
     },
     togg: function(){
@@ -257,6 +305,7 @@ export default {
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
+    setTimeout(() => this.$refs.spinner.style.display = "none", 1000);
   },
 }
 </script>

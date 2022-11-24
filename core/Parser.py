@@ -22,8 +22,9 @@ class Parser:
         self.__position = 0
         self.__pedantic = True
         self.__parsed_count = 0
+        self.__p_index = -1
 
-    def attach(self, string: str):
+    def attach(self, string: str, p_index: int):
         """ this is the method supplying the parser with a string to parse """
         for key, value in self.d.items():
             string = string.replace(key, value)
@@ -34,6 +35,7 @@ class Parser:
         self.__expression_generator = expression_generator(string)  # create generator for the parser to iterate over
         self.__current = next(self.__expression_generator)  # set current char to next in generator
         self.__position = 0  # position within the string being parsed.
+        self.__p_index = p_index
 
     @staticmethod
     def __pretty_error(predicate: str, p_index: int) -> str:
@@ -81,6 +83,7 @@ class Parser:
         self.__parsed_count += 1
         if not parsed:
             raise Exception('Při parsování vstupu nastala neznámá chyba.')
+        parsed.p_index = self.__p_index
         return parsed
 
     # S -> Q[E]

@@ -19,9 +19,13 @@ class Evaluator:
         self.__universal_solved = []   # the universtal statement result
         self.__existential_solved = {}
         self.__conclusion_solved = {}
+        self.__explanations = {}
 
     def get_sets(self):
         return self.__objects
+
+    def get_explanations(self):
+        return self.__explanations
 
     def __get_variables(self, tree: ExpressionTree | Node):
         """ produces a list of variables in the expression tree """
@@ -59,7 +63,7 @@ class Evaluator:
             return venn.existential(node)
         raise ValueError(f'Neočekávaný počet objektů {len(self.__objects)}. Zkontrolujte vstup.')
 
-    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, set[str]]:
+    def eval(self, trees: List[ExpressionTree], conclusion_tree: ExpressionTree) -> dict[str, list[str]]:
         """ takes all the predicates and sequentially produces lists of 'areas' of the imaginary venn diagram
             read as: predicate -> 'is this area crossed out or does it contain an X?'. Solves universal first. """
         existential_validate = 0
@@ -84,15 +88,22 @@ class Evaluator:
 
         # universal predicates have priority
         for expr_tree in trees:
+            self.__explanations[expr_tree.p_index] = []
             if expr_tree.value == '∀':
-                print(f"\nsolving {expr_tree.value}")
-                adding = self.__universal_solve(expr_tree)
-                self.__universal_solved += adding
-                print(self.__universal_solved, ";)")
+                print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
+                self.__universal_solved += self.__universal_solve(expr_tree)
+                print(set(self.__universal_solved), ";)")
+
+                for solved in set(self.__universal_solved):
+                    area = list(solved)
+                    print(area)
+                    # add list to list instead of joining
+                    self.__explanations[expr_tree.p_index].append(area)
+
                 self.__existential_solved[expr_tree.variable] = []
             elif expr_tree.value == '∃':
-                adding = self.__existential_solve(expr_tree)
-                self.__existential_solved[expr_tree.variable] = self.__existential_solved[expr_tree.variable] + adding
+                print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
+                self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
@@ -111,14 +122,21 @@ class Evaluator:
                 self.__existential_solved[var] += self.__existential_solved[constant.variable]
             existential_solved_final[var] = set(self.__existential_solved[var])
 
+        print(f"\nsolving conclusion {conclusion_tree.p_index}")
         self.__conclusion_solved[conclusion_tree.variable] = self.__existential_solve(conclusion_tree)
         print()
         print(self.__existential_solved, "hi")
         print(self.__universal_solved, "hi2")
 
-        return {"Exists within": existential_solved_final, "Crossed out": set(self.__universal_solved), "Universum":"Crossed"}
+        print(f"\n\nExplanations : {self.__explanations}\n\n")
 
-    def validity(self, solution: dict[str, set[str]]):
+        return {
+            "Exists within": existential_solved_final,
+            "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+            "Explanations": self.__explanations
+        }
+
+    def validity(self, solution: dict[str, list[str]]):
         """ checks the validity of the entire problem using the parsed existential and universal results """
         variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
         print(solution)

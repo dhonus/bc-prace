@@ -25,6 +25,7 @@ class ExpressionTree(Node):
         self.variable = variable
         self.tree = tree
         self.constant = False
+        self.p_index = -1
 
     def print(self):
         match self.value:

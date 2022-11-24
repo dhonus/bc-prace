@@ -19,9 +19,11 @@ import git
 class Item(BaseModel):
     existential: dict[str, set[tuple]] = {}
     universal: set[tuple] = set()
+    explanations: dict[int, list[list[str]]] = {}
+    predicates: dict[int, str] = {}
     sets: List[str] = []
     valid: bool | None = None
-    notes: str = ""
+    notes: str = "OK"
 
 
 class Thing(BaseModel):
@@ -50,21 +52,26 @@ async def send_expression(item: Thing):
 
     predicates = [predicate.replace(" ", "") for predicate in item.predicates]
 
+    # we will return the enumerated predicates to the frontend to make sure the order is maintained
+    predicates_to_return = {}
+
     p_index = 1
     try:
         responseItem = Item()
         trees = []
         parser = Parser()
         for predicate in predicates:
-            # print(f"{predicate}:")
-            parser.attach(predicate)
+            predicates_to_return[p_index] = predicate
+            parser.attach(predicate, p_index)
             tree = parser.parse()
             tree.validate()
             trees.append(tree)
             print(tree.print())
             print()
+            p_index += 1
 
-        parser.attach(item.conclusion)
+        predicates_to_return[p_index] = item.conclusion
+        parser.attach(item.conclusion, p_index)
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 
@@ -72,18 +79,19 @@ async def send_expression(item: Thing):
             trees, key=lambda tr: tr.value
         )  # sort to have universal statements first
 
-
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
         responseItem.sets += evaluator.get_sets()
         validity = evaluator.validity(solution)
         responseItem.sets += evaluator.get_sets()
+        responseItem.explanations = evaluator.get_explanations()
         responseItem.sets = list(set(responseItem.sets))
+        responseItem.predicates = predicates_to_return
+
         print(evaluator.get_sets(), "aaa")
         print(f"\n\n----------\nsolution: {solution}\n----------")
         print(validity)
-
-        p_index += 1
+        print(f"predicated to return {predicates_to_return}")
 
     except InvalidExpressionException as iee:
         print(iee)
@@ -100,7 +108,6 @@ async def send_expression(item: Thing):
     responseItem.existential = solution.get("Exists within")
     responseItem.universal = list(solution.get("Crossed out"))
     responseItem.valid = validity
-    responseItem.notes = "OK"
 
     return responseItem
 

@@ -58,7 +58,7 @@ class Venn:
             adding = item
             if adding:
                 sol_universum_accounted.append(adding)
-        print(sol_universum_accounted, ";)")
+        print(sol_universum_accounted, ";))")
         return sol_universum_accounted
 
     def existential(self, tree: ExpressionTree) -> list[str]:

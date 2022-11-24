@@ -9,19 +9,24 @@ def main(predicates: List[str], conclusion: str) -> None:
 
     predicates = [predicate.replace(" ", "") for predicate in predicates]
 
+    # we will return the enumerated predicates to the frontend to make sure the order is maintained
+    predicates_to_return = {}
     p_index = 1
     try:
         trees = []
         parser = Parser()
         for predicate in predicates:
-            parser.attach(predicate)
+            predicates_to_return[p_index] = predicate
+            parser.attach(predicate, p_index)
             tree = parser.parse()
             tree.validate()
             trees.append(tree)
             print(tree.print())
             print()
+            p_index += 1
 
-        parser.attach(conclusion)
+        predicates_to_return[p_index] = conclusion
+        parser.attach(conclusion, p_index)
         conclusion_tree = parser.parse()
         conclusion_tree.validate()
 
@@ -33,9 +38,8 @@ def main(predicates: List[str], conclusion: str) -> None:
         solution = evaluator.eval(trees, conclusion_tree)
         print(f" -- {evaluator.get_sets()} -- ")
         print(f"\n\n----------\nsolution: {solution}\n----------")
+        print(predicates_to_return)
         print(evaluator.validity(solution))
-
-        p_index += 1
 
     except InvalidExpressionException as iee:
         print(iee)
