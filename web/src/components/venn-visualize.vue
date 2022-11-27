@@ -270,6 +270,7 @@ export default {
           return compareArrays(arr, arr2);
         });
       });
+      console.log(hash_these, "hash these");
 
       i = 0;
       let sunFill = "#8f8f8f";
@@ -312,6 +313,7 @@ export default {
           return compareArrays(arr, arr2);
         });
       });
+      console.log(hash_these, "hash these !");
 
       for (const points of roundedTriPoints) {
         const ptCycle = points
@@ -322,7 +324,7 @@ export default {
 
         // if points is contained in hash_these
         if (hash_these.some((arr) => {
-          return compareArrays(arr, roundedTriNames[i]);
+          return compareArrays(arr, roundedTriNames[0]);
         })) {
           // they are the same, so we need to hatch it
           console.log("hatch it");
@@ -332,7 +334,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "hashed", "#aa86c5", roundedTriNames[i]));
+          areas_of_diagram.push(new Area(theId, "hashed", "#aa86c5", roundedTriNames[0]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -341,7 +343,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "#aa86c5")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "clear", "#aa86c5", [this.sets[0], this.sets[1], this.sets[2]]));
+          areas_of_diagram.push(new Area(theId, "clear", "#aa86c5", roundedTriNames[0]));
         }
       }
 

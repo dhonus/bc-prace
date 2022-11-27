@@ -267,7 +267,7 @@ export default {
           }
 
           this.resultVenn = createApp(VennVisualizer, {
-            vennSize: 3,
+            vennSize: response.data["sets"].length,
             sets: response.data["sets"],
             predicates: response.data["predicates"],
             explanations: response.data["explanations"],
@@ -276,8 +276,6 @@ export default {
             universal: universal_sorted,
           });
           this.resultVenn.mount('#venn');
-
-
 
 
         }, (error) => {
