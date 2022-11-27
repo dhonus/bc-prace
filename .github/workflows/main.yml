@@ -1,13 +1,12 @@
-defaults:
-  run:
-    working-directory: ./web
-
 name: Build Vue
 on: [push]
 jobs:
   build_vue:
     runs-on: ubuntu-latest
     name: Build Vue
+    defaults:
+      run:
+        working-directory: web
     steps:
     - uses: actions/checkout@v2
     - id: Build-Vue
