@@ -383,9 +383,12 @@ export default {
         tooltip.text("ID plochy: " + svg.attr('id'));
         tooltip.style("visibility", "visible");
         tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        svg.style("", "url(#drop-shadow)");
       });
+
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");
+        const svg = d3.select(this);
       });
 
       g.append("text")

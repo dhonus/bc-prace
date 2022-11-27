@@ -91,7 +91,7 @@
             <tr>
               <td>Universum diskursu</td>
               <td></td>
-              <td>μ</td>
+              <td>Ω</td>
             </tr>
           </table>
 
@@ -303,7 +303,8 @@ export default {
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
-    setTimeout(() => this.$refs.spinner.style.display = "none", 1000);
+    setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
+    setTimeout(() => this.$refs.spinner.style.display = "none", 1500);
   },
 }
 </script>
