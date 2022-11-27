@@ -4,7 +4,7 @@
   </div>
   <div class="home">
     <HelloWorld msg="Bc. Práce"/>
-    <div class="input_wrapper" @keyup.ctrl.enter="submitWithKey">
+    <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.ctrl.shift.enter.exact="submitWithKey">
       <div class="predicates">
         <div v-for="key in count" :key="key">
           <Transition>
@@ -17,9 +17,15 @@
         </div>
         <input @focus="focusOnMe(-1)" ref="zaver" id="zaver" placeholder="Závěr" />
         <div class="button_container">
-          <button style="padding:0 1em; box-sizing: border-box; flex:1; display: flex; justify-content: left; align-items: center;" class="accept_button" ref="accept_button" @click="submit">
+          <button class="accept_button" ref="accept_button" @click="submit">
             <p style="flex:1; text-align: left; font-size: larger;">Vyhodnotit</p>
             <img style="color:white; height: 2rem; " src="../assets/control.svg">
+            &nbsp;
+            <img style="color:white; height: 2rem; " src="../assets/enter.svg">
+          </button>
+          <button style="flex:1;" class="accept_button" ref="accept_button2" @click="submit">
+            <p style="flex:1; text-align: left; font-size: larger;">Odkrokovat</p>
+            <img style="color:white; height: 2rem; " src="../assets/shift.svg">
             &nbsp;
             <img style="color:white; height: 2rem; " src="../assets/enter.svg">
           </button>
@@ -304,7 +310,7 @@ export default {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
     setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
-    setTimeout(() => this.$refs.spinner.style.display = "none", 1500);
+    setTimeout(() => this.$refs.spinner.style.display = "none", 1300);
   },
 }
 </script>
