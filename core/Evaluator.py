@@ -12,14 +12,19 @@ def deprecated(args):
 
 class Evaluator:
     def __init__(self):
+        self.__existential_count = 0
         self.__objects = []
         self.__variables = []
         self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram
         self.__sets_dict = {}
-        self.__universal_solved = []   # the universtal statement result
+        self.__universal_solved = []  # the universtal statement result
         self.__existential_solved = {}
         self.__conclusion_solved = {}
         self.__explanations = {}
+        self.__valid_on_all = True  # if it so happens that something goes wrong, the validity is set to false
+
+    def get_invalid_expected(self) -> bool:
+        return not self.__valid_on_all
 
     def get_sets(self):
         return self.__objects
@@ -75,12 +80,13 @@ class Evaluator:
             self.__get_variables(tree)
         self.__get_variables(conclusion_tree)
         if existential_validate == 0 and conclusion_tree.value == '∃':
+            self.__valid_on_all = False
             raise LogicException('Nesprávný úsudek. Všeobecné premisy nemohou implikovat existenci.')
 
         # there is a limit to how many objects we can draw. This checks if we have exceeded said limit.
         if len(self.__objects) > self.__sets_count_limit:  # +1 for quantifier
             raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} objektů.\n'
-                             f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Objekty: {self.__objects}')
+                            f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Objekty: {self.__objects}')
 
         print(f"objects for the entire diagram: {self.__objects}")
         for var in self.__variables:
@@ -102,8 +108,17 @@ class Evaluator:
 
                 self.__existential_solved[expr_tree.variable] = []
             elif expr_tree.value == '∃':
+                self.__existential_count += 1
                 print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
-                self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
+                adding = set(self.__existential_solve(expr_tree)) # we want this to be length 1
+                print(adding, "ADDING")
+                # remove from adding those that are in universal
+                adding = adding - set(self.__universal_solved)
+                if len(adding) != 1:
+                    self.__explanations[expr_tree.p_index] = f"Nevíme na kterou plochu z {self.__universal_solved} umístit {adding}"
+                    self.__valid_on_all = False
+                else:
+                    self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
@@ -123,8 +138,8 @@ class Evaluator:
             existential_solved_final[var] = set(self.__existential_solved[var])
 
         print(f"\nsolving conclusion {conclusion_tree.p_index}")
-        self.__conclusion_solved[conclusion_tree.variable] = self.__existential_solve(conclusion_tree)
-        print()
+        self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
+        print(self.__conclusion_solved, "conclusion")
         print(self.__existential_solved, "hi")
         print(self.__universal_solved, "hi2")
 
@@ -136,10 +151,52 @@ class Evaluator:
             "Explanations": self.__explanations
         }
 
-    def validity(self, solution: dict[str, list[str]]):
+    def validity(self, solution: dict[str, dict[str, list[str]]]) -> bool:
         """ checks the validity of the entire problem using the parsed existential and universal results """
+        variables = list(solution['Exists within'].keys())  # the variable of the conclusion
+        print(variables, "solution")
+
+        ret = True
+        len_sum = 0
+        for variable in variables:
+            len_sum += len(solution['Exists within'][variable])
+            print(set(solution['Exists within'][variable]), variable)
+            print(set(solution['Crossed out']), "crossed out")
+            var_set = set(solution['Exists within'][variable])
+            crossed_out = set(solution['Crossed out'])
+            # if an element in var_set is in crossed_out remove it from var_set
+            var_set.difference_update(crossed_out)
+            print(var_set, "var_set")
+            try:
+                print(self.__conclusion_solved[variable], "conclusion")
+                # if the conclusion is not a subset of the var_set, the problem is invalid
+                if not var_set.issubset(self.__conclusion_solved[variable]):
+                    ret = False
+                print(set(self.__conclusion_solved[variable]), "conclusion")
+            except KeyError:
+                print("not the correct variable")
+
+        # if we have 0 crosses and it is not the case that the problem is purely
+        # universal, we can say that the problem is invalid
+        if len_sum == 0 and self.__existential_count != 0:
+            ret = False
+        return ret
+
+    """
+     solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
+            print(len(solution_candidates))
+            print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")
+            print(solution_candidates.intersection(set(self.__conclusion_solved[variable])))
+            if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
+                ret = ret & False
+            ret = ret & True"""
+
+
+"""
+    def validity(self, solution: dict[str, list[str]]):
+         checks the validity of the entire problem using the parsed existential and universal results 
         variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
-        print(solution)
+        print(variable, "solution")
         solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
         print(len(solution_candidates))
         print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")
@@ -147,6 +204,7 @@ class Evaluator:
         if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
             return False
         return True
+ """
 
 
 class LogicException(Exception):

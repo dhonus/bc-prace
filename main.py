@@ -4,7 +4,7 @@ import logging
 from typing import List
 
 
-def main(predicates: List[str], conclusion: str) -> None:
+def main(predicates: List[str], conclusion: str) -> bool:
     logging.root.setLevel(logging.DEBUG)
 
     predicates = [predicate.replace(" ", "") for predicate in predicates]
@@ -43,8 +43,16 @@ def main(predicates: List[str], conclusion: str) -> None:
 
     except InvalidExpressionException as iee:
         print(iee)
+        if evaluator.get_invalid_expected():
+            print("Invalid expected")
+            return False
     except Exception as e:
         logging.critical(f"{type(e).__name__}: V predikátu {p_index}: {e}")
+        if evaluator.get_invalid_expected():
+            print("Invalid expected")
+            return False
+
+    return evaluator.validity(solution)
 
 
 if __name__ == "__main__":
@@ -54,11 +62,11 @@ if __name__ == "__main__":
          "∃y[B(y) | A(y)]",
          "B(x) & C(x)"]"""
     p = [
-        "Ax[P(x) > Q(x)]",
-        "Ax[Q(x) > R(x)]",
-        "Ex[P(x)]",
+        "Ax[A(x) > !B(x)]",
+        "Ex[A(x) &!B(x)]",
+        "Ey[A(y) &!B(y)]"
     ]
 
     # c = "∃y[B(y) | C(y)]"
-    c = "Ex[P(x) & R(x)]"
+    c = "Ex[B(x) & A(x)]"
     main(p, c)
