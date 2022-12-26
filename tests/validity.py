@@ -2,7 +2,6 @@ import unittest
 
 from main import main
 
-
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         p = [
