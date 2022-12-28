@@ -104,7 +104,6 @@ class Evaluator:
                     area = list(solved)
                     print(area)
                     # add list to list instead of joining
-                    self.__explanations[expr_tree.p_index].append(area)
 
                 self.__existential_solved[expr_tree.variable] = []
             elif expr_tree.value == '∃':
@@ -115,7 +114,7 @@ class Evaluator:
                 # remove from adding those that are in universal
                 adding = adding - set(self.__universal_solved)
                 if len(adding) != 1:
-                    self.__explanations[expr_tree.p_index] = f"Nevíme na kterou plochu z {self.__universal_solved} umístit {adding}"
+                    self.__explanations[expr_tree.p_index].append(f"Nevíme na kterou plochu z {set(self.__universal_solved)} umístit {adding}")
                     self.__valid_on_all = False
                 else:
                     self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
@@ -133,7 +132,6 @@ class Evaluator:
         # here we just add the existential output of constants to all other variables
         for var in self.__existential_solved.keys():
             for constant in constants:
-                print(self.__existential_solved[constant.variable], "ggg")
                 self.__existential_solved[var] += self.__existential_solved[constant.variable]
             existential_solved_final[var] = set(self.__existential_solved[var])
 

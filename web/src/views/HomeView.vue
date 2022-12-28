@@ -100,16 +100,29 @@
               <td>Ω</td>
             </tr>
           </table>
-
-          <p>Premisa musí být ohraničena <b>hranatými závorkami</b> a musí začínat kvantifikátorem a proměnnou:
-            <br>&nbsp;&nbsp;&nbsp;<b>∃x[A(x)]</b>
-            <br>&nbsp;&nbsp;&nbsp;<b>∀x[B(x)]</b></p>
-          <p><b>Konstanty</b> se zapisují bez hranatých závorek: <br><b>&nbsp;&nbsp;&nbsp;Q(a)<br>&nbsp;&nbsp;&nbsp;P(x)</b></p>
-
+          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kdy proměnná je malé písmeno. Platné literály:</p>
+          <ul>
+            <li>P(x)</li>
+            <li>Auto(y)</li>
+          </ul>
+          <p>Na vstupu mohou být premisy, nebo konstanty.</p>
+          <p><b>Premisa</b> musí začínat kvantifikátorem a proměnnou na kterou se váže. Následující jsou platné premisy:</p>
+          <ul>
+            <li>∃x[A(x)]</li>
+            <li>∀x[B(x)]</li>
+            <li>∃xA(x) > B(x)</li>
+            <li>∀x B(x) & C(x)</li>
+            <li>AxB(x)</li>
+          </ul>
+          <p><b>Konstanty</b> se zapisují bez hranatých závorek:</p>
+          <ul>
+            <li>Q(a)</li>
+            <li>P(x)</li>
+          </ul>
           <h3>Příklad validního vstupu:</h3>
           <p>
-            P1: ∀x[A(x) > !B(x)]<br>
-            P2: ∀x[A(x) > B(x)]<br>
+            P1: ∀x A(x) > !B(x)<br>
+            P2: Ex[A(x) > C(x)]<br>
           </p>
           <hr>
           <p>
@@ -168,7 +181,7 @@ export default {
     // removes the last input field
     removeP: function(){
       if (this.count > 1)
-      this.count--;
+        this.count--;
     },
     remove: function () {
       this.count--;
@@ -207,7 +220,7 @@ export default {
       for (var key of Object.keys(this.values)) {
         console.log(key + " -> " + this.values[key]);
         if (this.values[key].length !== 0)
-        predicates.push(this.values[key]);
+          predicates.push(this.values[key]);
       }
 
       let conclusion = this.$refs.zaver.value;
@@ -230,63 +243,63 @@ export default {
             return qs.stringify(params)
           }
         })
-        .then((response) => {
-          console.log(response);
-          if (response.data['notes'] !== "OK")
-            this.APIErrorMessage = response.data['notes'];
-          else{
-            this.APIErrorMessage = "";
-          }
-          this.logicResponseExistential = "Existenciální: "
-          //response.data["existential"].forEach(appendExistential);
-          for (const [key, value] of Object.entries(response.data["existential"])) {
-            console.log(key, value);
-            this.logicResponseExistential += key + " -> ";
-            for (const val of value){
-              this.logicResponseExistential += val + ", ";
-            }
-            this.logicResponseExistential += "\n";
-          }
+            .then((response) => {
+              console.log(response);
+              if (response.data['notes'] !== "OK")
+                this.APIErrorMessage = response.data['notes'];
+              else{
+                this.APIErrorMessage = "";
+              }
+              this.logicResponseExistential = "Existenciální: "
+              //response.data["existential"].forEach(appendExistential);
+              for (const [key, value] of Object.entries(response.data["existential"])) {
+                console.log(key, value);
+                this.logicResponseExistential += key + " -> ";
+                for (const val of value){
+                  this.logicResponseExistential += val + ", ";
+                }
+                this.logicResponseExistential += "\n";
+              }
 
-          this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
-          this.validity = response.data["valid"];
+              this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
+              this.validity = response.data["valid"];
 
-          let theData = []
-          for (const element of response.data["sets"]) {
-            theData.push({ label: String(element), values: []})
-          }
+              let theData = []
+              for (const element of response.data["sets"]) {
+                theData.push({ label: String(element), values: []})
+              }
 
-          console.log(theData, "thedata");
-          console.log([
-            { label: 'A', values: [] },
-            { label: 'B', values: [] },
-            { label: 'C', values: [] },
-          ]);
+              console.log(theData, "thedata");
+              console.log([
+                { label: 'A', values: [] },
+                { label: 'B', values: [] },
+                { label: 'C', values: [] },
+              ]);
 
-          if (this.resultVenn != null){
-            this.resultVenn.unmount();
-          }
-          let universal_sorted = response.data["universal"];
-          // sort every array inside this.universal alphabetically
-          for (let i = 0; i < universal_sorted.length; i++) {
-            universal_sorted[i].sort();
-          }
+              if (this.resultVenn != null){
+                this.resultVenn.unmount();
+              }
+              let universal_sorted = response.data["universal"];
+              // sort every array inside this.universal alphabetically
+              for (let i = 0; i < universal_sorted.length; i++) {
+                universal_sorted[i].sort();
+              }
 
-          this.resultVenn = createApp(VennVisualizer, {
-            vennSize: response.data["sets"].length,
-            sets: response.data["sets"],
-            predicates: response.data["predicates"],
-            explanations: response.data["explanations"],
-            // solutions
-            existential: response.data["existential"],
-            universal: universal_sorted,
-          });
-          this.resultVenn.mount('#venn');
+              this.resultVenn = createApp(VennVisualizer, {
+                vennSize: response.data["sets"].length,
+                sets: response.data["sets"],
+                predicates: response.data["predicates"],
+                explanations: response.data["explanations"],
+                // solutions
+                existential: response.data["existential"],
+                universal: universal_sorted,
+              });
+              this.resultVenn.mount('#venn');
 
 
-        }, (error) => {
-          console.log(error);
-        });
+            }, (error) => {
+              console.log(error);
+            });
       } catch (err) {
         // uh oh, didn't work, time for plan B
       }

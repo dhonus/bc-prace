@@ -14,7 +14,6 @@ class Parser:
             '∧': '&',
             '∨': '|'
         }
-
         self.__expression = ""
         self.__variable = ""
         self.__expression_generator = None
@@ -32,10 +31,13 @@ class Parser:
             raise EmptyInputException
         self.__expression = string
         self.__variable = ""
-        self.__expression_generator = expression_generator(string)  # create generator for the parser to iterate over
+        self.__expression_generator = self.__make_expression_generator()  # create generator for the parser to iterate over
         self.__current = next(self.__expression_generator)  # set current char to next in generator
-        self.__position = 0  # position within the string being parsed.
         self.__p_index = p_index
+
+    def __make_expression_generator(self):
+        self.__position = 0  # position within the string being parsed.
+        return expression_generator(self.__expression)
 
     @staticmethod
     def __pretty_error(predicate: str, p_index: int) -> str:
@@ -94,21 +96,27 @@ class Parser:
             # form like B(x) instead of Ex[B(x)]
             # constants behave differently to regular expressions
             # a variable of constant is shared among other constants with any variable
-            constant = self.__e_rule()
-            expr.tree = constant
-            expr.variable = self.__variable
             expr.constant = True
+            # we now have to backtrack because we have eaten up the first 2 chars
+            self.__expression_generator = self.__make_expression_generator()
+            self.__current = next(self.__expression_generator)
+            expr.tree = self.__e_rule(expr.constant)
+            expr.variable = self.__variable
             if self.__current:
                 raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
             return expr
         if self.__match('['):
-            tree = self.__e_rule()
+            tree = self.__e_rule(False)
             if not tree:
                 return None
             expr.tree = tree
             self.__require(']')
         else:
-            raise Exception('Chybějící otevírací hranatá závorka')
+            # we later agreed that an expression does not need to be bracket-enclosed
+            tree = self.__e_rule(False)
+            if not tree:
+                return None
+            expr.tree = tree
         return expr
 
     def __deduce_variable(self) -> str:
@@ -129,6 +137,8 @@ class Parser:
         match elem:
             case '∃' | 'E':
                 self.__current = next(self.__expression_generator)
+                if self.__current == '(':
+                    return ExpressionTree(value='∃', variable=None, tree=None)
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem.')
@@ -137,6 +147,8 @@ class Parser:
                 return ExpressionTree(value='∃', variable=variable, tree=None)
             case '∀' | 'A':
                 self.__current = next(self.__expression_generator)
+                if self.__current == '(':
+                    return ExpressionTree(value='∃', variable=None, tree=None)
                 variable = self.__current
                 print(variable)
                 if not variable.islower() and self.__pedantic:
@@ -148,7 +160,7 @@ class Parser:
                 return ExpressionTree(value='∃', variable=None, tree=None)
 
     # E -> B # this is done because we can only have one expression
-    def __e_rule(self) -> Operation | None:
+    def __e_rule(self, constant: bool) -> Operation | None:
         left = self.__b_rule()
         if not left:
             return None
@@ -212,8 +224,14 @@ class Parser:
         left = self.__f_rule()
         return left
 
-    # F = W(V)
+    # F = W(V) | W[V]
     def __f_rule(self) -> Set | None:
+        if self.__match('['):
+            right = self.__b_rule()
+            if self.__require(']'):
+                self.__advance()
+                return right
+            return None
         if self.__match('('):
             right = self.__b_rule()
             if self.__require(')'):

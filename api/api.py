@@ -19,7 +19,7 @@ import git
 class Item(BaseModel):
     existential: dict[str, set[tuple]] = {}
     universal: set[tuple] = set()
-    explanations: dict[int, list[list[str]]] = {}
+    explanations: dict[int, list[str]] = {}
     predicates: dict[int, str] = {}
     sets: List[str] = []
     valid: bool | None = None
