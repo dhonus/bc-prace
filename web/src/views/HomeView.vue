@@ -3,12 +3,12 @@
     <img src="@/assets/spinner.gif" alt="Spinner" />
   </div>
   <div class="home">
-    <HelloWorld msg="Bc. Práce"/>
+    <HelloWorld msg="Bc. Práce" />
     <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.ctrl.shift.enter.exact="submitWithKey">
       <div class="predicates">
         <div v-for="key in count" :key="key">
           <Transition>
-            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" >
+            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print">
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
@@ -322,8 +322,9 @@ export default {
   mounted: function() {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
-    setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
-    setTimeout(() => this.$refs.spinner.style.display = "none", 1300);
+    setTimeout(() => this.$refs.spinner.style.display = "none", 0);
+    //setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
+    //setTimeout(() => this.$refs.spinner.style.display = "none", 1300);
   },
 }
 </script>

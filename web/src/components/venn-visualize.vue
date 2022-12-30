@@ -18,8 +18,16 @@
       </div>
     </div>
   </div>
-  <div class="canvasWrapper">
+  <div class="canvasWrapper" ref="canvasWrapper">
     <svg width="600" height="400" ref="canvas"></svg>
+    <img ref="canvasExportImage">
+  </div>
+  <div class="print-wrapper">
+    <div class="offset"></div>
+    <div class="print-button" @click="printCanvas">
+      <span class="download-text">Stáhnout</span>
+      <img src="../assets/icons/iconmonstr-save-thin.svg" title="Tisk">
+    </div>
   </div>
 </template>
 
@@ -44,6 +52,12 @@ export default {
     };
   },
   methods: {
+    printCanvas: function (){
+      //const canvas = this.$refs.canvas;
+      //const img    = canvas.toDataURL('image/png');
+      //this.$refs.canvasExportImage.src = img;
+      print();
+    },
     // sets the current active button to the one that was clicked on
     activate: function(button){
       if(this.currentModifierButton !== null){
@@ -95,10 +109,30 @@ export default {
 
       // add hatching pattern to svg
       let pattern = svg.append("pattern").attr("id", "diagonalHatch").attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-      pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #000; stroke-width: 2px");
+      pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 2px;");
+
+      let patternUniversum = svg.append("pattern").attr("id", "universumHatch").attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+      patternUniversum.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #929292; stroke-width: 2px");
+      patternUniversum.attr("patternTransform", "rotate(90)");
 
       const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       console.log(g);
+
+      let areas_of_diagram = [];
+
+      // if universum is hashed
+      let universum_hatched;
+      if (this.universal.flat().includes('μ')) {
+        console.log("so flat", this.universal.flat());
+        universum_hatched = true;
+        areas_of_diagram.push(new Area("Universum", "hashed", "#cecece", "A 0 20 0 0 1 " + width + " " + height)); // universum
+      }
+      else {
+        universum_hatched = false;
+        areas_of_diagram.push(new Area("Universum", "clear", "#cecece", "A 0 20 0 0 1 " + width + " " + height)); // universum
+      }
+      console.log(areas_of_diagram);
+      console.log('this is the sets');
 
       // center of first circle
       const centerX_1 = 220;
@@ -114,6 +148,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
+
       // add square to svg
       let universum = g.append("rect")
         .attr("x", 0)
@@ -122,9 +157,23 @@ export default {
         .attr("height", height)
         .attr("fill", "none")
         .attr("stroke", "#9782ae");
+      g.append("path")
+          .attr("id", "Universum")
+          .attr("d", "M0,20 L" + width + ",20 L"
+              + width + "," + (height + 20) + " L0," + (height + 20) + " L0,20")
+          .attr("class", "segment")
+          .attr("fill", universum_hatched ? "url(#universumHatch)" : "rgb(206, 206, 206)")
+          .attr("opacity", 0.6);
 
 
-      // add circles to svg
+      // add circles to svg (The ones with _ are background circles)
+      let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
+              .attr("class", "circle-background");
+      let circle2_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")")
+          .attr("class", "circle-background");
+      let circle3_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_3 + "," + centerY_3 + ")")
+          .attr("class", "circle-background");
+
       let circle1 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")");
       let circle2 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")");
       let circle3 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_3 + "," + centerY_3 + ")");
@@ -210,12 +259,12 @@ export default {
         [this.sets[1], this.sets[2], this.sets[0]].sort(),
       ]
 
-      let areas_of_diagram = [];
-
       const compareArrays = (arr1, arr2) => {
         return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
       }
 
+      console.log("our universal friends are ", this.universal)
+      console.log("the things are", ironPointsNames)
       // find common
       let hash_these = ironPointsNames.filter((arr) => {
         return this.universal.some((arr2) => {
@@ -246,7 +295,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.3);
+              .attr("opacity", 0.5);
           areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
         } else {
           console.log("dont hatch it");
@@ -292,7 +341,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.6);
+              .attr("opacity", 1);
           areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
           console.log("dont hatch it");
@@ -301,7 +350,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", sunFill)
-              .attr("opacity", 0.6);
+              .attr("opacity", 1);
           areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
         }
         i++;
@@ -333,7 +382,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.8);
+              .attr("opacity", 1);
           areas_of_diagram.push(new Area(theId, "hashed", "#aa86c5", roundedTriNames[0]));
         } else {
           console.log("dont hatch it");
@@ -342,7 +391,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "#aa86c5")
-              .attr("opacity", 0.8);
+              .attr("opacity", 1);
           areas_of_diagram.push(new Area(theId, "clear", "#aa86c5", roundedTriNames[0]));
         }
       }
@@ -359,8 +408,12 @@ export default {
           area.state = "clear";
           svg.transition().attr("fill", area.color);
         } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed";
-          svg.transition().attr("fill", "url(#diagonalHatch)");
+          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          if (svg.attr('id') === "Universum") {
+              svg.transition().attr("fill", "url(#universumHatch)");
+            } else {
+            svg.transition().attr("fill", "url(#diagonalHatch)");
+          }
         }
       });
 

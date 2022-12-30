@@ -3,6 +3,8 @@ html, body
   color: white
   margin: 0
   padding: 0
+  z-index: -2
+  position: relative
 p, h1, h2, h3, h4, h5, h6
   color: #2c2c2c
 
@@ -52,7 +54,7 @@ div.input_wrapper
         background: #8c74a6
       &:active
         background: #8c74a6
-  .left_section
+  div.left_section
     .guide
       text-align: left
       overflow-wrap: break-word
@@ -121,8 +123,8 @@ div.input_wrapper
 
 circle
   fill: none
-  stroke: #cccccc
-  stroke-width: 1px
+  stroke: #727272
+  stroke-width: 2px
 
 text
   font-family: sans-serif
@@ -170,7 +172,7 @@ text
   box-shadow: 0px 0px 23px 0px #9782ae
 
 .canvasWrapper
-  margin: 0 0 2rem 0
+  margin: 0 0 1rem 0
   padding: 1rem
   background: #e2e2e2
   border-radius: 5px
@@ -198,3 +200,80 @@ text
 @media screen and (max-width: 1200px)
   div.input_wrapper
     width: 90%
+
+@keyframes wave
+  0%
+    transform: scale(1)
+
+  100%
+    transform: scale(10)
+
+.wave
+  position: absolute
+  top: 30%
+  left: 50%
+  transform: translate(-50%, -50%)
+  width: 0
+  height: 0
+  border-radius: 50%
+  animation: wave 2s linear
+  animation-iteration-count: 1
+  animation-fill-mode: forwards
+  transition: border-radius 0.5s linear
+  background-color: #ff0000
+  box-shadow: 0 0 100px 50px rgba(255, 0, 0, 0.15)
+  z-index: -1
+
+.circle-background
+  fill: #c0c0c0
+
+.print-wrapper
+  display: flex
+  flex-direction: row
+  div.offset
+    flex: 1
+    margin: 0 1rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+  span.download-text
+    color: #010201
+
+.print-button
+  background-color: #e2e2e2
+  padding: .3rem
+  height: 2.5rem
+  border-radius: 5px
+  transition: all .3s ease
+  cursor: pointer
+  border: 1px solid #ccc
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: center
+  gap: .5rem
+  &:hover
+    background-color: #c8c8c8
+    transition: all .3s ease
+  img
+    width: 2.5rem
+    height: 2.5rem
+    filter: brightness(0.8)
+
+
+@media print
+  @page
+    margin: 0.5cm
+  body
+    -webkit-print-color-adjust: exact !important
+    print-color-adjust: exact !important
+
+  div.input_wrapper
+    width: 100%
+    div.left_section, div.canvasControls, div.print-wrapper,  button.button_plus, button.accept_button, .home div.noprint
+      display: none!important
+    div.button_container
+      border-bottom: 1px solid gray
+  .noprint
+    display: none
