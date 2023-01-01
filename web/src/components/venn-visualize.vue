@@ -34,6 +34,25 @@
 <script>
 import * as d3 from 'd3'
 
+class Area {
+  constructor(id, state, color, assignment) {
+    this.id = id;
+    this.state = state; // clear | hashed | questioning
+    this.color = color;
+    this.comment = "";
+    // this corresponds to the areas we get from the API.
+    // Hardcoded in each of the venn functions because the API doesn't return the areas of the same name every time
+    this.assignment = assignment;
+  }
+}
+
+const margin = {
+  top: 0,
+  right: 20,
+  bottom: 30,
+  left: 20,
+};
+
 export default {
   name: 'vennVisualizer',
   props: {
@@ -48,7 +67,9 @@ export default {
   data: () => {
     return {
       msg: '',
-      currentModifierButton: null
+      currentModifierButton: null,
+      width: 0,
+      height: 0,
     };
   },
   methods: {
@@ -76,36 +97,11 @@ export default {
       }
       this.currentModifierButton = button;
     },
-    // this creates the venn diagram
-    venn3: function(){
-      console.log(this.vennSize);
-      console.log("venn");
-
-      console.log(this.universal, "universal");
-
-      this.msg = 'Velikost: ' + this.vennSize;
-      class Area {
-        constructor(id, state, color, assignment) {
-          this.id = id;
-          this.state = state; // clear | hashed | questioning
-          this.color = color;
-          this.comment = "";
-          // this corresponds to the areas we get from the API.
-          // Hardcoded in each of the venn functions because the API doesn't return the areas of the same name every time
-          this.assignment = assignment;
-        }
-      }
-
+    prepare: function() {
       let svg = d3.select(this.$refs.canvas);
 
-      const margin = {
-        top: 0,
-        right: 20,
-        bottom: 30,
-        left: 20,
-      };
-      const width = svg.attr("width") - margin.left - margin.right;
-      const height = +svg.attr("height") - margin.top - margin.bottom;
+      this.width = svg.attr("width") - margin.left - margin.right;
+      this.height = +svg.attr("height") - margin.top - margin.bottom;
 
       // add hatching pattern to svg
       let pattern = svg.append("pattern").attr("id", "diagonalHatch").attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
@@ -117,22 +113,497 @@ export default {
 
       const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       console.log(g);
-
-      let areas_of_diagram = [];
-
+      return g;
+    },
+    universum_hatch_check: function (g){
+      // empty inline function
+      let universum = (g, hatched) => {
+        // add square to svg
+        g.append("rect")
+            .attr("x", 0)
+            .attr("y", 20)
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .attr("fill", "none")
+            .attr("stroke", "#9782ae");
+        g.append("path")
+            .attr("id", "Universum")
+            .attr("d", "M0,20 L" + this.width + ",20 L"
+                + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
+            .attr("class", "segment")
+            .attr("fill", hatched ? "url(#universumHatch)" : "rgb(206, 206, 206)")
+            .attr("opacity", 0.6);
+      };
       // if universum is hashed
-      let universum_hatched;
       if (this.universal.flat().includes('μ')) {
         console.log("so flat", this.universal.flat());
-        universum_hatched = true;
-        areas_of_diagram.push(new Area("Universum", "hashed", "#cecece", "A 0 20 0 0 1 " + width + " " + height)); // universum
+        universum(g, true);
+        return new Area("Universum", "hashed", "#cecece", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
       else {
-        universum_hatched = false;
-        areas_of_diagram.push(new Area("Universum", "clear", "#cecece", "A 0 20 0 0 1 " + width + " " + height)); // universum
+        universum(g, false);
+        return new Area("Universum", "clear", "#cecece", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
+    },
+    venn1: function (){
+      let g = this.prepare();
+      let areas_of_diagram = [];
+
+      // center of first circle
+      const centerX_1 = 280;
+      const centerY_1 = 200;
+      const vennRadius = 100;
+
+      const factor = 1.26;
+      const offset = factor * vennRadius;
+      // center of second circle
+      const centerX_2 = centerX_1 + offset;
+      const centerY_2 = centerY_1; //creating new var for clarity
+      // center of third circle
+      const centerX_3 = centerX_1 + offset / 2;
+      const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
+
+      areas_of_diagram.push(this.universum_hatch_check(g));
+
+      // add circles to svg (The ones with _ are background circles)
+      let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
+          .attr("class", "circle-background");
+      let circle1 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")");
+
+      // calculate points of intersections
+      const generalHeight = Math.sqrt(vennRadius ** 2 - (offset / 2) ** 2);
+      const C1__C2_X_up = centerX_3;
+      const C1__C2_Y_up = centerY_1 - generalHeight;
+      const C1__C2_X_down = centerX_3;
+      const C1__C2_Y_down = centerY_1 + generalHeight;
+
+      //treat "triHeight" as the hypoteneuse of a 30.60.90 triangle.
+      //this tells us the shift from the midpoint of a leg of the triangle
+      //to the point of intersection
+      const xDelta = (generalHeight * Math.sqrt(3)) / 2;
+      const yDelta = generalHeight / 2;
+
+      const xMidpointC1C3 = (centerX_1 + centerX_3) / 2;
+      const xMidpointC2C3 = (centerX_2 + centerX_3) / 2;
+      const yMidpointBoth = (centerY_1 + centerY_3) / 2;
+
+      // calculate the rest of the points of intersection
+      const xIsect2 = xMidpointC1C3 - xDelta;
+      const yIsect2 = yMidpointBoth + yDelta;
+      const xIsect3 = xMidpointC2C3 + xDelta;
+      const yIsect3 = yMidpointBoth + yDelta;
+
+      const xIsect5 = xMidpointC1C3 + xDelta;
+      const yIsect5 = yMidpointBoth - yDelta;
+      const xIsect6 = xMidpointC2C3 - xDelta;
+      const yIsect6 = yMidpointBoth - yDelta;
+
+      let xPoints = [C1__C2_X_up, xIsect2, xIsect3, C1__C2_X_down, xIsect5, xIsect6];
+      let yPoints = [C1__C2_Y_up, yIsect2, yIsect3, C1__C2_Y_down, yIsect5, yIsect6];
+
+      const singleSetArea = ([x1, x2, x3, y1, y2, y3]) => {
+        let path = `M ${x1} ${y1}
+             A ${vennRadius} ${vennRadius} 0 0 1 ${x2} ${y2}
+             A ${vennRadius} ${vennRadius} 0 0 1 ${x3} ${y3}
+             A ${vennRadius} ${vennRadius} 0 1 1 ${x1} ${y1}`;
+        return path;
+      };
+
+      let sunPoints = [
+        [1, 5,  4],
+      ];
+      let sunPointsNames = [
+        [this.sets[0]],
+      ]
+      let roundedTriPoints = [[5, 4, 6]];
+      let roundedTriNames = [
+        [this.sets[1], this.sets[2], this.sets[0]].sort(),
+      ]
+
+      const compareArrays = (arr1, arr2) => {
+        return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
+      }
+
+      console.log("our universal friends are ", this.universal)
+
+
+      // find common
+      let hash_these = sunPointsNames.filter((arr) => {
+        return this.universal.some((arr2) => {
+          return compareArrays(arr, arr2);
+        });
+      });
+      console.log(hash_these, "hash these");
+
+      let i = 0;
+      let sunFill = "#8f8f8f";
+      for (const points of sunPoints) {
+        const ptCycle = points
+            .map((i) => xPoints[i - 1])
+            .concat(points.map((i) => yPoints[i - 1]));
+        const shape = singleSetArea(ptCycle);
+        const theId = String(points[0]) + String(points[1]) + String(points[2]);
+
+        // if points is contained in hash_these
+        if (hash_these.some((arr) => {
+          return compareArrays(arr, sunPointsNames[i]);
+        })) {
+          // they are the same, so we need to hatch it
+          console.log("hatch it");
+          g.append("path")
+              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", "url(#diagonalHatch)")
+              .attr("opacity", 1);
+          areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
+        } else {
+          console.log("dont hatch it");
+          g.append("path")
+              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", sunFill)
+              .attr("opacity", 1);
+          areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
+        }
+        i++;
+      }
+
+      // this is the function that will be called when the user clicks on a segment
+      g.selectAll("path.segment").on("click", function () {
+        const svg = d3.select(this);
+        console.log(svg);
+        console.log(svg.attr('id'));
+        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+          area.state = "clear";
+          svg.transition().attr("fill", area.color);
+        } else {
+          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          if (svg.attr('id') === "Universum") {
+            svg.transition().attr("fill", "url(#universumHatch)");
+          } else {
+            svg.transition().attr("fill", "url(#diagonalHatch)");
+          }
+        }
+      });
+
+      var tooltip = d3.select("body")
+          .append("div")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .style("background-color", "rgb(54, 54, 54)")
+          .style("padding", ".8rem");
+
+      var vis = d3.select("body").append("svg:svg")
+          .attr("width", 0)
+          .attr("height", 0);
+
+      // hover over a segment and get its description
+      g.selectAll("path.segment").on("mousemove", function (event) {
+        const svg = d3.select(this);
+        tooltip.text("ID plochy: " + svg.attr('id'));
+        tooltip.style("visibility", "visible");
+        tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        svg.style("", "url(#drop-shadow)");
+      });
+
+      g.selectAll("path.segment").on("mouseout", function (event) {
+        tooltip.style("visibility", "hidden");
+        const svg = d3.select(this);
+      });
+
+      g.append("text")
+          .text("Ω")
+          .attr("x", (this.width - 30))
+          .attr("y", 50)
+          .style('fill', '#323232')
+          .style('font-size', '1.5rem');
+
+      g.append("text")
+          .text(this.sets[0])
+          .attr("x", centerX_1 + vennRadius - 20)
+          .attr("y", centerY_1 - vennRadius*0.8)
+          .style('fill', '#323232');
+    },
+    venn2: function (){
+      let g = this.prepare();
+      let areas_of_diagram = [];
+
+      // center of first circle
+      const centerX_1 = 220;
+      const centerY_1 = 200;
+      const vennRadius = 100;
+
+      const factor = 1.26;
+      const offset = factor * vennRadius;
+      // center of second circle
+      const centerX_2 = centerX_1 + offset;
+      const centerY_2 = centerY_1; //creating new var for clarity
+      // center of third circle
+      const centerX_3 = centerX_1 + offset / 2;
+      const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
+
+      areas_of_diagram.push(this.universum_hatch_check(g));
+
+      // add circles to svg (The ones with _ are background circles)
+      let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
+          .attr("class", "circle-background");
+      let circle2_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")")
+          .attr("class", "circle-background");
+
+      let circle1 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")");
+      let circle2 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")");
+
+      // calculate points of intersections
+      const generalHeight = Math.sqrt(vennRadius ** 2 - (offset / 2) ** 2);
+      const C1__C2_X_up = centerX_3;
+      const C1__C2_Y_up = centerY_1 - generalHeight;
+      const C1__C2_X_down = centerX_3;
+      const C1__C2_Y_down = centerY_1 + generalHeight;
+
+      //treat "triHeight" as the hypoteneuse of a 30.60.90 triangle.
+      //this tells us the shift from the midpoint of a leg of the triangle
+      //to the point of intersection
+      const xDelta = (generalHeight * Math.sqrt(3)) / 2;
+      const yDelta = generalHeight / 2;
+
+      const xMidpointC1C3 = (centerX_1 + centerX_3) / 2;
+      const xMidpointC2C3 = (centerX_2 + centerX_3) / 2;
+      const yMidpointBoth = (centerY_1 + centerY_3) / 2;
+
+      // calculate the rest of the points of intersection
+      const xIsect2 = xMidpointC1C3 - xDelta;
+      const yIsect2 = yMidpointBoth + yDelta;
+      const xIsect3 = xMidpointC2C3 + xDelta;
+      const yIsect3 = yMidpointBoth + yDelta;
+
+      const xIsect5 = xMidpointC1C3 + xDelta;
+      const yIsect5 = yMidpointBoth - yDelta;
+      const xIsect6 = xMidpointC2C3 - xDelta;
+      const yIsect6 = yMidpointBoth - yDelta;
+
+      let xPoints = [C1__C2_X_up, xIsect2, xIsect3, C1__C2_X_down, xIsect5, xIsect6];
+      let yPoints = [C1__C2_Y_up, yIsect2, yIsect3, C1__C2_Y_down, yIsect5, yIsect6];
+
+      // three functions to create the paths using the points of intersection
+      const intersectionOfTwoArea = ([x1, x2, x3, y1, y2, y3]) => {
+        let path = `M ${x1} ${y1}
+             A ${vennRadius} ${vennRadius} 0 0 1 ${x2} ${y2}
+             A ${vennRadius} ${vennRadius} 0 0 1 ${x3} ${y3}
+             A ${vennRadius} ${vennRadius} 0 0 1 ${x1} ${y1}`;
+        return path;
+      };
+
+      const singleSetArea = ([x1, x2, x3, y1, y2, y3]) => {
+        let path = `M ${x1} ${y1}
+             A ${vennRadius} ${vennRadius} 0 0 0 ${x2} ${y2}
+             A ${vennRadius} ${vennRadius} 0 0 0 ${x3} ${y3}
+             A ${vennRadius} ${vennRadius} 0 1 1 ${x1} ${y1}`;
+        return path;
+      };
+
+      let ironPoints = [
+        [1, 5, 4],
+      ];
+      let ironPointsNames = [
+        [this.sets[0], this.sets[1]].sort(),
+        [this.sets[1], this.sets[2]].sort(),
+        [this.sets[2], this.sets[0]].sort(),
+      ]
+      let sunPoints = [
+        [4, 5, 1],
+        [1, 6, 4],
+      ];
+      let sunPointsNames = [
+        [this.sets[1]],
+        [this.sets[2]],
+        [this.sets[0]],
+      ]
+      let roundedTriPoints = [[5, 4, 6]];
+      let roundedTriNames = [
+        [this.sets[1], this.sets[2], this.sets[0]].sort(),
+      ]
+
+      const compareArrays = (arr1, arr2) => {
+        return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
+      }
+
+      console.log("our universal friends are ", this.universal)
+      console.log("the things are", ironPointsNames)
+      // find common
+      let hash_these = ironPointsNames.filter((arr) => {
+        return this.universal.some((arr2) => {
+          return compareArrays(arr, arr2);
+        });
+      });
+
+      console.log(hash_these, "hash these");
+
+      // three functions to iterate over points and append paths
+      let i = 0;
+      let ironFill = "#9f9f9f";
+      for (const points of ironPoints) {
+        const ptCycle = points
+            .map((i) => xPoints[i - 1])
+            .concat(points.map((i) => yPoints[i - 1]));
+        const shape = intersectionOfTwoArea(ptCycle);
+        const theId = String(points[0]) + String(points[1]) + String(points[2]);
+
+        // if points is contained in hash_these
+        if (hash_these.some((arr) => {
+          return compareArrays(arr, ironPointsNames[i]);
+        })) {
+          // they are the same, so we need to hatch it
+          console.log("hatch it");
+          g.append("path")
+              .attr("id", theId)
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", "url(#diagonalHatch)")
+              .attr("opacity", 0.5);
+          areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
+        } else {
+          console.log("dont hatch it");
+          g.append("path")
+              .attr("id", theId)
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", ironFill)
+              .attr("opacity", 0.4);
+          areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
+        }
+
+        console.log(this.universal, "universal ", ironPointsNames[i]);
+
+        i++;
+      }
+
+      // find common
+      hash_these = sunPointsNames.filter((arr) => {
+        return this.universal.some((arr2) => {
+          return compareArrays(arr, arr2);
+        });
+      });
+      console.log(hash_these, "hash these");
+
+      i = 0;
+      let sunFill = "#8f8f8f";
+      for (const points of sunPoints) {
+        const ptCycle = points
+            .map((i) => xPoints[i - 1])
+            .concat(points.map((i) => yPoints[i - 1]));
+        const shape = singleSetArea(ptCycle);
+        const theId = String(points[0]) + String(points[1]) + String(points[2]);
+
+        // if points is contained in hash_these
+        if (hash_these.some((arr) => {
+          return compareArrays(arr, sunPointsNames[i]);
+        })) {
+          // they are the same, so we need to hatch it
+          console.log("hatch it");
+          g.append("path")
+              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", "url(#diagonalHatch)")
+              .attr("opacity", 1);
+          areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
+        } else {
+          console.log("dont hatch it");
+          g.append("path")
+              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("d", shape)
+              .attr("class", "segment")
+              .attr("fill", sunFill)
+              .attr("opacity", 1);
+          areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
+        }
+        i++;
+      }
+
+      // find common
+      hash_these = roundedTriNames.filter((arr) => {
+        return this.universal.some((arr2) => {
+          return compareArrays(arr, arr2);
+        });
+      });
+      console.log(hash_these, "hash these !");
+
+
       console.log(areas_of_diagram);
-      console.log('this is the sets');
+
+      // this is the function that will be called when the user clicks on a segment
+      g.selectAll("path.segment").on("click", function () {
+        const svg = d3.select(this);
+        console.log(svg);
+        console.log(svg.attr('id'));
+        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+          area.state = "clear";
+          svg.transition().attr("fill", area.color);
+        } else {
+          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          if (svg.attr('id') === "Universum") {
+            svg.transition().attr("fill", "url(#universumHatch)");
+          } else {
+            svg.transition().attr("fill", "url(#diagonalHatch)");
+          }
+        }
+      });
+
+      var tooltip = d3.select("body")
+          .append("div")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .style("background-color", "rgb(54, 54, 54)")
+          .style("padding", ".8rem");
+
+      var vis = d3.select("body").append("svg:svg")
+          .attr("width", 0)
+          .attr("height", 0);
+
+      // hover over a segment and get its description
+      g.selectAll("path.segment").on("mousemove", function (event) {
+        const svg = d3.select(this);
+        tooltip.text("ID plochy: " + svg.attr('id'));
+        tooltip.style("visibility", "visible");
+        tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        svg.style("", "url(#drop-shadow)");
+      });
+
+      g.selectAll("path.segment").on("mouseout", function (event) {
+        tooltip.style("visibility", "hidden");
+        const svg = d3.select(this);
+      });
+
+      g.append("text")
+          .text("Ω")
+          .attr("x", (this.width - 30))
+          .attr("y", 50)
+          .style('fill', '#323232')
+          .style('font-size', '1.5rem');
+
+      g.append("text")
+          .text(this.sets[0])
+          .attr("x", centerX_1 - vennRadius - 20)
+          .attr("y", centerY_1 - vennRadius*0.9)
+          .style('fill', '#323232');
+
+      g.append("text")
+          .text(this.sets[1])
+          .attr("x", centerX_2 + vennRadius - 20)
+          .attr("y", centerY_2 - vennRadius*0.9)
+          .style('fill', '#323232');
+
+    },
+    // this creates the venn diagram
+    venn3: function(){
+      let g = this.prepare();
+      let areas_of_diagram = [];
 
       // center of first circle
       const centerX_1 = 220;
@@ -148,23 +619,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-
-      // add square to svg
-      let universum = g.append("rect")
-        .attr("x", 0)
-        .attr("y", 20)
-        .attr("width", width)
-        .attr("height", height)
-        .attr("fill", "none")
-        .attr("stroke", "#9782ae");
-      g.append("path")
-          .attr("id", "Universum")
-          .attr("d", "M0,20 L" + width + ",20 L"
-              + width + "," + (height + 20) + " L0," + (height + 20) + " L0,20")
-          .attr("class", "segment")
-          .attr("fill", universum_hatched ? "url(#universumHatch)" : "rgb(206, 206, 206)")
-          .attr("opacity", 0.6);
-
+      areas_of_diagram.push(this.universum_hatch_check(g));
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -417,7 +872,6 @@ export default {
         }
       });
 
-
       var tooltip = d3.select("body")
           .append("div")
           .style("position", "absolute")
@@ -446,7 +900,7 @@ export default {
 
       g.append("text")
           .text("Ω")
-          .attr("x", (width - 30))
+          .attr("x", (this.width - 30))
           .attr("y", 50)
           .style('fill', '#323232')
           .style('font-size', '1.5rem');
@@ -519,8 +973,10 @@ export default {
   mounted: function () {
     switch (this.vennSize) {
       case 1:
+        this.venn1();
         break;
       case 2:
+        this.venn2();
         break;
       case 3:
         this.venn3();
