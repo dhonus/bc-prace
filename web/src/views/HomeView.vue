@@ -32,12 +32,13 @@
         </div>
 
         <p style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
-        <h4>{{ logicResponseExistential }}</h4>
-        <h4>{{ logicResponseUniversal }}</h4>
         <h4 v-if="validity === true" style="color:#129412;">Platný úsudek</h4>
         <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
 
-        <div id="venn">
+        <div id="venn"></div>
+        <div class="out-info">
+          <h4>{{ logicResponseExistential }}</h4>
+          <h4>{{ logicResponseUniversal }}</h4>
         </div>
 
         <div id="container">

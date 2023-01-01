@@ -410,8 +410,6 @@ export default {
       ];
       let ironPointsNames = [
         [this.sets[0], this.sets[1]].sort(),
-        [this.sets[1], this.sets[2]].sort(),
-        [this.sets[2], this.sets[0]].sort(),
       ]
       let sunPoints = [
         [4, 5, 1],
@@ -419,10 +417,11 @@ export default {
       ];
       let sunPointsNames = [
         [this.sets[1]],
-        [this.sets[2]],
         [this.sets[0]],
       ]
-      let roundedTriPoints = [[5, 4, 6]];
+      let roundedTriPoints = [
+          [5, 4, 6]
+      ];
       let roundedTriNames = [
         [this.sets[1], this.sets[2], this.sets[0]].sort(),
       ]
@@ -523,16 +522,6 @@ export default {
         }
         i++;
       }
-
-      // find common
-      hash_these = roundedTriNames.filter((arr) => {
-        return this.universal.some((arr2) => {
-          return compareArrays(arr, arr2);
-        });
-      });
-      console.log(hash_these, "hash these !");
-
-
       console.log(areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
