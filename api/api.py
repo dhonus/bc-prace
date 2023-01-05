@@ -84,6 +84,7 @@ async def send_expression(item: Thing):
         responseItem.sets += evaluator.get_sets()
         validity = evaluator.validity(solution)
         responseItem.sets += evaluator.get_sets()
+        responseItem.sets = responseItem.sets
         responseItem.explanations = evaluator.get_explanations()
         responseItem.sets = list(set(responseItem.sets))
         responseItem.predicates = predicates_to_return

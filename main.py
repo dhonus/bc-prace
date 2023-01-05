@@ -62,11 +62,11 @@ if __name__ == "__main__":
          "∃y[B(y) | A(y)]",
          "B(x) & C(x)"]"""
     p = [
-        "Ax[A(x) > !B(x)]",
-        "Ex[A(x) &!B(x)]",
-        "Ey[A(y) &!B(y)]"
+        "∀x P(x) > Q(x)",
+        "AxQ(x)>R(x)",
+        "ExP(x)"
     ]
 
     # c = "∃y[B(y) | C(y)]"
-    c = "Ex[B(x) & A(x)]"
+    c = "ExP(x) & R(x)"
     main(p, c)

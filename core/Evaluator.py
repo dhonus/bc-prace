@@ -21,6 +21,7 @@ class Evaluator:
         self.__existential_solved = {}
         self.__conclusion_solved = {}
         self.__explanations = {}
+        self.__steps = []
         self.__valid_on_all = True  # if it so happens that something goes wrong, the validity is set to false
 
     def get_invalid_expected(self) -> bool:
@@ -92,9 +93,17 @@ class Evaluator:
         for var in self.__variables:
             self.__existential_solved[var] = []
 
+        # since we have outputs for multiple different variables, we can store them in a dictionary
+        existential_solved_final = {}
+
+        constants = []
+        for expr_tree in trees:
+            if expr_tree.constant:
+                constants.append(expr_tree)
+
         # universal predicates have priority
         for expr_tree in trees:
-            self.__explanations[expr_tree.p_index] = []
+            self.__explanations[expr_tree.p_index] = ["hi"]  # TBA
             if expr_tree.value == '∀':
                 print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
                 self.__universal_solved += self.__universal_solve(expr_tree)
@@ -114,34 +123,68 @@ class Evaluator:
                 # remove from adding those that are in universal
                 adding = adding - set(self.__universal_solved)
                 if len(adding) != 1:
-                    self.__explanations[expr_tree.p_index].append(f"Nevíme na kterou plochu z {set(self.__universal_solved)} umístit {adding}")
+                    self.__explanations[expr_tree.p_index] = [f"Nevíme na kterou plochu umístit {adding}"]
                     self.__valid_on_all = False
+                    for var in self.__existential_solved.keys():
+                        for constant in constants:
+                            self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                        # this should be OK, removing the inaccessible areas
+                        existential_solved_final[var] = adding
+                        self.__steps.append(
+                            {
+                                "Exists within": adding,
+                                "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+                                "Explanations": self.__explanations.copy()
+                            }
+                        )
+                        for constant in constants:
+                            self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                        # this should be OK, removing the inaccessible areas
+                        existential_solved_final[var] = adding
+                        self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
+                        return {
+                            "Exists within": existential_solved_final,
+                            "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+                            "Explanations": self.__explanations
+                        }
+
                 else:
                     self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
 
-        constants = []
-        for expr_tree in trees:
-            if expr_tree.constant:
-                constants.append(expr_tree)
+            # here we just add the existential output of constants to all other variables
+            for var in self.__existential_solved.keys():
+                for constant in constants:
+                    self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                # this should be OK, removing the inaccessible areas
+                existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
 
-        # since we have outputs for multiple different variables, we can store them in a dictionary
-        existential_solved_final = {}
+            self.__steps.append(
+                {
+                    "Exists within": existential_solved_final,
+                    "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+                    "Explanations": self.__explanations.copy()  # we need the current state
+                }
+            )
 
         # here we just add the existential output of constants to all other variables
         for var in self.__existential_solved.keys():
             for constant in constants:
                 self.__existential_solved[var] += self.__existential_solved[constant.variable]
-            existential_solved_final[var] = set(self.__existential_solved[var])
+            # this should be OK, removing the inaccessible areas
+            existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
 
         print(f"\nsolving conclusion {conclusion_tree.p_index}")
         self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
-        print(self.__conclusion_solved, "conclusion")
-        print(self.__existential_solved, "hi")
-        print(self.__universal_solved, "hi2")
 
         print(f"\n\nExplanations : {self.__explanations}\n\n")
+
+        print()
+        print("STEPS")
+        for step in self.__steps:
+            print(step)
+        print()
 
         return {
             "Exists within": existential_solved_final,

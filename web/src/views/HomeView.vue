@@ -288,7 +288,7 @@ export default {
 
               this.resultVenn = createApp(VennVisualizer, {
                 vennSize: response.data["sets"].length,
-                sets: response.data["sets"],
+                sets: response.data["sets"].sort(),
                 predicates: response.data["predicates"],
                 explanations: response.data["explanations"],
                 // solutions
