@@ -20,6 +20,7 @@ class Evaluator:
         self.__universal_solved = []  # the universtal statement result
         self.__existential_solved = {}
         self.__conclusion_solved = {}
+        self.__conclusion_variable = None
         self.__explanations = {}
         self.__steps = []
         self.__valid_on_all = True  # if it so happens that something goes wrong, the validity is set to false
@@ -122,9 +123,13 @@ class Evaluator:
                 print(adding, "ADDING")
                 # remove from adding those that are in universal
                 adding = adding - set(self.__universal_solved)
+
                 if len(adding) != 1:
                     self.__explanations[expr_tree.p_index] = [f"Nevíme na kterou plochu umístit {adding}"]
+                    if len(adding) == 0:
+                        self.__explanations[expr_tree.p_index] = [f"Všechny plochy jsou vyřazeny"]
                     self.__valid_on_all = False
+
                     for var in self.__existential_solved.keys():
                         for constant in constants:
                             self.__existential_solved[var] += self.__existential_solved[constant.variable]
@@ -140,8 +145,21 @@ class Evaluator:
                         for constant in constants:
                             self.__existential_solved[var] += self.__existential_solved[constant.variable]
                         # this should be OK, removing the inaccessible areas
-                        existential_solved_final[var] = adding
-                        self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
+                        existential_solved_final[expr_tree.variable] = adding
+                        self.__conclusion_variable = conclusion_tree.variable
+                        if conclusion_tree.value == '∃' or conclusion_tree.value == 'E':
+                            self.__conclusion_solved[conclusion_tree.variable] = set(
+                                self.__existential_solve(conclusion_tree))
+                        else:
+                            self.__conclusion_solved[conclusion_tree.variable] = set(
+                                self.__universal_solve(conclusion_tree))
+
+                        print()
+                        print("STEPS")
+                        for step in self.__steps:
+                            print(step)
+                        print()
+
                         return {
                             "Exists within": existential_solved_final,
                             "Crossed out": list(set(self.__universal_solved)),  # deduplicate
@@ -176,7 +194,11 @@ class Evaluator:
             existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
 
         print(f"\nsolving conclusion {conclusion_tree.p_index}")
-        self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
+        self.__conclusion_variable = conclusion_tree.variable
+        if conclusion_tree.value == '∃' or conclusion_tree.value == 'E':
+            self.__conclusion_solved[conclusion_tree.variable] = set(self.__existential_solve(conclusion_tree))
+        else:
+            self.__conclusion_solved[conclusion_tree.variable] = set(self.__universal_solve(conclusion_tree))
 
         print(f"\n\nExplanations : {self.__explanations}\n\n")
 
@@ -196,31 +218,68 @@ class Evaluator:
         """ checks the validity of the entire problem using the parsed existential and universal results """
         variables = list(solution['Exists within'].keys())  # the variable of the conclusion
         print(variables, "solution")
+        print(self.__conclusion_variable, "conclusion")
+
+        if not self.__valid_on_all:
+            return False
 
         ret = True
         len_sum = 0
-        for variable in variables:
-            len_sum += len(solution['Exists within'][variable])
-            print(set(solution['Exists within'][variable]), variable)
-            print(set(solution['Crossed out']), "crossed out")
-            var_set = set(solution['Exists within'][variable])
-            crossed_out = set(solution['Crossed out'])
-            # if an element in var_set is in crossed_out remove it from var_set
-            var_set.difference_update(crossed_out)
-            print(var_set, "var_set")
-            try:
-                print(self.__conclusion_solved[variable], "conclusion")
-                # if the conclusion is not a subset of the var_set, the problem is invalid
-                if not var_set.issubset(self.__conclusion_solved[variable]):
-                    ret = False
-                print(set(self.__conclusion_solved[variable]), "conclusion")
-            except KeyError:
-                print("not the correct variable")
+        # for variable in variables:
 
-        # if we have 0 crosses and it is not the case that the problem is purely
+        variable = self.__conclusion_variable
+
+        len_sum += len(solution['Exists within'][variable])
+        print(set(solution['Exists within'][variable]), variable)
+        print(set(solution['Crossed out']), "crossed out")
+        var_set = set(solution['Exists within'][variable])
+        crossed_out = set(solution['Crossed out'])
+        # if an element in var_set is in crossed_out remove it from var_set
+        var_set.difference_update(crossed_out)
+        print(var_set, "var_set")
+
+        print (len_sum, "len_sum")
+        if len_sum == 0:
+            self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
+        try:
+            print(self.__conclusion_solved[variable], "conclusion")
+            # if the conclusion is not a subset of the var_set, the problem is invalid
+            if not var_set.issubset(self.__conclusion_solved[variable]):
+                ret = False
+            print(set(self.__conclusion_solved[variable]), "conclusion")
+        except KeyError:
+            print("not the correct variable")
+
+        # here we solve the case in which only universal statements are provided
+        # we determine the validity by checking if the areas that should be crossed out are actually crossed out
+        if len_sum == 0:
+            checking = set(crossed_out) - set(self.__conclusion_solved[variable])
+            if set(self.__conclusion_solved[variable]).issubset(crossed_out):
+                self.__explanations[0] = [f"Platí, že vyškrtání {checking} vystihuje aktuální řešení."]
+                return True
+            else:
+                self.__explanations[0] = [f"Toto nelze tvrdit. Všechny z {self.__conclusion_solved[variable]} musí být vyškrtány."]
+                return False
+
+        # if we have 0 crosses, and it is not the case that the problem is purely
         # universal, we can say that the problem is invalid
         if len_sum == 0 and self.__existential_count != 0:
+            self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Žádná existenciální tvrzení."]
             ret = False
+
+        if len_sum == 1:
+            if len(crossed_out) == 0:
+                self.__explanations[0] = [f"Pro {variable} nalezeno řešení. "
+                                          f"Můžeme umístit {var_set} a jedná se o jediné řešení."]
+            else:
+                self.__explanations[0] = [f"Pro {variable} nalezeno řešení. "
+                                  f"Můžeme umístit {var_set}, protože {crossed_out} jsou vyškrtány."]
+            ret = True
+        else:
+            self.__explanations[0] = [f"Pro {variable} není řešení. "
+                                  f"Nevíme kam umístit {var_set}"]
+            ret = False
+
         return ret
 
     """

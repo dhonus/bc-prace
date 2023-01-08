@@ -33,6 +33,7 @@
 
 <script>
 import * as d3 from 'd3'
+import {indexOf} from "core-js/internals/array-includes";
 
 class Area {
   constructor(id, state, color, assignment) {
@@ -886,28 +887,89 @@ export default {
         const svg = d3.select(this);
       });
 
+      let __sets_identifiers = [
+        [this.sets[0]],
+        [this.sets[1]],
+        [this.sets[2]],
+
+        [this.sets[0], this.sets[1]],
+        [this.sets[1], this.sets[2]],
+        [this.sets[0], this.sets[2]],
+
+        [this.sets[0], this.sets[1], this.sets[2]],
+      ];
+
+      // positions as [x, y]; corresponds to __sets_identifiers
+      let __sets_positions = [
+        [centerX_1 - 20, centerY_1 - 20],
+        [centerX_2 + 60, centerY_2 - 20],
+        [centerX_3 + 20, centerY_3 + 60],
+
+        [centerX_3 + 20, centerY_2 - 20],
+        [xMidpointC2C3 + 40, yMidpointBoth + 20],
+        [xMidpointC1C3, yMidpointBoth + 20],
+
+        [centerX_3 + 20, yMidpointBoth - 10],
+      ]
+
+      console.log(__sets_identifiers);
+
+      let position_me = (index, key, character) => {
+        const pos = __sets_positions[index];
+        console.log(pos, key, "pos, key");
+        // background for the text
+        g.append("circle")
+            .attr("r", 14)
+            .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
+            .attr("class", character === "?" ? "question-background" : "set-background")
+        // the "X" or "?"
+        g.append("text")
+            .text(character)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28))
+            .attr("y", pos[1] - 5)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '1.2rem');
+        // the variable
+        g.append("text")
+            .text(key)
+            .attr("x", pos[0] - (character === "?" ? 18 : 18))
+            .attr("y", pos[1] - 1)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '.8rem');
+      }
+
+      /*for (let pos of __sets_positions) {
+        let key = "x";
+        position_me(pos, key);
+      }*/
 
       // existential
       console.log(this.existential, "existential");
-      for(let key in this.existential) {
-        console.log(this.existential[key], "existential key");
-        if (this.existential[key][0] instanceof Array){
-          console.log("2d array");
-          // if the array is the same as the "sets" array
-          console.log("the things are", ironPointsNames)
-          // check for occurence of the array in the ironPointsNames array
-          if (ironPointsNames.some((arr) => {
-            return compareArrays(arr, this.existential[key][0]);
-          })) {
-            console.log("the array is in the ironPointsNames array");
-            // find the index of the array in the ironPointsNames array
-            let index = ironPointsNames.findIndex((arr) => {
-              return compareArrays(arr, this.existential[key][0]);
-            });
-            console.log(index, "index");
+      for (const position in __sets_identifiers){
+        for(let key in this.existential) {
+          console.log("the size is: " + this.existential[key].length);
+          for (let all in this.existential[key]) {
+            if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
+              console.log("found it");
+              console.log(this.existential[key][all], __sets_identifiers[position]);
+              position_me(position, key, this.existential[key].length === 1 ? "x" : "?");
+
+            }
           }
+          /*
+          console.log(key[0].toString())
+          if (key[0].toString() == position.toString()) {
+            console.log(this.existential[key][0], "existential key");
+            console.log(__sets_identifiers.indexOf(this.existential[key][0]), "index of");
+          } else {
+            console.log("not found");
+          }
+          */
         }
       }
+
 
       console.log(this.existential instanceof Array)
 
@@ -977,8 +1039,7 @@ export default {
           .attr("y", yIsect6)
           .style('fill', 'white')
 */
-      g.append("text").text("?").attr("x", centerX_1).attr("y", centerY_1)
-          .style('fill', 'white');
+
 
     },
     venn4: function(){

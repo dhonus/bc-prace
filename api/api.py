@@ -1,5 +1,7 @@
 # https://fastapi.tiangolo.com/tutorial/bigger-applications/
 # https://fastapi.tiangolo.com/tutorial/body/
+from __future__ import annotations
+
 from fastapi import FastAPI, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -24,6 +26,7 @@ class Item(BaseModel):
     sets: List[str] = []
     valid: bool | None = None
     notes: str = "OK"
+    steps: list[Item] = []
 
 
 class Thing(BaseModel):
@@ -98,12 +101,12 @@ async def send_expression(item: Thing):
         print(iee)
     except EmptyInputException as e:
         responseItem = Item()
-        responseItem.notes = "Prázdný vstup, nebo chybějící závěr."
+        responseItem.notes = "Prázdný vstup, nebo chybějící závěr!"
         return responseItem
     except Exception as e:
         logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
         responseItem = Item()
-        responseItem.notes = f"{type(e).__name__}: V {p_index}. premise: {e}"
+        responseItem.notes = f"Chyba v {p_index}. premise: {e}"
         return responseItem
 
     responseItem.existential = solution.get("Exists within")

@@ -31,9 +31,14 @@
           </button>
         </div>
 
-        <p style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
-        <h4 v-if="validity === true" style="color:#129412;">Platný úsudek</h4>
-        <h4 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h4>
+        <div class="why">
+          <p v-if="APIErrorMessage.length > 0" style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
+          <span v-if="APIErrorMessage.length <= 0">
+            <h3 v-if="validity === true" style="color:#129412;">Platný úsudek</h3>
+            <h3 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h3>
+            <p>{{ Explanation }}</p>
+          </span>
+        </div>
 
         <div id="venn"></div>
         <div class="out-info">
@@ -162,6 +167,7 @@ export default {
       validity: null,
       myChart: null,
       resultVenn: null,
+      Explanation: '',
     }
   },
   methods: {
@@ -265,6 +271,18 @@ export default {
               this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
               this.validity = response.data["valid"];
 
+              // this is the message to the user!
+              // the result reasoning is on the 0th position
+              // if we cannot find it, we will display the last one
+              if (response.data["explanations"][0] !== undefined){
+                this.Explanation = String(response.data["explanations"][0]);
+              }
+              else{
+                const max = Object.keys(response.data["explanations"]).length;
+                console.log(max);
+                this.Explanation = String(response.data["explanations"][max]);
+              }
+
               let theData = []
               for (const element of response.data["sets"]) {
                 theData.push({ label: String(element), values: []})
@@ -285,6 +303,15 @@ export default {
               for (let i = 0; i < universal_sorted.length; i++) {
                 universal_sorted[i].sort();
               }
+              let existential_sorted = {};
+              // sort dict entries
+              for (let [key, value] of Object.entries(response.data["existential"])) {
+                console.log(key, value, "key value");
+                for (let i = 0; i < value.length; i++) {
+                  value[i].sort();
+                }
+                existential_sorted[key] = value.sort();
+              }
 
               this.resultVenn = createApp(VennVisualizer, {
                 vennSize: response.data["sets"].length,
@@ -292,7 +319,7 @@ export default {
                 predicates: response.data["predicates"],
                 explanations: response.data["explanations"],
                 // solutions
-                existential: response.data["existential"],
+                existential: existential_sorted,
                 universal: universal_sorted,
               });
               this.resultVenn.mount('#venn');

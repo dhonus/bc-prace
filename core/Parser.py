@@ -71,7 +71,7 @@ class Parser:
                   f" Pravděpodobně chybějící závorka na {self.__position}. pozici."
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
         else:
-            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__current}'. Na pozici: {self.__position}"
+            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__currbent}'. Na pozici: {self.__position}"
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
     def __advance(self, amount=1):
@@ -141,7 +141,7 @@ class Parser:
                     return ExpressionTree(value='∃', variable=None, tree=None)
                 variable = self.__current
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Proměnná by měla být malým písmem.')
+                    raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
@@ -152,7 +152,7 @@ class Parser:
                 variable = self.__current
                 print(variable)
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Proměnná by měla být malým písmem.')
+                    raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∀', variable=variable, tree=None)

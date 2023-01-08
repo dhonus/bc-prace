@@ -74,9 +74,10 @@ class Venn:
         # remove universe symbol from all but just itself
         # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
         for item in solution:
-            if item[0] == 'μ' and len(item) == 1:
+            # NOT SURE HERE
+            """if item[0] == 'μ' and len(item) == 1:
                 sol_universum_accounted.append(item)
-                continue
+                continue"""
             try:
                 idx = item.index('μ')
                 item = item[:idx] + item[idx + 1:]
