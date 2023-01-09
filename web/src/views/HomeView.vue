@@ -337,6 +337,11 @@ export default {
         vennSize: 300,
       }).mount('#container')*/
               if (!steps) {
+                for (let i = 0; i < this.containers.length; i++) {
+                  if (this.containers[i] != null){
+                    this.containers[i].unmount();
+                  }
+                }
                 this.resultVenn = createApp(VennVisualizer, {
                   vennSize: response.data["sets"].length,
                   sets: response.data["sets"].sort(),
@@ -348,6 +353,9 @@ export default {
                 });
                 this.resultVenn.mount('#venn');
               } else {
+                if (this.resultVenn != null) {
+                  this.resultVenn.unmount();
+                }
                 console.log(response.data["steps"]);
                 // for each in steps
                 let i = 1;
