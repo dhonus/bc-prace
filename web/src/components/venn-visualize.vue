@@ -1,7 +1,7 @@
 <!-- https://axios-http.com/docs/post_example -->
 
 <template>
-  <div class="canvasControls">
+  <!--<div class="canvasControls">
     <div class="left">
       <p>Funkce diagramu:</p>
       <p ref="canvasMessage">{{ msg }}</p>
@@ -17,17 +17,10 @@
         <img src="../assets/icons/hashed.svg" title="Vyšrafovat">
       </div>
     </div>
-  </div>
+  </div>-->
   <div class="canvasWrapper" ref="canvasWrapper">
     <svg width="600" height="400" ref="canvas"></svg>
     <img ref="canvasExportImage">
-  </div>
-  <div class="print-wrapper">
-    <div class="offset"></div>
-    <div class="print-button" @click="printCanvas">
-      <span class="download-text">Stáhnout</span>
-      <img src="../assets/icons/iconmonstr-save-thin.svg" title="Tisk">
-    </div>
   </div>
 </template>
 
@@ -74,12 +67,6 @@ export default {
     };
   },
   methods: {
-    printCanvas: function (){
-      //const canvas = this.$refs.canvas;
-      //const img    = canvas.toDataURL('image/png');
-      //this.$refs.canvasExportImage.src = img;
-      print();
-    },
     // sets the current active button to the one that was clicked on
     activate: function(button){
       if(this.currentModifierButton !== null){

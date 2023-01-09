@@ -30,9 +30,9 @@ class ExpressionTree(Node):
     def print(self):
         match self.value:
             case '∃':
-                return f"Exists {self.variable} for which {self.tree.print()}"
+                return f"Existuje {self.variable}, pro které platí že {self.tree.print()}"
             case '∀':
-                return f"For all {self.variable} applies {self.tree.print()}"
+                return f"Pro všechna {self.variable} platí, že {self.tree.print()}"
 
     def validate(self):
         self.tree.validate(self.variable)
@@ -45,7 +45,7 @@ class Set(Node):
         self.variable = variable
 
     def print(self):
-        return f"({self.value}({self.variable}))"
+        return f"({self.value} vázané na {self.variable}))"
 
     def validate(self, variable: str):
         if self.variable != variable:
@@ -58,7 +58,7 @@ class Neg(Node):
         super().__init__(left, None, "not")
 
     def print(self):
-        return f" not " + '{' + f"{self.left.print()}" + '}'
+        return f" nejsou " + '{' + f"{self.left.print()}" + '}'
 
     def validate(self, variable: str):
         pass
@@ -68,9 +68,19 @@ class Operation(Node):
     """ an operation node """
     def __init__(self, left: Node | None, right: Node | None, operation: str):
         super().__init__(left, right, operation)
+        self.text_value = self.value
+        match self.value:
+            case '>':
+                self.text_value = 'implikuje'
+            case '<>':
+                self.text_value = 'je ekvivalentní'
+            case '&':
+                self.text_value = 'a'
+            case '|':
+                self.text_value = 'nebo'
 
     def print(self):
-        return f"[ {self.left.print()} {self.value} {self.right.print()} ]"
+        return f"[ {self.left.print()} {self.text_value} {self.right.print()} ]"
 
 
 def expression_generator(string: str) -> Generator[str, None, None]:

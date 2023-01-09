@@ -82,15 +82,25 @@ async def send_expression(item: Thing):
             trees, key=lambda tr: tr.value
         )  # sort to have universal statements first
 
+        print(trees, "trees")
+
         evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
         responseItem.sets += evaluator.get_sets()
         validity = evaluator.validity(solution)
         responseItem.sets += evaluator.get_sets()
-        responseItem.sets = responseItem.sets
         responseItem.explanations = evaluator.get_explanations()
         responseItem.sets = list(set(responseItem.sets))
         responseItem.predicates = predicates_to_return
+
+        for step in evaluator.get_steps():
+            item = Item()
+            item.sets = evaluator.get_sets()
+            print(f'problematic {step["Exists within"]}')
+            item.existential = step["Exists within"]
+            item.universal = step["Crossed out"]
+            item.explanations = step["Explanations"]
+            responseItem.steps.append(item)
 
         print(evaluator.get_sets(), "aaa")
         print(f"\n\n----------\nsolution: {solution}\n----------")

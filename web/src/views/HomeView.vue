@@ -4,7 +4,7 @@
   </div>
   <div class="home">
     <HelloWorld msg="Bc. Práce" />
-    <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.ctrl.shift.enter.exact="submitWithKey">
+    <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.shift.enter.exact="submitWithKeySteps">
       <div class="predicates">
         <div v-for="key in count" :key="key">
           <Transition>
@@ -17,13 +17,13 @@
         </div>
         <input @focus="focusOnMe(-1)" ref="zaver" id="zaver" placeholder="Závěr" />
         <div class="button_container">
-          <button class="accept_button" ref="accept_button" @click="submit">
+          <button class="accept_button" ref="accept_button" @click="submit(false)">
             <p style="flex:1; text-align: left; font-size: larger;">Vyhodnotit</p>
             <img style="color:white; height: 2rem; " src="../assets/control.svg">
             &nbsp;
             <img style="color:white; height: 2rem; " src="../assets/enter.svg">
           </button>
-          <button style="flex:1;" class="accept_button" ref="accept_button2" @click="submit">
+          <button style="flex:1;" class="accept_button" ref="step_button" @click="submit(true)">
             <p style="flex:1; text-align: left; font-size: larger;">Odkrokovat</p>
             <img style="color:white; height: 2rem; " src="../assets/shift.svg">
             &nbsp;
@@ -40,6 +40,10 @@
           </span>
         </div>
 
+        <div id="venn_one"></div>
+        <div id="venn_two"></div>
+        <div id="venn_three"></div>
+        <div id="venn_four"></div>
         <div id="venn"></div>
         <div class="out-info">
           <h4>{{ logicResponseExistential }}</h4>
@@ -47,6 +51,13 @@
         </div>
 
         <div id="container">
+        </div>
+        <div class="print-wrapper">
+          <div class="offset"></div>
+          <div class="print-button" @click="printCanvas">
+            <span class="download-text">Stáhnout</span>
+            <img src="../assets/icons/iconmonstr-save-thin.svg" title="Tisk">
+          </div>
         </div>
 
       </div>
@@ -168,6 +179,8 @@ export default {
       myChart: null,
       resultVenn: null,
       Explanation: '',
+      containers: [null, null, null, null],
+      container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four"]
     }
   },
   methods: {
@@ -193,14 +206,26 @@ export default {
     remove: function () {
       this.count--;
     },
+    printCanvas: function (){
+      //const canvas = this.$refs.canvas;
+      //const img    = canvas.toDataURL('image/png');
+      //this.$refs.canvasExportImage.src = img;
+      print();
+    },
     // submits the form on ctrl + enter 
     submitWithKey: function(){
       this.$refs.accept_button.classList.add("activated");
-      this.submit();
+      this.submit(false);
       setTimeout(() => {
         this.$refs.accept_button.classList.remove("activated");
       }, 250);
-
+    },
+    submitWithKeySteps: function() {
+      this.$refs.step_button.classList.add("activated");
+      this.submit(true);
+      setTimeout(() => {
+        this.$refs.step_button.classList.remove("activated");
+      }, 250);
     },
     // adds the symbol from the virtual keyboard to the active input field
     type: function(value_to_enter){
@@ -214,14 +239,7 @@ export default {
       this.focused.dispatchEvent(new Event('input')); // this is done because vue doesnt detect changes without an event
     },
     // submits the form and requests the data from the API
-    async submit(){
-
-      //createApp with props
-      /*createApp(VennVisualizer, {
-        vennSize: 300,
-      }).mount('#container')
-*/
-
+    async submit(steps){
 
       let predicates = []
       for (var key of Object.keys(this.values)) {
@@ -312,17 +330,46 @@ export default {
                 }
                 existential_sorted[key] = value.sort();
               }
+              /*
+              *
+      //createApp with props
+      createApp(VennVisualizer, {
+        vennSize: 300,
+      }).mount('#container')*/
+              if (!steps) {
+                this.resultVenn = createApp(VennVisualizer, {
+                  vennSize: response.data["sets"].length,
+                  sets: response.data["sets"].sort(),
+                  predicates: response.data["predicates"],
+                  explanations: response.data["explanations"],
+                  // solutions
+                  existential: existential_sorted,
+                  universal: universal_sorted,
+                });
+                this.resultVenn.mount('#venn');
+              } else {
+                console.log(response.data["steps"]);
+                // for each in steps
+                let i = 1;
+                for (const step of response.data["steps"]){
+                  const container =
+                  console.log(step);
+                  if (this.containers[i] != null){
+                    this.containers[i].unmount();
+                  }
+                  this.containers[i] = createApp(VennVisualizer, {
+                    vennSize: step.sets.length,
+                    sets: step.sets.sort(),
+                    predicates: step.predicates,
+                    explanations: step.explanations,
+                    // solutions
+                    existential: step.existential,
+                    universal: step.universal,
+                  });
+                  this.containers[i].mount(this.container_names[i++]);
+                }
 
-              this.resultVenn = createApp(VennVisualizer, {
-                vennSize: response.data["sets"].length,
-                sets: response.data["sets"].sort(),
-                predicates: response.data["predicates"],
-                explanations: response.data["explanations"],
-                // solutions
-                existential: existential_sorted,
-                universal: universal_sorted,
-              });
-              this.resultVenn.mount('#venn');
+              }
 
 
             }, (error) => {
