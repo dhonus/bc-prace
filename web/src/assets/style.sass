@@ -34,6 +34,8 @@ div.input_wrapper
       &:focus-visible
         outline: none
         background-color: #c9c9c9
+    #zaver
+      margin: .5em 0 1em 0
     .button_container
       display: flex
       flex-direction: row
@@ -103,7 +105,6 @@ div.input_wrapper
   cursor: pointer
   border: none
   border-radius: 5px
-  margin: .5rem 0 .5rem 0
   transition: background-color .2s ease
   padding: 0 1em
   box-sizing: border-box
@@ -176,6 +177,38 @@ text
   padding: 1rem
   background: #e2e2e2
   border-radius: 5px
+div.information
+  margin: 0 0 1rem 0
+  padding: 1rem
+  background: #e2e2e2
+  border-radius: 5px
+  display: flex
+  flex-direction: column
+  position: relative
+  p
+    margin: 0
+    padding: 0
+    font-size: 1.1rem
+    color: #2c2c2c
+    font-weight: 400
+    line-height: 1.5rem
+    text-align: left
+    &:first-child
+      font-weight: 600
+      font-size: 1.2rem
+      margin-bottom: .5rem
+  &:after, &:before
+    // short vertical line
+    content: ""
+    position: absolute
+    width: 2px
+    height: 3rem
+    background-color: #939393
+    right: 1em
+    top: 4.5em
+  &:after
+    right: 1.5em
+
 
 .spinner
   position: absolute
@@ -280,7 +313,7 @@ text
   text-align: left
   padding: 0 1rem
   background: #e2e2e2
-  margin: 0 0 1em 0
+  margin: 1em 0
   border-radius: 5px
 
 @media print

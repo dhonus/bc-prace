@@ -345,6 +345,7 @@ export default {
                   // solutions
                   existential: existential_sorted,
                   universal: universal_sorted,
+                  step: false,
                 });
                 this.resultVenn.mount('#venn');
               } else {
@@ -382,6 +383,9 @@ export default {
                     // solutions
                     existential: l_existential_sorted,
                     universal: l_universal_sorted,
+                    canvasPredicate: response.data["predicates"][step.p_index],
+                    canvasExplanation: response.data["explanations"][step.p_index][0],
+                    step: true,
                   });
                   this.containers[i].mount(this.container_names[i++]);
                 }

@@ -18,6 +18,10 @@
       </div>
     </div>
   </div>-->
+  <div v-if="step" class="information">
+    <p ref="canvasPredicate">{{ canvasPredicate }}</p>
+    <p ref="canvasExplanation">{{ canvasExplanation }}</p>
+  </div>
   <div class="canvasWrapper" ref="canvasWrapper">
     <svg width="600" height="400" ref="canvas"></svg>
     <img ref="canvasExportImage">
@@ -57,6 +61,9 @@ export default {
     // solutions
     existential: Object,
     universal: Array,
+    canvasPredicate: String,
+    canvasExplanation: String,
+    step: Boolean
   },
   data: () => {
     return {
@@ -942,7 +949,6 @@ export default {
               console.log("found it");
               console.log(this.existential[key][all], __sets_identifiers[position]);
               position_me(position, key, this.existential[key].length === 1 ? "x" : "?");
-
             }
           }
           /*

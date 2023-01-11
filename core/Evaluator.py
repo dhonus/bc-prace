@@ -157,6 +157,7 @@ class Evaluator:
                         existential_solved_final[var] = adding
                         self.__steps.append(
                             {
+                                "Predicate": expr_tree.p_index,
                                 "Exists within": existential_solved_final.copy(),
                                 "Crossed out": list(set(self.__universal_solved)),  # deduplicate
                                 "Explanations": self.__explanations.copy()
@@ -186,18 +187,24 @@ class Evaluator:
                 existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
                 print(f"existential solved final: {self.__existential_solved[var]}")
 
-            self.__steps.append(
-                {
-                    "Exists within": existential_solved_final.copy(),
-                    "Crossed out": list(set(self.__universal_solved)),  # deduplicate
-                    "Explanations": self.__explanations.copy()  # we need the current state
-                }
-            )
+            found = False
+            for step in self.__steps:
+                if step["Predicate"] == expr_tree.p_index:
+                    found = True
+            if not found:
+                self.__steps.append(
+                    {
+                        "Predicate": expr_tree.p_index,
+                        "Exists within": existential_solved_final.copy(),
+                        "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+                        "Explanations": self.__explanations.copy()  # we need the current state
+                    }
+                )
 
-        # here we just add the existential output of constants to all other variables
-        for var in self.__existential_solved.keys():
-            for constant in constants:
-                self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
+            # here we just add the existential output of constants to all other variables
+            for var in self.__existential_solved.keys():
+                for constant in constants:
+                    self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
 
             # this should be OK, removing the inaccessible areas
             existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)

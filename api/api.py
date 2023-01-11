@@ -27,6 +27,7 @@ class Item(BaseModel):
     valid: bool | None = None
     notes: str = "OK"
     steps: list[Item] = []
+    p_index: int = 0
 
 
 class Thing(BaseModel):
@@ -100,6 +101,7 @@ async def send_expression(item: Thing):
             item.existential = step["Exists within"]
             item.universal = step["Crossed out"]
             item.explanations = step["Explanations"]
+            item.p_index = step["Predicate"]
             responseItem.steps.append(item)
 
         print(evaluator.get_sets(), "aaa")
