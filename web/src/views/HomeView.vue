@@ -45,10 +45,6 @@
         <div id="venn_three"></div>
         <div id="venn_four"></div>
         <div id="venn"></div>
-        <div class="out-info">
-          <h4>{{ logicResponseExistential }}</h4>
-          <h4>{{ logicResponseUniversal }}</h4>
-        </div>
 
         <div id="container">
         </div>
@@ -137,14 +133,14 @@
             <li>P(x)</li>
           </ul>
           <h3>Příklad validního vstupu:</h3>
-          <p>
-            P1: ∀x A(x) > !B(x)<br>
-            P2: Ex[A(x) > C(x)]<br>
-          </p>
+          <ul>
+            <li>∀x A(x) & !B(x)</li>
+            <li>Ex [A(x) > C(x)]</li>
+          </ul>
           <hr>
-          <p>
-            Z: ∃x[C(x)]
-          </p>
+          <ul>
+            <li>∃x[C(x)]</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -173,8 +169,6 @@ export default {
       focused: null,
       zaver: null,
       APIErrorMessage: '',
-      logicResponseExistential: '',
-      logicResponseUniversal: '',
       validity: null,
       myChart: null,
       resultVenn: null,
@@ -275,18 +269,6 @@ export default {
               else{
                 this.APIErrorMessage = "";
               }
-              this.logicResponseExistential = "Existenciální: "
-              //response.data["existential"].forEach(appendExistential);
-              for (const [key, value] of Object.entries(response.data["existential"])) {
-                console.log(key, value);
-                this.logicResponseExistential += key + " -> ";
-                for (const val of value){
-                  this.logicResponseExistential += val + ", ";
-                }
-                this.logicResponseExistential += "\n";
-              }
-
-              this.logicResponseUniversal = 'Univerzální (vyšrafované oblasti): ' + response.data["universal"];
               this.validity = response.data["valid"];
 
               // this is the message to the user!
