@@ -141,7 +141,7 @@ class Evaluator:
                 if len(adding) != 1:
                     # so if we DO NOT know where to put the "x", we will tell the user
                     # self.__valid_on_all = False
-                    self.__explanations[expr_tree.p_index] = [f"Nevíme na kterou plochu umístit {adding}"]
+                    self.__explanations[expr_tree.p_index] = [f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {adding} umístit křížek."]
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
@@ -151,7 +151,7 @@ class Evaluator:
                     print("adding is not 1", self.__existential_solved)
                     for var in self.__existential_solved.keys():
                         for constant in constants:
-                            self.__existential_solved[var] += set(self.__existential_solved[constant.variable])
+                            self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
 
                         # this should be OK, removing the inaccessible areas
                         existential_solved_final[var] = adding
@@ -163,7 +163,8 @@ class Evaluator:
                             }
                         )
                         for constant in constants:
-                            self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                            self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
+
                         # this should be OK, removing the inaccessible areas
                         existential_solved_final[expr_tree.variable] = adding
                         self.__conclusion_variable = conclusion_tree.variable
@@ -180,7 +181,7 @@ class Evaluator:
             for var in self.__existential_solved.keys():
                 print(f"var: {var}")
                 for constant in constants:
-                    self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                    self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
                 # this should be OK, removing the inaccessible areas
                 existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
                 print(f"existential solved final: {self.__existential_solved[var]}")
@@ -196,7 +197,8 @@ class Evaluator:
         # here we just add the existential output of constants to all other variables
         for var in self.__existential_solved.keys():
             for constant in constants:
-                self.__existential_solved[var] += self.__existential_solved[constant.variable]
+                self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
+
             # this should be OK, removing the inaccessible areas
             existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
 
@@ -234,8 +236,8 @@ class Evaluator:
 
         ret = True
         len_sum = 0
-        # for variable in variables:
 
+        # for variable in variables:
         variable = self.__conclusion_variable
 
         len_sum += len(solution['Exists within'][variable])
@@ -309,7 +311,7 @@ class Evaluator:
             if len_sum == 0:
                 checking = set(crossed_out) - set(self.__conclusion_solved[variable])
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
-                    self.__explanations[0] = [f"Platí, že vyškrtání {self.__conclusion_solved[variable]} vystihuje správné řešení."]
+                    self.__explanations[0] = [f"Závěr říká, že mají být vyškrtány {self.__conclusion_solved[variable]}, což odpovídá výsledku."]
                     return True
 
             if not var_set.issubset(self.__conclusion_solved[variable]):
@@ -317,7 +319,7 @@ class Evaluator:
                                           f"Platí že {var_set} není vyškrtáno a splňuje tím podmínku závěru."]
                 return True
 
-            self.__explanations[0] = [f"Pro {variable} není řešení. "]
+            self.__explanations[0] = [f"Pro {variable} není řešení. Je žádané, aby byly vyškrtány {self.__conclusion_solved[variable]}."]
             return False
 
 

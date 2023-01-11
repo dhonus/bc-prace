@@ -290,7 +290,7 @@ export default {
               this.validity = response.data["valid"];
 
               // this is the message to the user!
-              // the result reasoning is on the 0th position
+              // the "result" reasoning is at the 0th position
               // if we cannot find it, we will display the last one
               if (response.data["explanations"][0] !== undefined){
                 this.Explanation = String(response.data["explanations"][0]);
@@ -316,8 +316,9 @@ export default {
               if (this.resultVenn != null){
                 this.resultVenn.unmount();
               }
-              let universal_sorted = response.data["universal"];
+
               // sort every array inside this.universal alphabetically
+              let universal_sorted = response.data["universal"];
               for (let i = 0; i < universal_sorted.length; i++) {
                 universal_sorted[i].sort();
               }
@@ -330,12 +331,6 @@ export default {
                 }
                 existential_sorted[key] = value.sort();
               }
-              /*
-              *
-      //createApp with props
-      createApp(VennVisualizer, {
-        vennSize: 300,
-      }).mount('#container')*/
               if (!steps) {
                 for (let i = 0; i < this.containers.length; i++) {
                   if (this.containers[i] != null){
@@ -365,29 +360,38 @@ export default {
                   if (this.containers[i] != null){
                     this.containers[i].unmount();
                   }
+                  let l_universal_sorted = step.universal;
+                  // sort every array inside this.universal alphabetically
+                  for (let i = 0; i < l_universal_sorted.length; i++) {
+                    l_universal_sorted[i].sort();
+                  }
+                  let l_existential_sorted = {};
+                  // sort dict entries
+                  for (let [key, value] of Object.entries(step.existential)) {
+                    console.log(key, value, "key value");
+                    for (let i = 0; i < value.length; i++) {
+                      value[i].sort();
+                    }
+                    l_existential_sorted[key] = value.sort();
+                  }
                   this.containers[i] = createApp(VennVisualizer, {
                     vennSize: step.sets.length,
                     sets: step.sets.sort(),
                     predicates: step.predicates,
                     explanations: step.explanations,
                     // solutions
-                    existential: step.existential,
-                    universal: step.universal,
+                    existential: l_existential_sorted,
+                    universal: l_universal_sorted,
                   });
                   this.containers[i].mount(this.container_names[i++]);
                 }
-
               }
-
-
             }, (error) => {
               console.log(error);
             });
       } catch (err) {
         // uh oh, didn't work, time for plan B
       }
-
-
     },
     togg: function(){
       if (this.$refs.buttonFour.innerText === '+'){
