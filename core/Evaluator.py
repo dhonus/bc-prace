@@ -285,6 +285,8 @@ class Evaluator:
                 self.__explanations[0] = [f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__conclusion_solved[variable]}."]
                 return True
 
+            self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {solution['Exists within'][variable]}."]
+
             return False
 
             # here we solve the case in which only universal statements are provided
@@ -302,19 +304,19 @@ class Evaluator:
             # if we have 0 crosses, and it is not the case that the problem is purely
             # universal, we can say that the problem is invalid
             if len_sum == 0 and self.__existential_count != 0:
-                self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Žádná existenciální tvrzení."]
+                self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádná existenciální tvrzení."]
                 ret = False
 
             if len_sum == 1:
                 if len(crossed_out) == 0:
-                    self.__explanations[0] = [f"Pro {variable} nalezeno řešení. "
+                    self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
                                               f"Můžeme umístit {var_set} a jedná se o jediné řešení."]
                 else:
-                    self.__explanations[0] = [f"Pro {variable} nalezeno řešení. "
+                    self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
                                               f"Můžeme umístit {var_set}, protože {crossed_out} jsou vyškrtány."]
                 ret = True
             else:
-                self.__explanations[0] = [f"Pro {variable} není řešení. "
+                self.__explanations[0] = [f"Pro '{variable}' není řešení. "
                                           f"Nevíme kam umístit {var_set}"]
                 ret = False
 
@@ -330,11 +332,11 @@ class Evaluator:
                     return True
 
             if not var_set.issubset(self.__conclusion_solved[variable]):
-                self.__explanations[0] = [f"Pro {variable} nalezeno řešení. "
+                self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
                                           f"Platí že {var_set} není vyškrtáno a splňuje tím podmínku závěru."]
                 return True
 
-            self.__explanations[0] = [f"Pro {variable} není řešení. Je žádané, aby byly vyškrtány {self.__conclusion_solved[variable]}."]
+            self.__explanations[0] = [f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__conclusion_solved[variable]}."]
             return False
 
 
