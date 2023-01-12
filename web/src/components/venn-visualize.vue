@@ -1513,6 +1513,13 @@ export default {
       });
 
       g.append("text")
+          .text("tuto velikost dodělám v blízké době")
+          .attr("x", 0)
+          .attr("y", 50)
+          .style('fill', '#323232')
+          .style('font-size', '1.5rem');
+
+      g.append("text")
           .text("Ω")
           .attr("x", (this.width - 30))
           .attr("y", 50)

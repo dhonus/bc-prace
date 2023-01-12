@@ -72,7 +72,7 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
-          <p>Následuje tabulka <b>podporovaných symbolů</b><br> včetně jejich <b>akceptovatelných variant</b>. Symboly lze je libovolně kombinovat.</p>
+          <p>Následuje tabulka <b>podporovaných symbolů</b> a jejich <b>povolených variant</b>. Tyto symboly <br>mohou být libovolně kombinovány</p>
           <table>
             <tr>
               <td>Implikace</td>
@@ -116,7 +116,7 @@
             </tr>
           </table>
           <blockquote><p>Na vstupu mohou být premisy, nebo konstanty.</p></blockquote>
-          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou na kterou se váže. Následující jsou platné premisy:</p>
+          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Následující jsou platné premisy:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
@@ -124,7 +124,7 @@
             <li>∀x B(x) & C(x)</li>
             <li>AxB(x)</li>
           </ul>
-          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kdy proměnná je malé písmeno. Platné literály:</p>
+          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kde proměnná je malé písmeno. Platné literály:</p>
           <ul>
             <li>P(x)</li>
             <li>Venn(y)</li>
