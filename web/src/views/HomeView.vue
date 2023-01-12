@@ -44,6 +44,8 @@
         <div id="venn_two"></div>
         <div id="venn_three"></div>
         <div id="venn_four"></div>
+        <div id="venn_five"></div>
+        <div id="venn_six"></div>
         <div id="venn"></div>
 
         <div id="container">
@@ -70,7 +72,7 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
-          <p>Následuje tabulka <b>podporovaných symbolů</b><br> včetně jejich <b>akceptovatelných variant</b>.</p>
+          <p>Následuje tabulka <b>podporovaných symbolů</b><br> včetně jejich <b>akceptovatelných variant</b>. Symboly lze je libovolně kombinovat.</p>
           <table>
             <tr>
               <td>Implikace</td>
@@ -113,24 +115,24 @@
               <td>Ω</td>
             </tr>
           </table>
-          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kdy proměnná je malé písmeno. Platné literály:</p>
-          <ul>
-            <li>P(x)</li>
-            <li>Auto(y)</li>
-          </ul>
-          <p>Na vstupu mohou být premisy, nebo konstanty.</p>
-          <p><b>Premisa</b> musí začínat kvantifikátorem a proměnnou na kterou se váže. Následující jsou platné premisy:</p>
+          <blockquote><p>Na vstupu mohou být premisy, nebo konstanty.</p></blockquote>
+          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou na kterou se váže. Následující jsou platné premisy:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
-            <li>∃xA(x) > B(x)</li>
+            <li>∃xA(x) ⊃ B(x)</li>
             <li>∀x B(x) & C(x)</li>
             <li>AxB(x)</li>
           </ul>
-          <p><b>Konstanty</b> se zapisují bez hranatých závorek:</p>
+          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kdy proměnná je malé písmeno. Platné literály:</p>
+          <ul>
+            <li>P(x)</li>
+            <li>Venn(y)</li>
+          </ul>
+          <p><b>Konstanty</b> se zapisují bez kvantifikátoru. Jsou pro ně vyhrazeny proměnné [a..g]:</p>
           <ul>
             <li>Q(a)</li>
-            <li>P(x)</li>
+            <li>P(g) ⊃ ¬Q(g)</li>
           </ul>
           <h3>Příklad validního vstupu:</h3>
           <ul>
@@ -173,8 +175,8 @@ export default {
       myChart: null,
       resultVenn: null,
       Explanation: '',
-      containers: [null, null, null, null],
-      container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four"]
+      containers: [null, null, null, null, null, null],
+      container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"]
     }
   },
   methods: {
@@ -339,7 +341,7 @@ export default {
                 let i = 1;
                 for (const step of response.data["steps"]){
                   const container =
-                  console.log(step);
+                  console.log(step, i);
                   if (this.containers[i] != null){
                     this.containers[i].unmount();
                   }

@@ -71,7 +71,7 @@ class Parser:
                   f" Pravděpodobně chybějící závorka na {self.__position}. pozici."
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
         else:
-            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__currbent}'. Na pozici: {self.__position}"
+            raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__current}'. Na pozici: {self.__position}"
                              f"\n{self.__pretty_error(self.__expression, self.__position)}")
 
     def __advance(self, amount=1):
@@ -95,16 +95,21 @@ class Parser:
             # we assume that this is a constant
             # form like B(x) instead of Ex[B(x)]
             # constants behave differently to regular expressions
-            # a variable of constant is shared among other constants with any variable
+            # a variable of a constant is shared among other constants with any variable
             expr.constant = True
             # we now have to backtrack because we have eaten up the first 2 chars
             self.__expression_generator = self.__make_expression_generator()
             self.__current = next(self.__expression_generator)
             expr.tree = self.__e_rule(expr.constant)
             expr.variable = self.__variable
+            if expr.variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                raise Exception(f"Pro konstanty jsou vyhrazenny proměnné [a..g], '{expr.variable}' nespadá do tohoto intervalu.")
+
             if self.__current:
                 raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
             return expr
+        elif expr.variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            raise Exception(f"Proměnná '{expr.variable}' je rezervována pro konstanty.")
         if self.__match('['):
             tree = self.__e_rule(False)
             if not tree:
@@ -246,7 +251,7 @@ class Parser:
         self.__current = next(self.__expression_generator)
         if not elem.isupper():
             if elem.islower():
-                raise TypeError(f"Jméno objektu malým písmem. Neznámý znak '{elem}' na pozici {self.__position}."
+                raise TypeError(f"Jméno objektu musí začínat velkým písmenem. Neznámý znak '{elem}' na pozici {self.__position}."
                                 f"\n{self.__pretty_error(self.__expression, self.__position)}")
             raise TypeError(f"Nelze identifikovat znak '{elem}' na {self.__position}. pozici. Očekáván literál."
                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
@@ -271,7 +276,11 @@ class Parser:
         variable = self.__current.lower()
         self.__set_variable(variable)
         self.__current = next(self.__expression_generator)
-        self.__require(')')
+        try:
+            self.__require(')')
+        except ValueError:
+            raise ValueError(f"Nalezen znak '{self.__current}'. Zde by měla být ukončovací závorka, jelikož proměnné "
+                             f"musí být ve tvaru jednoho písmene.")
         logging.debug(f"returning set {elem}({variable})")
 
         return Set(elem, variable)

@@ -116,9 +116,14 @@ async def send_expression(item: Thing):
         responseItem.notes = "Prázdný vstup, nebo chybějící závěr!"
         return responseItem
     except Exception as e:
-        logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
         responseItem = Item()
-        responseItem.notes = f"Chyba v {p_index}. premise: {e}"
+        if p_index == len(predicates) :
+            logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
+            responseItem.notes = f"Chyba v {p_index}. premise: {e}"
+        else:
+            logging.critical(f"{type(e).__name__}: V závěru: {e}")
+            responseItem.notes = f"Chyba v závěru: {e}"
+
         return responseItem
 
     responseItem.existential = solution.get("Exists within")

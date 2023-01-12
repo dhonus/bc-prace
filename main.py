@@ -47,7 +47,10 @@ def main(predicates: List[str], conclusion: str) -> bool:
             print("Invalid expected")
             return False
     except Exception as e:
-        logging.critical(f"{type(e).__name__}: V predikátu {p_index}: {e}")
+        if p_index == len(predicates):
+            logging.critical(f"{type(e).__name__}: V závěru: {e}")
+        else:
+            logging.critical(f"{type(e).__name__}: V predikátu {p_index}: {e}")
         if evaluator.get_invalid_expected():
             print("Invalid expected")
             return False

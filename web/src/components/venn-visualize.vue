@@ -284,7 +284,7 @@ export default {
         }
       });
 
-      var tooltip = d3.select("body")
+      let tooltip = d3.select("body")
           .append("div")
           .style("position", "absolute")
           .style("z-index", "10")
@@ -292,9 +292,6 @@ export default {
           .style("background-color", "rgb(54, 54, 54)")
           .style("padding", ".8rem");
 
-      var vis = d3.select("body").append("svg:svg")
-          .attr("width", 0)
-          .attr("height", 0);
 
       // hover over a segment and get its description
       g.selectAll("path.segment").on("mousemove", function (event) {
@@ -309,6 +306,77 @@ export default {
         tooltip.style("visibility", "hidden");
         const svg = d3.select(this);
       });
+
+
+      let __sets_identifiers = [
+        [this.sets[0]],
+      ];
+
+      // positions as [x, y]; corresponds to __sets_identifiers
+      let __sets_positions = [
+        [centerX_1 + 20, centerY_1+10],
+      ];
+
+      console.log(__sets_identifiers);
+
+      let positioned = {
+        '.': [],
+      };
+      let position_me = (index, key, character) => {
+        const pos = __sets_positions[index];
+
+        // this is done because a single position can be taken by multiple "x"
+        // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
+        if (positioned[index] === undefined){
+          positioned[index] = [];
+          positioned[index].push(key);
+        } else {
+          positioned[index].push(key);
+        }
+
+        console.log(index, "pos, key, index");
+        // background for the text
+        g.append("circle")
+            .attr("r", 14 + positioned[index].length * 3)
+            .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
+            .attr("class", character === "?" ? "question-background" : "set-background")
+        // the "X" or "?"
+        g.append("text")
+            .text(character)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("y", pos[1] - 5)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '1.2rem');
+        // the variable
+        g.append("text")
+            .text(character === "?" ? key : positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+            .attr("y", pos[1] - 1)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '.8rem');
+
+        if (character === "?"){
+          positioned[index].pop();
+        }
+      }
+
+
+      // existential
+      console.log(this.existential, "existential");
+      for (const position in __sets_identifiers){
+        for(let key in this.existential) {
+          console.log("the size is: " + this.existential[key].length);
+          for (let all in this.existential[key]) {
+            if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
+              console.log("found it");
+              console.log(this.existential[key][all], __sets_identifiers[position]);
+              position_me(position, key, this.existential[key].length === 1 ? "x" : "?");
+            }
+          }
+        }
+      }
 
       g.append("text")
           .text("Ω")
@@ -564,6 +632,86 @@ export default {
         const svg = d3.select(this);
       });
 
+
+      let __sets_identifiers = [
+        [this.sets[0]],
+        [this.sets[1]],
+        [this.sets[0], this.sets[1]],
+      ];
+
+      // positions as [x, y]; corresponds to __sets_identifiers
+      let __sets_positions = [
+        [centerX_1 - 20, centerY_1 + 10],
+        [centerX_2 + 60, centerY_2 + 10],
+        [centerX_3 + 20, centerY_2 + 10],
+      ];
+
+      console.log(__sets_identifiers);
+
+      let positioned = {
+        '.': [],
+      };
+      let position_me = (index, key, character) => {
+        const pos = __sets_positions[index];
+
+        // this is done because a single position can be taken by multiple "x"
+        // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
+        if (positioned[index] === undefined){
+          positioned[index] = [];
+          positioned[index].push(key);
+        } else {
+          positioned[index].push(key);
+        }
+
+        console.log(index, "pos, key, index");
+        // background for the text
+        g.append("circle")
+            .attr("r", 14 + positioned[index].length * 3)
+            .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
+            .attr("class", character === "?" ? "question-background" : "set-background")
+        // the "X" or "?"
+        g.append("text")
+            .text(character)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("y", pos[1] - 5)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '1.2rem');
+        // the variable
+        g.append("text")
+            .text(character === "?" ? key : positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+            .attr("y", pos[1] - 1)
+            .style('fill', '#323232')
+            .attr("class", character === "?" ? "question-text" : "set-text")
+            .style('font-size', '.8rem');
+
+        if (character === "?"){
+          positioned[index].pop();
+        }
+      }
+/*
+      for (let pos = 0; pos < __sets_positions.length; pos++) {
+        let key = "x";
+        position_me(pos, key, "?");
+      }
+*/
+
+      // existential
+      console.log(this.existential, "existential");
+      for (const position in __sets_identifiers){
+        for(let key in this.existential) {
+          console.log("the size is: " + this.existential[key].length);
+          for (let all in this.existential[key]) {
+            if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
+              console.log("found it");
+              console.log(this.existential[key][all], __sets_identifiers[position]);
+              position_me(position, key, this.existential[key].length === 1 ? "x" : "?");
+            }
+          }
+        }
+      }
+
       g.append("text")
           .text("Ω")
           .attr("x", (this.width - 30))
@@ -618,14 +766,7 @@ export default {
 
       // calculate points of intersections
       const generalHeight = Math.sqrt(vennRadius ** 2 - (offset / 2) ** 2);
-      const C1__C2_X_up = centerX_3;
-      const C1__C2_Y_up = centerY_1 - generalHeight;
-      const C1__C2_X_down = centerX_3;
-      const C1__C2_Y_down = centerY_1 + generalHeight;
 
-      //treat "triHeight" as the hypoteneuse of a 30.60.90 triangle.
-      //this tells us the shift from the midpoint of a leg of the triangle
-      //to the point of intersection
       const xDelta = (generalHeight * Math.sqrt(3)) / 2;
       const yDelta = generalHeight / 2;
 
@@ -633,19 +774,26 @@ export default {
       const xMidpointC2C3 = (centerX_2 + centerX_3) / 2;
       const yMidpointBoth = (centerY_1 + centerY_3) / 2;
 
-      // calculate the rest of the points of intersection
-      const xIsect2 = xMidpointC1C3 - xDelta;
-      const yIsect2 = yMidpointBoth + yDelta;
-      const xIsect3 = xMidpointC2C3 + xDelta;
-      const yIsect3 = yMidpointBoth + yDelta;
+      const x_intersect_1 = centerX_3;
+      const y_intersect_1 = centerY_1 - generalHeight;
 
-      const xIsect5 = xMidpointC1C3 + xDelta;
-      const yIsect5 = yMidpointBoth - yDelta;
-      const xIsect6 = xMidpointC2C3 - xDelta;
-      const yIsect6 = yMidpointBoth - yDelta;
+      const x_intersect_2 = xMidpointC1C3 - xDelta;
+      const y_intersect_2 = yMidpointBoth + yDelta;
 
-      let xPoints = [C1__C2_X_up, xIsect2, xIsect3, C1__C2_X_down, xIsect5, xIsect6];
-      let yPoints = [C1__C2_Y_up, yIsect2, yIsect3, C1__C2_Y_down, yIsect5, yIsect6];
+      const x_intersect_3 = xMidpointC2C3 + xDelta;
+      const y_intersect_3 = yMidpointBoth + yDelta;
+
+      const x_intersect_4 = centerX_3;
+      const y_intersect_4 = centerY_1 + generalHeight;
+
+      const x_intersect_5 = xMidpointC1C3 + xDelta;
+      const y_intersect_5 = yMidpointBoth - yDelta;
+
+      const x_intersect_6 = xMidpointC2C3 - xDelta;
+      const y_intersect_6 = yMidpointBoth - yDelta;
+
+      let xPoints = [x_intersect_1, x_intersect_2, x_intersect_3, x_intersect_4, x_intersect_5, x_intersect_6];
+      let yPoints = [y_intersect_1, y_intersect_2, y_intersect_3, y_intersect_4, y_intersect_5, y_intersect_6];
 
       // three functions to create the paths using the points of intersection
       const intersectionOfTwoArea = ([x1, x2, x3, y1, y2, y3]) => {
@@ -908,36 +1056,48 @@ export default {
 
       console.log(__sets_identifiers);
 
+      let positioned = {
+        '.': [],
+      };
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
-        console.log(pos, key, "pos, key");
+
+        // this is done because a single position can be taken by multiple "x"
+        // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
+        if (positioned[index] === undefined){
+          positioned[index] = [];
+          positioned[index].push(key);
+        } else {
+          positioned[index].push(key);
+        }
+
+        console.log(index, "pos, key, index");
         // background for the text
         g.append("circle")
-            .attr("r", 14)
+            .attr("r", 14 + positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
         g.append("text")
             .text(character)
-            .attr("x", pos[0] - (character === "?" ? 27 : 28))
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1.2rem');
         // the variable
         g.append("text")
-            .text(key)
-            .attr("x", pos[0] - (character === "?" ? 18 : 18))
+            .text(character === "?" ? key : positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '.8rem');
-      }
 
-      /*for (let pos of __sets_positions) {
-        let key = "x";
-        position_me(pos, key);
-      }*/
+        if (character === "?"){
+          positioned[index].pop();
+        }
+      }
 
       // existential
       console.log(this.existential, "existential");
@@ -951,18 +1111,8 @@ export default {
               position_me(position, key, this.existential[key].length === 1 ? "x" : "?");
             }
           }
-          /*
-          console.log(key[0].toString())
-          if (key[0].toString() == position.toString()) {
-            console.log(this.existential[key][0], "existential key");
-            console.log(__sets_identifiers.indexOf(this.existential[key][0]), "index of");
-          } else {
-            console.log("not found");
-          }
-          */
         }
       }
-
 
       console.log(this.existential instanceof Array)
 
@@ -1075,7 +1225,6 @@ export default {
 
       // calculate points of intersections
       const generalHeight = Math.sqrt(vennRadius ** 2 - (offset / 2) ** 2);
-
 
       //treat "triHeight" as the hypoteneuse of a 30.60.90 triangle.
       //this tells us the shift from the midpoint of a leg of the triangle

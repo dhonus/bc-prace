@@ -20,7 +20,7 @@ class Node:
 
 class ExpressionTree(Node):
     """ main node which holds the quantifier of a premise and the full subtree """
-    def __init__(self, value: str, variable: str, tree: Node | None):
+    def __init__(self, value: str, variable: str | None, tree: Node | None):
         super().__init__(None, None, value)
         self.variable = variable
         self.tree = tree

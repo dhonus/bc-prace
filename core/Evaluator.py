@@ -145,7 +145,7 @@ class Evaluator:
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
-                        self.__explanations[expr_tree.p_index] = [f"Všechny plochy jsou vyřazeny"]
+                        self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny."]
                         self.__valid_on_all = False
 
                     print("adding is not 1", self.__existential_solved)
@@ -155,14 +155,22 @@ class Evaluator:
 
                         # this should be OK, removing the inaccessible areas
                         existential_solved_final[var] = adding
-                        self.__steps.append(
-                            {
-                                "Predicate": expr_tree.p_index,
-                                "Exists within": existential_solved_final.copy(),
-                                "Crossed out": list(set(self.__universal_solved)),  # deduplicate
-                                "Explanations": self.__explanations.copy()
-                            }
-                        )
+                        found = False
+                        for step in self.__steps:
+                            if step["Predicate"] == expr_tree.p_index:
+                                step["Exists within"] = existential_solved_final.copy()
+                                step["Crossed out"] = list(set(self.__universal_solved.copy()))  # deduplicate
+                                step["Explanations"] = self.__explanations.copy()
+                                found = True
+                        if not found and var == expr_tree.variable:
+                            self.__steps.append(
+                                {
+                                    "Predicate": expr_tree.p_index,
+                                    "Exists within": existential_solved_final.copy(),
+                                    "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
+                                    "Explanations": self.__explanations.copy()  # we need the current state
+                                }
+                            )
                         for constant in constants:
                             self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
 
@@ -196,7 +204,7 @@ class Evaluator:
                     {
                         "Predicate": expr_tree.p_index,
                         "Exists within": existential_solved_final.copy(),
-                        "Crossed out": list(set(self.__universal_solved)),  # deduplicate
+                        "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
                         "Explanations": self.__explanations.copy()  # we need the current state
                     }
                 )
