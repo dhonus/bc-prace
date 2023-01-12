@@ -125,7 +125,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_thirteen(self):
         p = [
-            "A(x)",
+            "A(a)",
             "Ex[A(x) & !B(x)]",
         ]
         c = "Ex[!B(x)]"
