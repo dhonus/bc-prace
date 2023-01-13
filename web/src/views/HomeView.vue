@@ -337,12 +337,20 @@ export default {
                 l_existential_sorted[key] = value.sort();
               }
 
+              let l_bad_sorted = {};
+              // sort dict entries
+              for (let [key, value] of Object.entries(step.bad)) {
+                //console.log(key, value, "key value");
+                for (let i = 0; i < value.length; i++) value[i].sort();
+                l_bad_sorted[key] = value.sort();
+              }
+
               this.containers[i] = createApp(VennVisualizer, {
                 vennSize: step.sets.length,
                 sets: step.sets.sort(),
                 predicates: step.predicates,
                 explanations: step.explanations,
-                bad: step.bad,
+                bad: l_bad_sorted,
                 // solutions
                 existential: l_existential_sorted,
                 universal: l_universal_sorted,
