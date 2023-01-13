@@ -109,9 +109,7 @@ class Evaluator:
         # universal predicates have priority
         for expr_tree in trees:
             if expr_tree.value == '∀':
-                # self.__explanations[expr_tree.p_index] = [f"{expr_tree.print()}"]
-                if expr_tree:
-                    self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
+                self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
 
                 print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
                 self.__universal_solved += self.__universal_solve(expr_tree)
@@ -166,6 +164,7 @@ class Evaluator:
                         if not found and var == expr_tree.variable:
                             self.__steps.append(
                                 {
+                                    "Bad": {expr_tree.variable: adding},
                                     "Predicate": expr_tree.p_index,
                                     "Exists within": existential_solved_final.copy(),
                                     "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
@@ -204,6 +203,7 @@ class Evaluator:
             if not found:
                 self.__steps.append(
                     {
+                        "Bad": {},
                         "Predicate": expr_tree.p_index,
                         "Exists within": existential_solved_final.copy(),
                         "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
@@ -283,8 +283,14 @@ class Evaluator:
                 self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
                 return False
 
-            if var_set.issubset(self.__conclusion_solved[variable]):
-                self.__explanations[0] = [f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__conclusion_solved[variable]}."]
+            # if any from var_set is in the conclusion, the problem is valid
+            if not var_set.isdisjoint(self.__conclusion_solved[variable]):
+                if variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                    self.__explanations[0] = [
+                        f"Pro '{variable}' platí, že existuje prvek, který spadá do alespoň jednoho z {self.__conclusion_solved[variable]}."]
+                else:
+                    self.__explanations[0] = [f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__conclusion_solved[variable]}."]
+
                 return True
 
             self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {solution['Exists within'][variable]}."]

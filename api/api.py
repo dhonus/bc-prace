@@ -20,6 +20,7 @@ import git
 
 class Item(BaseModel):
     existential: dict[str, set[tuple]] = {}
+    bad: dict[str, set[tuple]] = {}
     universal: set[tuple] = set()
     explanations: dict[int, list[str]] = {}
     predicates: dict[int, str] = {}
@@ -102,6 +103,7 @@ async def send_expression(item: Thing):
             item.universal = step["Crossed out"]
             item.explanations = step["Explanations"]
             item.p_index = step["Predicate"]
+            item.bad = step["Bad"]
             responseItem.steps.append(item)
 
         print(evaluator.get_sets(), "aaa")

@@ -199,9 +199,6 @@ export default {
       if (this.count > 1)
         this.count--;
     },
-    remove: function () {
-      this.count--;
-    },
     printCanvas: function (){
       //const canvas = this.$refs.canvas;
       //const img    = canvas.toDataURL('image/png');
@@ -238,24 +235,14 @@ export default {
     async submit(steps){
 
       let predicates = []
-      for (var key of Object.keys(this.values)) {
+      for (let key of Object.keys(this.values)) {
         console.log(key + " -> " + this.values[key]);
         if (this.values[key].length !== 0)
           predicates.push(this.values[key]);
       }
 
       let conclusion = this.$refs.zaver.value;
-      let formdata = new FormData();
-      formdata.append('conclusion', JSON.stringify(conclusion))
-      formdata.append('predicates',JSON.stringify(predicates));
-      /*
-      axios.post('/api', {
-            conclusion: conclusion,
-            predicates: predicates,
-          paramsSerializer: params => {
-            return qs.stringify(params)
-          }
-      */
+     
       try {
         axios.post('/api', {
           conclusion: conclusion,
@@ -263,135 +250,116 @@ export default {
           paramsSerializer: params => {
             return qs.stringify(params)
           }
-        })
-            .then((response) => {
-              console.log(response);
-              if (response.data['notes'] !== "OK")
-                this.APIErrorMessage = response.data['notes'];
-              else{
-                this.APIErrorMessage = "";
-              }
-              this.validity = response.data["valid"];
+        }).then((response) => {
+          console.log(response);
 
-              // this is the message to the user!
-              // the "result" reasoning is at the 0th position
-              // if we cannot find it, we will display the last one
-              if (response.data["explanations"][0] !== undefined){
-                this.Explanation = String(response.data["explanations"][0]);
-              }
-              else{
-                const max = Object.keys(response.data["explanations"]).length;
-                console.log(max);
-                this.Explanation = String(response.data["explanations"][max]);
-              }
+          this.APIErrorMessage = response.data['notes'] !== "OK" ? response.data['notes'] : "";
+          this.validity = response.data["valid"];
 
-              let theData = []
-              for (const element of response.data["sets"]) {
-                theData.push({ label: String(element), values: []})
-              }
+          // this is the message to the user!
+          // the "result" reasoning is at the 0th position
+          // if we cannot find it, we will display the last one
+          if (response.data["explanations"][0] !== undefined) {
+            this.Explanation = String(response.data["explanations"][0]);
+          }
+          else {
+            const max = Object.keys(response.data["explanations"]).length;
+            this.Explanation = String(response.data["explanations"][max]);
+            //console.log(max);
+          }
 
-              console.log(theData, "thedata");
-              console.log([
-                { label: 'A', values: [] },
-                { label: 'B', values: [] },
-                { label: 'C', values: [] },
-              ]);
+          let theData = []
+          for (const element of response.data["sets"]) {
+            theData.push({ label: String(element), values: []})
+          }
 
-              if (this.resultVenn != null){
-                this.resultVenn.unmount();
-              }
+          if (this.resultVenn != null){
+            this.resultVenn.unmount();
+            this.resultVenn = null;
+          }
+
+          // sort every array inside this.universal alphabetically
+          let universal_sorted = response.data["universal"];
+          for (let i = 0; i < universal_sorted.length; i++) universal_sorted[i].sort();
+
+          let existential_sorted = {};
+
+          // sort dict entries
+          for (let [key, value] of Object.entries(response.data["existential"])) {
+            console.log(key, value, "key value");
+            for (let i = 0; i < value.length; i++) value[i].sort();
+
+            existential_sorted[key] = value.sort();
+          }
+
+          if (!steps) {
+            for (let i = 0; i < this.containers.length; i++) {
+              if (this.containers[i] != null) this.containers[i].unmount();
+            }
+
+            this.resultVenn = createApp(VennVisualizer, {
+              vennSize: response.data["sets"].length,
+              sets: response.data["sets"].sort(),
+              predicates: response.data["predicates"],
+              explanations: response.data["explanations"],
+              bad: response.data["bad"],
+              // solutions
+              existential: existential_sorted,
+              universal: universal_sorted,
+              step: false,
+            });
+            this.resultVenn.mount('#venn');
+
+          } else {
+            if (this.resultVenn != null)
+              this.resultVenn.unmount();
+
+            //console.log(response.data["steps"]);
+
+            // for each in steps
+            let i = 1;
+            for (const step of response.data["steps"]){
+              //console.log(step, i);
+
+              if (this.containers[i] != null)
+                this.containers[i].unmount();
+
+              let l_universal_sorted = step.universal;
 
               // sort every array inside this.universal alphabetically
-              let universal_sorted = response.data["universal"];
-              for (let i = 0; i < universal_sorted.length; i++) {
-                universal_sorted[i].sort();
-              }
-              let existential_sorted = {};
+              for (let i = 0; i < l_universal_sorted.length; i++) l_universal_sorted[i].sort();
+
+              let l_existential_sorted = {};
               // sort dict entries
-              for (let [key, value] of Object.entries(response.data["existential"])) {
-                console.log(key, value, "key value");
-                for (let i = 0; i < value.length; i++) {
-                  value[i].sort();
-                }
-                existential_sorted[key] = value.sort();
+              for (let [key, value] of Object.entries(step.existential)) {
+                //console.log(key, value, "key value");
+                for (let i = 0; i < value.length; i++) value[i].sort();
+                l_existential_sorted[key] = value.sort();
               }
-              if (!steps) {
-                for (let i = 0; i < this.containers.length; i++) {
-                  if (this.containers[i] != null){
-                    this.containers[i].unmount();
-                  }
-                }
-                this.resultVenn = createApp(VennVisualizer, {
-                  vennSize: response.data["sets"].length,
-                  sets: response.data["sets"].sort(),
-                  predicates: response.data["predicates"],
-                  explanations: response.data["explanations"],
-                  // solutions
-                  existential: existential_sorted,
-                  universal: universal_sorted,
-                  step: false,
-                });
-                this.resultVenn.mount('#venn');
-              } else {
-                if (this.resultVenn != null) {
-                  this.resultVenn.unmount();
-                }
-                console.log(response.data["steps"]);
-                // for each in steps
-                let i = 1;
-                for (const step of response.data["steps"]){
-                  const container =
-                  console.log(step, i);
-                  if (this.containers[i] != null){
-                    this.containers[i].unmount();
-                  }
-                  let l_universal_sorted = step.universal;
-                  // sort every array inside this.universal alphabetically
-                  for (let i = 0; i < l_universal_sorted.length; i++) {
-                    l_universal_sorted[i].sort();
-                  }
-                  let l_existential_sorted = {};
-                  // sort dict entries
-                  for (let [key, value] of Object.entries(step.existential)) {
-                    console.log(key, value, "key value");
-                    for (let i = 0; i < value.length; i++) {
-                      value[i].sort();
-                    }
-                    l_existential_sorted[key] = value.sort();
-                  }
-                  this.containers[i] = createApp(VennVisualizer, {
-                    vennSize: step.sets.length,
-                    sets: step.sets.sort(),
-                    predicates: step.predicates,
-                    explanations: step.explanations,
-                    // solutions
-                    existential: l_existential_sorted,
-                    universal: l_universal_sorted,
-                    canvasPredicate: response.data["predicates"][step.p_index],
-                    canvasExplanation: response.data["explanations"][step.p_index][0],
-                    step: true,
-                  });
-                  this.containers[i].mount(this.container_names[i++]);
-                }
-              }
-            }, (error) => {
-              console.log(error);
-            });
+
+              this.containers[i] = createApp(VennVisualizer, {
+                vennSize: step.sets.length,
+                sets: step.sets.sort(),
+                predicates: step.predicates,
+                explanations: step.explanations,
+                bad: step.bad,
+                // solutions
+                existential: l_existential_sorted,
+                universal: l_universal_sorted,
+                canvasPredicate: response.data["predicates"][step.p_index],
+                canvasExplanation: response.data["explanations"][step.p_index][0],
+                step: true,
+              });
+              this.containers[i].mount(this.container_names[i++]);
+            }
+          }
+        }, (error) => {
+          console.log(error);
+          this.APIErrorMessage = "Něco se pokazilo na pozadí. Pokud problém přetrvává, kontaktujte administrátora.";
+        });
       } catch (err) {
         // uh oh, didn't work, time for plan B
       }
-    },
-    togg: function(){
-      if (this.$refs.buttonFour.innerText === '+'){
-        this.$refs.buttonFour.innerText = "-";
-      }
-      else {
-        this.$refs.buttonFour.innerText = "+";
-      }
-
-    },
-    makeChart() {
-
     },
   },
   mounted: function() {
