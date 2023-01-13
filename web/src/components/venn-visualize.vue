@@ -138,7 +138,7 @@ export default {
             .attr("opacity", 0.6);
       };
       // if universum is hashed
-      if (this.universal.flat().includes('μ')) {
+      if (this.universal.flat().includes('Ω')) {
         console.log("so flat", this.universal.flat());
         universum(g, true);
         return new Area("Universum", "hashed", "#cecece", "A 0 20 0 0 1 " + this.width + " " + this.height);

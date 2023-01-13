@@ -11,7 +11,7 @@ class Venn:
         self.dict = {}
         self.explanations = {}
         self.variables = variables
-        self.variables.append('μ')
+        self.variables.append('Ω')
         self.sets = []
         for var in self.variables:
             self.dict[var] = " "
@@ -45,13 +45,13 @@ class Venn:
 
         sol_universum_accounted = list()
         # remove universe symbol from all but just itself
-        # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
+        # {'AΩ', 'Ω', 'BΩ'} -> {'A', 'Ω', 'B'}
         for item in sol:
-            if item[0] == 'μ' and len(item) == 1:
+            if item[0] == 'Ω' and len(item) == 1:
                 sol_universum_accounted.append(item)
                 continue
             try:
-                idx = item.index('μ')
+                idx = item.index('Ω')
                 item = item[:idx] + item[idx + 1:]
             except ValueError:
                 pass # not in tuple
@@ -72,14 +72,14 @@ class Venn:
         print(self.area_combinations)
         sol_universum_accounted = list()
         # remove universe symbol from all but just itself
-        # {'Aμ', 'μ', 'Bμ'} -> {'A', 'μ', 'B'}
+        # {'AΩ', 'Ω', 'BΩ'} -> {'A', 'Ω', 'B'}
         for item in solution:
             # NOT SURE HERE
-            """if item[0] == 'μ' and len(item) == 1:
+            """if item[0] == 'Ω' and len(item) == 1:
                 sol_universum_accounted.append(item)
                 continue"""
             try:
-                idx = item.index('μ')
+                idx = item.index('Ω')
                 item = item[:idx] + item[idx + 1:]
             except ValueError:
                 pass # not in tuple
