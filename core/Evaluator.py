@@ -109,7 +109,9 @@ class Evaluator:
         # universal predicates have priority
         for expr_tree in trees:
             if expr_tree.value == '∀':
-                self.__explanations[expr_tree.p_index] = [f"{expr_tree.print()}"]
+                # self.__explanations[expr_tree.p_index] = [f"{expr_tree.print()}"]
+                if expr_tree:
+                    self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
 
                 print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
                 self.__universal_solved += self.__universal_solve(expr_tree)
@@ -121,7 +123,6 @@ class Evaluator:
                     # add list to list instead of joining
 
             elif expr_tree.value == '∃':
-                self.__explanations[expr_tree.p_index] = [f"{expr_tree.print()}"]
                 self.__existential_count += 1
 
                 print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
@@ -182,6 +183,7 @@ class Evaluator:
 
                 else:
                     self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
+                    self.__explanations[expr_tree.p_index] = [f"Existuje pouze jedna plocha, na kterou lze umístit křížek. Tato plocha je {adding}."]
 
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')

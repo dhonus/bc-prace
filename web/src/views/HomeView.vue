@@ -72,7 +72,7 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
-          <p>Následuje tabulka <b>podporovaných symbolů</b> a jejich <b>povolených variant</b>. Tyto symboly <br>mohou být libovolně kombinovány</p>
+          <p>Následuje tabulka <b>podporovaných symbolů</b> a jejich <b>povolených variant</b>. Tyto symboly <br>mohou být libovolně kombinovány.</p>
           <table>
             <tr>
               <td>Implikace</td>
