@@ -118,6 +118,9 @@ export default {
       console.log(g);
       return g;
     },
+    emptyDict: function(dict) {
+      return Object.keys(dict).length === 0;
+    },
     universum_hatch_check: function (g){
       // empty inline function
       let universum = (g, hatched) => {
@@ -385,7 +388,7 @@ export default {
                     position_me(position, key, "?");
                   }
                 }
-              } else {
+              } else if (this.emptyDict(this.bad)){
                 position_me(position, key, "x");
               }
             }
@@ -732,7 +735,7 @@ export default {
                     position_me(position, key, "?");
                   }
                 }
-              } else {
+              } else if (this.emptyDict(this.bad)){
                 position_me(position, key, "x");
               }
             }
@@ -1145,7 +1148,7 @@ export default {
                     position_me(position, key, "?");
                   }
                 }
-              } else {
+              }  else if (this.emptyDict(this.bad)){
                 position_me(position, key, "x");
               }
             }
