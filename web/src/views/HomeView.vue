@@ -314,13 +314,10 @@ export default {
             if (this.resultVenn != null)
               this.resultVenn.unmount();
 
-            //console.log(response.data["steps"]);
-
             // for each in steps
             let i = 1;
             for (const step of response.data["steps"]){
               //console.log(step, i);
-
               if (this.containers[i] != null)
                 this.containers[i].unmount();
 

@@ -22,7 +22,9 @@
     <p ref="canvasPredicate">{{ canvasPredicate }}</p>
     <p ref="canvasExplanation">{{ canvasExplanation }}</p>
   </div>
-  <div class="canvasWrapper" ref="canvasWrapper">
+  <p v-if="limit" class="information">Pro tuto velikost není náhled Vennova diagramu k dispozici.</p>
+
+  <div v-if="!limit" class="canvasWrapper" ref="canvasWrapper">
     <svg width="600" height="400" ref="canvas"></svg>
     <img ref="canvasExportImage">
   </div>
@@ -80,6 +82,7 @@ export default {
       currentModifierButton: null,
       width: 0,
       height: 0,
+      limit: false,
     };
   },
   methods: {
@@ -1458,8 +1461,6 @@ export default {
           return compareArrays(arr, twoSetAreasNames[i]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
-
           g.append("path")
               .attr("id", theId)
               .attr("d", shape)
@@ -1468,7 +1469,6 @@ export default {
               .attr("opacity", 0.8);
           areas_of_diagram.push(new Area(theId, "hashed", ironFill, twoSetAreasNames[i]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
               .attr("id", theId)
               .attr("d", shape)
@@ -1477,9 +1477,6 @@ export default {
               .attr("opacity", 0.8);
           areas_of_diagram.push(new Area(theId, "clear", ironFill, twoSetAreasNames[i]));
         }
-
-        console.log(this.universal, "universal ", twoSetAreasNames[i]);
-
         i++;
       }
 
@@ -1865,6 +1862,7 @@ export default {
   },
   // called when the component is created and inserted into the DOM
   mounted: function () {
+    this.limit = false;
     switch (this.vennSize) {
       case 1:
         this.venn1();
@@ -1879,6 +1877,7 @@ export default {
         this.venn4();
         break;
       default:
+        this.limit = true;
         console.log("no type specified");
     }
     console.log("created venn of size " + this.vennSize);
