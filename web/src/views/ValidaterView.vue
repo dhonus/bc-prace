@@ -3,21 +3,21 @@
     <img src="@/assets/spinner.gif" alt="Spinner" />
   </div>
   <div class="home">
-    <div class="tablinks">
+    <div class="tablinks" style="margin-bottom: 1rem">
       <div class="row">
         <div class="single">
           <a href="/">
-            <button class="tab active">Vyhodnotit</button>
+            <button class="tab">Vyhodnotit</button>
           </a>
         </div>
         <div class="single">
           <a href="/validate">
-          <button class="tab">Zkontrolovat</button>
+            <button class="tab active">Zkontrolovat</button>
           </a>
         </div>
       </div>
     </div>
-    <HelloWorld msg="Bc. Práce" />
+    <HelloWorld msg="Bc. Práce" style="display: none"/>
     <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.shift.enter.exact="submitWithKeySteps">
       <div class="predicates">
         <div v-for="key in count" :key="key">
@@ -32,14 +32,8 @@
         <input @focus="focusOnMe(-1)" ref="zaver" id="zaver" placeholder="Závěr" />
         <div class="button_container">
           <button class="accept_button" ref="accept_button" @click="submit(false)">
-            <p style="flex:1; text-align: left; font-size: larger;">Vyhodnotit</p>
+            <p style="flex:1; text-align: left; font-size: larger;">Začít</p>
             <img style="color:white; height: 2rem; " src="../assets/control.svg">
-            &nbsp;
-            <img style="color:white; height: 2rem; " src="../assets/enter.svg">
-          </button>
-          <button style="flex:1;" class="accept_button" ref="step_button" @click="submit(true)">
-            <p style="flex:1; text-align: left; font-size: larger;">Odkrokovat</p>
-            <img style="color:white; height: 2rem; " src="../assets/shift.svg">
             &nbsp;
             <img style="color:white; height: 2rem; " src="../assets/enter.svg">
           </button>

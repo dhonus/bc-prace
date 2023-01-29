@@ -9,6 +9,33 @@ html, body
 p, h1, h2, h3, h4, h5, h6
   color: #2c2c2c
 
+div.tablinks
+  width: 100%
+  padding: 1rem 0
+  background: #e2e2e2
+  div.row
+    margin: auto
+    width: 60%
+    display: flex
+    flex-direction: row
+    justify-content: left
+    gap: 1rem
+    div.single
+      button.tab
+        border: none
+        background: #cbcbcb
+        padding: .4rem .6rem
+        border-radius: 8px
+        font-size: 1rem
+        color: #333333
+        &:hover
+          background: #8a8a8a
+          color: white
+          cursor: pointer
+      button.active
+        color: #5C427E
+
+
 div.input_wrapper
   display: flex
   flex-direction: row

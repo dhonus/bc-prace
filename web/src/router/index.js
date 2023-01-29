@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import ValidaterView from "@/views/ValidaterView.vue";
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/validate',
+    name: 'validate',
+    component: ValidaterView
   },
   {
     path: '/about',
