@@ -54,7 +54,10 @@ app.add_middleware(
 @app.post("/api", response_model=Item)
 async def send_expression(item: Thing):
     logging.root.setLevel(logging.DEBUG)
-
+    """item.predicates = [
+        "AxA(x)|B(x)|C(x)|D(x)",
+        "Ex  B(x) & D(x)"    ]
+    item.conclusion = "AxA(x)|B(x)|C(x)|D(x)"""
     predicates = [predicate.replace(" ", "") for predicate in item.predicates]
 
     # we will return the enumerated predicates to the frontend to make sure the order is maintained

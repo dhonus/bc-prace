@@ -340,15 +340,15 @@ class Evaluator:
                     return True
 
             if not var_set.issubset(self.__conclusion_solved[variable]):
+                # if not var_set.issubset(set(self.__conclusion_solved[variable])):
+                #     self.__explanations[0] = [f"Pro '{variable}' není řešení. Existují prvky mimo výběr. {set(self.__conclusion_solved[variable]) - crossed_out}"]
+                #    return False
                 self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
                                           f"Platí že {var_set} není vyškrtáno a splňuje tím podmínku závěru."]
                 return True
 
             self.__explanations[0] = [f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__conclusion_solved[variable]}."]
             return False
-
-
-
 
 
     """
