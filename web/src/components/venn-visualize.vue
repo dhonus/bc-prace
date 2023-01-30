@@ -148,11 +148,11 @@ export default {
       if (this.universal.flat().includes('Ω')) {
         console.log("so flat", this.universal.flat());
         universum(g, true);
-        return new Area("Universum", "hashed", "#cecece", "A 0 20 0 0 1 " + this.width + " " + this.height);
+        return new Area("Universum", "hashed", "#fbfbfb", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
       else {
         universum(g, false);
-        return new Area("Universum", "clear", "#cecece", "A 0 20 0 0 1 " + this.width + " " + this.height);
+        return new Area("Universum", "clear", "#fbfbfb", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
     },
     venn1: function (){
@@ -244,7 +244,7 @@ export default {
       console.log(hash_these, "hash these");
 
       let i = 0;
-      let sunFill = "#e7e7e7";
+      let sunFill = "#e2e2e2";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -577,7 +577,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e7e7e7";
+      let sunFill = "#e2e2e2";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -943,7 +943,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e7e7e7";
+      let sunFill = "#e2e2e2";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -1489,7 +1489,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e7e7e7";
+      let sunFill = "#e2e2e2";
       for (const points of singleSetAreas) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -1784,6 +1784,7 @@ export default {
           .attr("y", centerY_4 + vennRadius)
           .style('fill', '#323232');
       // add the text labels
+      /*
             g.append("text")
                 .text("1")
                 .attr("x", x_intersect_1)
@@ -1856,7 +1857,7 @@ export default {
                 .attr("x", x_intersect_12)
                 .attr("y", y_intersect_12)
                 .style('fill', 'white')
-
+*/
     }
   },
   // called when the component is created and inserted into the DOM
