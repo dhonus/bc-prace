@@ -19,7 +19,7 @@
     </div>
     <HelloWorld msg="Bc. Práce" />
     <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.shift.enter.exact="submitWithKeySteps">
-      <div class="predicates">
+      <div class="predicates bubble">
         <div v-for="key in count" :key="key">
           <Transition>
             <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print">
@@ -44,6 +44,7 @@
             <img style="color:white; height: 2rem; " src="../assets/enter.svg">
           </button>
         </div>
+        <div style="height: 1px; background: #dddde0; margin: 1rem auto auto auto; width: 90%;"></div>
         <div class="why">
           <p v-if="APIErrorMessage.length > 0" style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
           <span v-if="APIErrorMessage.length <= 0">
@@ -72,7 +73,7 @@
         </div>
 
       </div>
-      <div class="left_section">
+      <div class="left_section bubble">
         <div class="keyboard">
           <button @click="type('⊃')" rel="">⊃</button>
           <button @click="type('≡')" rel="">≡</button>

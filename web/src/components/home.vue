@@ -1,7 +1,7 @@
 <!-- https://axios-http.com/docs/post_example -->
 
 <template>
-  <div class="noprint" style="padding: 1rem;">
+  <div class="noprint" style="padding: 0 0 2rem 0;">
     <p>{{ msg }}</p>
     <p><b style="color:#9981b4;">V případě chyby ve výsledku prosím o zaslání zadání na hon0102@vsb.cz včetně hash.</b></p>
   </div>

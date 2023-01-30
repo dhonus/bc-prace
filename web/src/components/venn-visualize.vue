@@ -141,7 +141,7 @@ export default {
             .attr("d", "M0,20 L" + this.width + ",20 L"
                 + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
             .attr("class", "segment")
-            .attr("fill", hatched ? "url(#universumHatch)" : "rgb(206, 206, 206)")
+            .attr("fill", hatched ? "url(#universumHatch)" : "#fbfbfb")
             .attr("opacity", 0.6);
       };
       // if universum is hashed
@@ -244,7 +244,7 @@ export default {
       console.log(hash_these, "hash these");
 
       let i = 0;
-      let sunFill = "#8f8f8f";
+      let sunFill = "#e0e0e0";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -577,7 +577,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#8f8f8f";
+      let sunFill = "#e0e0e0";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -943,7 +943,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#8f8f8f";
+      let sunFill = "#e0e0e0";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -1004,16 +1004,16 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", "#aa86c5", roundedTriNames[0]));
+          areas_of_diagram.push(new Area(theId, "hashed", "#929292", roundedTriNames[0]));
         } else {
           console.log("dont hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
               .attr("d", shape)
               .attr("class", "segment")
-              .attr("fill", "#aa86c5")
+              .attr("fill", "#929292")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", "#aa86c5", roundedTriNames[0]));
+          areas_of_diagram.push(new Area(theId, "clear", "#929292", roundedTriNames[0]));
         }
       }
 
@@ -1489,7 +1489,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#8f8f8f";
+      let sunFill = "#e0e0e0";
       for (const points of singleSetAreas) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
