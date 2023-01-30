@@ -244,7 +244,7 @@ export default {
       console.log(hash_these, "hash these");
 
       let i = 0;
-      let sunFill = "#e0e0e0";
+      let sunFill = "#e7e7e7";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -577,7 +577,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e0e0e0";
+      let sunFill = "#e7e7e7";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -943,7 +943,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e0e0e0";
+      let sunFill = "#e7e7e7";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -1489,7 +1489,7 @@ export default {
       console.log(hash_these, "hash these");
 
       i = 0;
-      let sunFill = "#e0e0e0";
+      let sunFill = "#e7e7e7";
       for (const points of singleSetAreas) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -1783,7 +1783,6 @@ export default {
           .attr("x", centerX_2 + vennRadius)
           .attr("y", centerY_4 + vennRadius)
           .style('fill', '#323232');
-/*
       // add the text labels
             g.append("text")
                 .text("1")
@@ -1857,7 +1856,7 @@ export default {
                 .attr("x", x_intersect_12)
                 .attr("y", y_intersect_12)
                 .style('fill', 'white')
-                */
+
     }
   },
   // called when the component is created and inserted into the DOM
