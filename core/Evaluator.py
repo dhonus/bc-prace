@@ -140,7 +140,7 @@ class Evaluator:
                 if len(adding) != 1:
                     # so if we DO NOT know where to put the "x", we will tell the user
                     # self.__valid_on_all = False
-                    self.__explanations[expr_tree.p_index] = [f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {adding} umístit křížek."]
+                    self.__explanations[expr_tree.p_index] = [f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
@@ -182,7 +182,7 @@ class Evaluator:
 
                 else:
                     self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
-                    self.__explanations[expr_tree.p_index] = [f"Existuje pouze jedna plocha, na kterou lze umístit křížek. Tato plocha je {adding}."]
+                    self.__explanations[expr_tree.p_index] = [f"Existuje pouze jedna plocha, na kterou lze umístit křížek. Tato plocha je {self.__pretty_print(adding)}."]
 
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
@@ -287,9 +287,9 @@ class Evaluator:
             if not var_set.isdisjoint(self.__conclusion_solved[variable]):
                 if variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     self.__explanations[0] = [
-                        f"Pro '{variable}' platí, že existuje prvek, který spadá do alespoň jednoho z {self.__conclusion_solved[variable]}."]
+                        f"Pro '{variable}' platí, že existuje prvek, který spadá do alespoň jednoho z {self.__pretty_print(self.__conclusion_solved[variable])}."]
                 else:
-                    self.__explanations[0] = [f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__conclusion_solved[variable]}."]
+                    self.__explanations[0] = [f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__pretty_print(self.__conclusion_solved[variable])}."]
 
                 return True
 
@@ -359,6 +359,31 @@ class Evaluator:
             if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
                 ret = ret & False
             ret = ret & True"""
+
+    def __pretty_print(self, param):
+        match param:
+            case set():
+                ret = ""
+                for what, i in enumerate(param):
+                    if what == len(param) - 2:
+                        ret += self.__pretty_print(i) + " a "
+                    else:
+                        ret += self.__pretty_print(i)
+                        if what != len(param) - 1:
+                            ret += ", "
+                return ret
+            case tuple():
+                ret = "("
+                if len(param) == 1:
+                    return ret + self.__pretty_print(param[0]) + ")"
+                for i, what in enumerate(param):
+                    ret += self.__pretty_print(what)
+                    if i != len(param) - 1:
+                        ret += " ∩ "
+                return ret + ")"
+            case _:
+                return str(param)
+
 
 
 """
