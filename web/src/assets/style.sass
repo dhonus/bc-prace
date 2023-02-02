@@ -151,7 +151,7 @@ div.input_wrapper
 button.accept_button
   line-height: 2rem
   color: white
-  background: #f6f6f9e0
+  background: #f7f7f9
   cursor: pointer
   border: 1px solid #dddde0
   border-radius: 25px
@@ -167,7 +167,8 @@ button.accept_button
     color: #2f2f2f
     font-weight: 400
   &:hover
-    border-color: purple
+    border-color: #800080
+    background: #f5ecf5
   &:active
     background: #f5ecf5
     border-color: purple
@@ -387,7 +388,10 @@ blockquote
     background-color: #939393
     left: -1rem
 
-  @page
+@media print
+  html
+    font-size: 12px
+  page
     margin: 0.5cm
   body
     -webkit-print-color-adjust: exact !important
