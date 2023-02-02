@@ -43,13 +43,12 @@ class Parser:
     def __pretty_error(predicate: str, p_index: int) -> str:
         """ print error including an ^ to indicate the position at which it had occurred """
         """ problematic to pass with api. To be replaced with a client-side solution """
-        pos_indicator = ""
+        ret = ""
         for i, char in enumerate(predicate):
-            if i == p_index - 1:
-                pos_indicator += "^"
-                continue
-            pos_indicator += " "
-        return predicate + '\n' + pos_indicator
+            if i == p_index:
+                ret += f"Problém okolo {p_index}. pozice: '{char}'"
+
+        return ret
 
     def __match(self, char: str) -> bool:
         """ check next char in generator """
@@ -259,6 +258,10 @@ class Parser:
         while not self.__match('('):
             if not self.__current.islower():
                 logging.warning("f_rule violated uppercase")
+                if self.__expression[0] not in ["A", "E", "∀", "∃"]:
+                    raise ValueError(
+                        f"Zakázaný znak '{self.__current}' uvnitř jména objektu. Očekáváno velké písmeno následováno pouze malými."
+                        f"\n{self.__pretty_error(self.__expression, self.__position)}. Je možné, že jste uvedli špatný kvalifikátor?")
                 raise ValueError(f"Zakázaný znak '{self.__current}' uvnitř jména objektu. Očekáváno velké písmeno následováno pouze malými."
                                  f"\n{self.__pretty_error(self.__expression, self.__position)}")
             elem += self.__current

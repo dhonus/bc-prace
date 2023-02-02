@@ -122,7 +122,7 @@ async def send_expression(item: Thing):
         return responseItem
     except Exception as e:
         responseItem = Item()
-        if p_index == len(predicates) :
+        if p_index <= len(predicates) :
             logging.critical(f"{type(e).__name__}: V {p_index}. premise: {e}")
             responseItem.notes = f"Chyba v {p_index}. premise: {e}"
         else:
