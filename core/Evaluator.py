@@ -293,7 +293,7 @@ class Evaluator:
 
                 return True
 
-            self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {solution['Exists within'][variable]}."]
+            self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {self.__pretty_print(solution['Exists within'][variable])}."]
 
             return False
 
@@ -321,11 +321,11 @@ class Evaluator:
                                               f"Můžeme umístit {var_set} a jedná se o jediné řešení."]
                 else:
                     self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
-                                              f"Můžeme umístit {var_set}, protože {crossed_out} jsou vyškrtány."]
+                                              f"Můžeme umístit {var_set}, protože {self.__pretty_print(crossed_out)} jsou vyškrtány."]
                 ret = True
             else:
                 self.__explanations[0] = [f"Pro '{variable}' není řešení. "
-                                          f"Nevíme kam umístit {var_set}"]
+                                          f"Nevíme kam umístit {self.__pretty_print(var_set)}"]
                 ret = False
 
             return ret
@@ -336,7 +336,7 @@ class Evaluator:
             if len_sum == 0:
                 checking = set(crossed_out) - set(self.__conclusion_solved[variable])
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
-                    self.__explanations[0] = [f"Závěr říká, že mají být vyškrtány {self.__conclusion_solved[variable]}, což odpovídá výsledku."]
+                    self.__explanations[0] = [f"Závěr říká, že mají být vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}, což odpovídá výsledku."]
                     return True
 
             if not var_set.issubset(self.__conclusion_solved[variable]):
@@ -344,10 +344,10 @@ class Evaluator:
                 #     self.__explanations[0] = [f"Pro '{variable}' není řešení. Existují prvky mimo výběr. {set(self.__conclusion_solved[variable]) - crossed_out}"]
                 #    return False
                 self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
-                                          f"Platí že {var_set} není vyškrtáno a splňuje tím podmínku závěru."]
+                                          f"Platí že {self.__pretty_print(var_set)} není vyškrtáno a splňuje tím podmínku závěru."]
                 return True
 
-            self.__explanations[0] = [f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__conclusion_solved[variable]}."]
+            self.__explanations[0] = [f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}."]
             return False
 
 
