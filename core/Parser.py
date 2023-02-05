@@ -64,7 +64,9 @@ class Parser:
             self.__current = next(self.__expression_generator)
             return True
 
-        if required == ')':
+        if required == ')' or required == ']':
+            if not self.__current:
+                raise ValueError(f"Chybějící závorka '{required}' na {self.__position}. pozici.")
             print(self.__pretty_error(self.__expression, self.__position))
             raise ValueError(f"Očekáváno '{required}', na vstupu je ale '{self.__current}'"
                   f" Pravděpodobně chybějící závorka na {self.__position}. pozici."
@@ -115,12 +117,15 @@ class Parser:
                 return None
             expr.tree = tree
             self.__require(']')
+            if self.__current:
+                prev = self.__current
+                self.__current = next(self.__expression_generator)
+                if self.__current == "∃" or self.__current == "∀":
+                    raise ValueError("Byla ukončena, ale byl nalezen kvantifikátor. Pouze jeden predikát na řádek.")
+                raise ValueError(f"Byla ukončena, ale nalezen znak '{prev}'. Pouze jeden predikát na řádek.")
+
         else:
-            # we later agreed that an expression does not need to be bracket-enclosed
-            tree = self.__e_rule(False)
-            if not tree:
-                return None
-            expr.tree = tree
+            raise Exception(f"Není uzavřena hranatými závorkami.")
         return expr
 
     def __deduce_variable(self) -> str:

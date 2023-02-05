@@ -7,7 +7,7 @@
       <div class="row">
         <div class="single">
           <a href="/">
-            <button class="tab">Vyhodnotit</button>
+            <button class="tab">Vyřešit</button>
           </a>
         </div>
         <div class="single">

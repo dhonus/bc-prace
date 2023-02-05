@@ -7,7 +7,7 @@
       <div class="row">
         <div class="single">
           <a href="/">
-            <button class="tab active">Vyhodnotit</button>
+            <button class="tab active">Vyřešit</button>
           </a>
         </div>
         <div class="single">
@@ -130,13 +130,13 @@
             </tr>
           </table>
           <blockquote><p>Na vstupu mohou být premisy, nebo konstanty.</p></blockquote>
-          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Následující jsou platné premisy:</p>
+          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Musí být také <b>uzavřena hranatými závorkami</b>. Následující jsou platné premisy:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
-            <li>∃xA(x) ⊃ B(x)</li>
-            <li>∀x B(x) & C(x)</li>
-            <li>AxB(x)</li>
+            <li>∃x [A(x) ⊃ B(x)]</li>
+            <li>∀x [B(x) & C(x)]</li>
+            <li>Ax [B(x)]</li>
           </ul>
           <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kde proměnná je malé písmeno. Platné literály:</p>
           <ul>
@@ -150,7 +150,7 @@
           </ul>
           <h3>Příklad validního vstupu:</h3>
           <ul>
-            <li>∀x A(x) & !B(x)</li>
+            <li>∀x [A(x) & !B(x)]</li>
             <li>Ex [A(x) > C(x)]</li>
           </ul>
           <hr>
@@ -378,6 +378,7 @@ export default {
         });
       } catch (err) {
         // uh oh, didn't work, time for plan B
+        console.log("?????");
       }
     },
   },

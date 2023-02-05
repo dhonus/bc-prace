@@ -111,9 +111,9 @@ class Evaluator:
             if expr_tree.value == '∀':
                 self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
 
-                print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
+                # print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
                 self.__universal_solved += self.__universal_solve(expr_tree)
-                print(set(self.__universal_solved), ";)")
+                # print(set(self.__universal_solved), ";)")
 
                 for solved in set(self.__universal_solved):
                     area = list(solved)
