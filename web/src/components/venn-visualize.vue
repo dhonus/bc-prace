@@ -1,37 +1,36 @@
 <!-- https://axios-http.com/docs/post_example -->
 
 <template>
-  <!--<div class="canvasControls">
-    <div class="left">
-      <p>Funkce diagramu:</p>
-      <p ref="canvasMessage">{{ msg }}</p>
-    </div>
-    <div class="right">
-      <div class="canvasButton" ref="empty" @click="activate('empty')">
-        <img src="../assets/icons/empty.svg" title="Vyprázdnit">
-      </div>
-      <div class="canvasButton" ref="question" @click="activate('question')">
-        <img src="../assets/icons/iconmonstr-question-thin.svg" title="Přidat otazník">
-      </div>
-      <div class="canvasButton" ref="hatched" @click="activate('hatched')">
-        <img src="../assets/icons/hashed.svg" title="Vyšrafovat">
-      </div>
-    </div>
-  </div>-->
   <div v-if="step" class="information">
     <p ref="canvasPredicate">{{ canvasPredicate }}</p>
     <p ref="canvasExplanation">{{ canvasExplanation }}</p>
   </div>
   <p v-if="limit" class="information">Pro tuto velikost není náhled Vennova diagramu k dispozici.</p>
 
-  <div v-if="!limit" class="canvasWrapper" ref="canvasWrapper">
+  <div v-if="!limit" class="canvasWrapper" ref="canvasWrapper" oncontextmenu="return false;">
+    <!--<div class="canvasControls">
+      <div class="left">
+        <p>Funkce diagramu:</p>
+        <p ref="canvasMessage">{{ msg }}</p>
+      </div>
+      <div class="right">
+        <div class="canvasButton" ref="question" @click="activate('question')">
+          <img src="../assets/icons/iconmonstr-mouse-12.svg" title="Přidat otazník">
+        </div>
+        <div class="canvasButton activeCanvasControls" ref="hatched" @click="activate('hatched')">
+          <img src="../assets/icons/iconmonstr-mouse-14.svg" title="Vyšrafovat">
+        </div>
+      </div>
+    </div>-->
     <svg width="600" height="400" ref="canvas"></svg>
     <img ref="canvasExportImage">
+    <button class="accept_button" v-if="thisInstanceWillActAsUserInput">Provést kontrolu</button>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3'
+
 import {indexOf} from "core-js/internals/array-includes";
 import {getComponentEmitsFromTypeDefine} from "eslint-plugin-vue/lib/utils/ts-ast-utils";
 
@@ -74,35 +73,36 @@ export default {
     universal: Array,
     canvasPredicate: String,
     canvasExplanation: String,
-    step: Boolean
+    step: Boolean,
+    thisInstanceWillActAsUserInput: Boolean,
   },
   data: () => {
     return {
       msg: '',
-      currentModifierButton: null,
+      currentModifierButton: "hatched",
       width: 0,
       height: 0,
       limit: false,
+      mouseHatching: false
     };
   },
   methods: {
     // sets the current active button to the one that was clicked on
     activate: function(button){
       if(this.currentModifierButton !== null){
-          this.$refs.empty.classList.remove("activeCanvasControls");
           this.$refs.question.classList.remove("activeCanvasControls");
           this.$refs.hatched.classList.remove("activeCanvasControls");
       }
-      if (button === "empty") {
-        this.$refs.empty.classList.add("activeCanvasControls");
-      }
       if (button === "question") {
         this.$refs.question.classList.add("activeCanvasControls");
+        this.mouseHatching = false;
       }
       if (button === "hatched") {
         this.$refs.hatched.classList.add("activeCanvasControls");
+        this.mouseHatching = true;
       }
       this.currentModifierButton = button;
+      console.log(this.currentModifierButton);
     },
     prepare: function() {
       let svg = d3.select(this.$refs.canvas);
@@ -613,11 +613,11 @@ export default {
       console.log(areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("click", function () {
+      g.selectAll("path.segment").on("click", function (){
         const svg = d3.select(this);
         console.log(svg);
         console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
           let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
           svg.transition().attr("fill", area.color);
@@ -629,6 +629,26 @@ export default {
             svg.transition().attr("fill", "url(#diagonalHatch)");
           }
         }
+        console.log(areas_of_diagram, " <- has been modified and our friend is ");
+      });
+      // this is the function that will be called when the user clicks on a segment
+      g.selectAll("path.segment").on("contextmenu", function (){
+        const svg = d3.select(this);
+        console.log(svg);
+        console.log(svg.attr('id'));
+        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
+          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+          area.state = "clear";
+          svg.transition().attr("fill", area.color);
+        } else {
+          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          if (svg.attr('id') === "Universum") {
+            svg.transition().attr("fill", "url(#universumHatch)");
+          } else {
+            svg.transition().attr("fill", "url(#diagonalHatch)");
+          }
+        }
+        console.log(areas_of_diagram, " <- has been modified and our friend is ");
       });
 
       var tooltip = d3.select("body")
@@ -1863,6 +1883,9 @@ export default {
   // called when the component is created and inserted into the DOM
   mounted: function () {
     this.limit = false;
+    if (this.thisInstanceWillActAsUserInput){
+      this.mouseHatching = true;
+    }
     switch (this.vennSize) {
       case 1:
         this.venn1();

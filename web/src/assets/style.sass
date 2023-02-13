@@ -106,6 +106,24 @@ div.input_wrapper
       text-align: left
       overflow-wrap: break-word
       max-width: 21em
+      .mouseGuide
+        display: flex
+        flex-direction: column
+        background: #fbfbfbd6
+        border-radius: 25px
+        border: 1px solid #aaa8a83b
+        box-shadow: 0 0 10px 2px #e3e3e326
+        padding: .3rem 1rem
+        div
+          display: flex
+          flex-direction: row
+          justify-content: left
+          align-items: center
+          img
+            height: 2rem
+            width: auto
+          p
+            margin: .6rem
       table
         width: 100%
         color: #2c2c2c
@@ -163,6 +181,8 @@ button.accept_button
   display: flex
   justify-content: left
   align-items: center
+  margin: auto
+  color: black
   p
     color: #2f2f2f
     font-weight: 400
@@ -233,6 +253,8 @@ text
   border: 1px solid #dddde0
   border-radius: 25px
   box-shadow: 0 0 10px 2px #c0c0c026
+  button.accept_button
+    border-radius: 8px
 div.information
   margin: 0 0 1rem 0
   padding: 1rem

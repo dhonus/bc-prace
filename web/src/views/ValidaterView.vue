@@ -80,6 +80,17 @@
           <button @click="type(']')" rel="">]</button>
         </div>
         <div class="guide">
+          <h3>Interaktivní diagram</h3>
+          <div class="mouseGuide">
+            <div>
+              <img src="../assets/icons/iconmonstr-mouse-12.svg" title="Vyšrafovat">
+              <p>Vyšrafovat</p>
+            </div>
+            <div>
+              <img src="../assets/icons/iconmonstr-mouse-14.svg" title="Přidat otazník">
+              <p>Přidat otazník</p>
+            </div>
+          </div>
           <p>Následuje tabulka <b>podporovaných symbolů</b> a jejich <b>povolených variant</b>. Tyto symboly <br>mohou být libovolně kombinovány.</p>
           <table>
             <tr>
@@ -312,9 +323,10 @@ export default {
               explanations: response.data["explanations"],
               bad: response.data["bad"],
               // solutions
-              existential: existential_sorted,
-              universal: universal_sorted,
+              existential: {},
+              universal: [],
               step: false,
+              thisInstanceWillActAsUserInput: true,
             });
             this.resultVenn.mount('#venn');
 
