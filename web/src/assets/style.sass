@@ -247,6 +247,9 @@ text
   box-shadow: 0px 0px 23px 0px #9782ae
 
 .canvasWrapper
+  display: flex
+  flex-direction: column
+  justify-content: center
   margin: 0 0 1rem 0
   padding: 1rem
   background-color: #f6f6f9e0
@@ -255,6 +258,22 @@ text
   box-shadow: 0 0 10px 2px #c0c0c026
   button.accept_button
     border-radius: 8px
+  div.entry_variable
+    display: flex
+    flex-direction: row
+    margin: auto
+    gap: .6rem
+    align-items: center
+    input
+      padding: 0!important
+      margin: 0!important
+      text-align: center
+      width: 2rem!important
+    input.bad
+      border: 1px solid red
+  svg
+    display: block
+    margin: auto
 div.information
   margin: 0 0 1rem 0
   padding: 1rem

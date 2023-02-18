@@ -22,6 +22,10 @@
         </div>
       </div>
     </div>-->
+    <div class="entry_variable">
+      <p>Proměnná</p>
+      <input type="text" maxlength="1" v-model="entryVariable" placeholder="x"/>
+    </div>
     <svg width="600" height="400" ref="canvas"></svg>
     <img ref="canvasExportImage">
     <button class="accept_button" v-if="thisInstanceWillActAsUserInput">Provést kontrolu</button>
@@ -34,6 +38,14 @@ import * as d3 from 'd3'
 import {indexOf} from "core-js/internals/array-includes";
 import {getComponentEmitsFromTypeDefine} from "eslint-plugin-vue/lib/utils/ts-ast-utils";
 
+class d3Element{
+  constructor() {
+    this.circle = null;
+    this.text = null;
+    this.var = null;
+    this.index = -1;
+  }
+}
 class Area {
   constructor(id, state, color, assignment) {
     this.id = id;
@@ -43,6 +55,9 @@ class Area {
     // this corresponds to the areas we get from the API.
     // Hardcoded in each of the venn functions because the API doesn't return the areas of the same name every time
     this.assignment = assignment;
+    this.question = false;
+    this.variable = "";
+    this.questionElement = new d3Element(); // this is the actual d3 element that we use to draw the question mark
   }
 }
 
@@ -79,11 +94,13 @@ export default {
   data: () => {
     return {
       msg: '',
+      entryVariable: '',
       currentModifierButton: "hatched",
       width: 0,
       height: 0,
       limit: false,
-      mouseHatching: false
+      mouseHatching: false,
+      positioned: Object,
     };
   },
   methods: {
@@ -124,6 +141,23 @@ export default {
     },
     emptyDict: function(dict) {
       return Object.keys(dict).length === 0;
+    },
+    wipe: function(i){
+      console.log("hey", this.positioned[i]);
+      // remove all elements from the array
+      this.positioned[i].length = 0;
+      this.positioned[i] = [];
+      console.log("hey", this.positioned[i]);
+      return true;
+    },
+    checkVar: function (i, variable){
+      // check if the variable is already in the array
+      for (let j = 0; j < this.positioned[i].length; j++){
+        if (this.positioned[i][j].variable === variable){
+          return true;
+        }
+      }
+      return false;
     },
     universum_hatch_check: function (g){
       // empty inline function
@@ -332,46 +366,44 @@ export default {
 
       console.log(__sets_identifiers);
 
-      let positioned = {
-        '.': [],
-      };
+
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
         // this is done because a single position can be taken by multiple "x"
         // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-        if (positioned[index] === undefined){
-          positioned[index] = [];
-          positioned[index].push(key);
+        if (this.positioned[index] === undefined){
+          this.positioned[index] = [];
+          this.positioned[index].push(key);
         } else {
-          positioned[index].push(key);
+          this.positioned[index].push(key);
         }
 
         console.log(index, "pos, key, index");
         // background for the text
         g.append("circle")
-            .attr("r", 14 + positioned[index].length * 3)
+            .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
         g.append("text")
             .text(character)
-            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1.2rem');
         // the variable
         g.append("text")
-            .text(character === "?" ? key : positioned[index])
-            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+            .text(character === "?" ? key : this.positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '.8rem');
 
         if (character === "?"){
-          positioned[index].pop();
+          this.positioned[index].pop();
         }
       }
 
@@ -631,25 +663,7 @@ export default {
         }
         console.log(areas_of_diagram, " <- has been modified and our friend is ");
       });
-      // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("contextmenu", function (){
-        const svg = d3.select(this);
-        console.log(svg);
-        console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
-          area.state = "clear";
-          svg.transition().attr("fill", area.color);
-        } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
-          if (svg.attr('id') === "Universum") {
-            svg.transition().attr("fill", "url(#universumHatch)");
-          } else {
-            svg.transition().attr("fill", "url(#diagonalHatch)");
-          }
-        }
-        console.log(areas_of_diagram, " <- has been modified and our friend is ");
-      });
+
 
       var tooltip = d3.select("body")
           .append("div")
@@ -693,54 +707,56 @@ export default {
 
       console.log(__sets_identifiers);
 
-      let positioned = {
-        '.': [],
-      };
+
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
+        let el = new d3Element();
+        el.index = index;
+
         // this is done because a single position can be taken by multiple "x"
         // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-        if (positioned[index] === undefined){
-          positioned[index] = [];
-          positioned[index].push(key);
+        if (this.positioned[index] === undefined || this.positioned[index].length === 0) {
+          this.positioned[index] = [];
+          this.positioned[index].push(key);
         } else {
-          positioned[index].push(key);
+          this.positioned[index].push(key);
         }
 
         console.log(index, "pos, key, index");
         // background for the text
-        g.append("circle")
-            .attr("r", 14 + positioned[index].length * 3)
+        el.circle = g.append("circle")
+            .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
-        g.append("text")
+        el.text = g.append("text")
             .text(character)
-            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1.2rem');
         // the variable
-        g.append("text")
-            .text(character === "?" ? key : positioned[index])
-            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+        el.var = g.append("text")
+            .text(character === "?" ? key : this.positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '.8rem');
 
         if (character === "?"){
-          positioned[index].pop();
+          this.positioned[index].pop();
         }
+        return el;
       }
-/*
-      for (let pos = 0; pos < __sets_positions.length; pos++) {
+
+      /*for (let pos = 0; pos < __sets_positions.length; pos++) {
         let key = "x";
-        position_me(pos, key, "?");
-      }
-*/
+        position_me(pos, key, "x");
+      }*/
+
 
       // existential
       console.log(this.existential, "existential");
@@ -766,6 +782,57 @@ export default {
           }
         }
       }
+
+      //user added areas
+      let user_added_areas = {};
+      let wipe = (index) => {
+        return this.wipe(index);
+      };
+
+
+
+      // this is the function that will be called when the user clicks on a segment
+      g.selectAll("path.segment").on("contextmenu", (e) => {
+        const svg = d3.select(e.currentTarget)
+        console.log(svg);
+        console.log(svg.attr('id'));
+
+        let theVar = this.entryVariable;
+        if (theVar === undefined || theVar === null || theVar.length === 0){
+          theVar = "x";
+        }
+        if (areas_of_diagram.find(e => e.id === svg.attr('id')).question === false) {
+          let area = areas_of_diagram.find(e => e.id === svg.attr('id'));
+          area.question = true;
+          let i = 0;
+          for (const ass in __sets_identifiers){
+            console.log(ass);
+            if (compareArrays(__sets_identifiers[ass], area.assignment)){
+              console.log("found it at index: " + i);
+              if (this.entryVariable === undefined
+                  || this.entryVariable === null
+                  || this.entryVariable.length === 0){
+                area.questionElement = position_me(i, "x", "x");
+              } else {
+                area.questionElement = position_me(i, this.entryVariable, "x");
+              }
+            }
+            i++;
+          }
+        } else {
+          let area = areas_of_diagram.find(e => e.id === svg.attr('id'));
+
+          area.question = false;
+          area.questionElement.circle.remove();
+          area.questionElement.text.remove();
+          area.questionElement.var.remove();
+
+          console.log("okok", wipe(area.questionElement.index)) // !!!!! inside questionElement
+        }
+        console.log(areas_of_diagram, " <- has been modified and our friend is ");
+      }).then(() => {
+        console.log("done");
+      });
 
       g.append("text")
           .text("Ω")
@@ -1111,47 +1178,45 @@ export default {
 
       console.log(__sets_identifiers);
 
-      let positioned = {
-        '.': [],
-      };
+
 
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
         // this is done because a single position can be taken by multiple "x"
         // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-        if (positioned[index] === undefined){
-          positioned[index] = [];
-          positioned[index].push(key);
+        if (this.positioned[index] === undefined){
+          this.positioned[index] = [];
+          this.positioned[index].push(key);
         } else {
-          positioned[index].push(key);
+          this.positioned[index].push(key);
         }
 
         console.log(index, "pos, key, index");
         // background for the text
         g.append("circle")
-            .attr("r", 14 + positioned[index].length * 3)
+            .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
         g.append("text")
             .text(character)
-            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1.2rem');
         // the variable
         g.append("text")
-            .text(character === "?" ? key : positioned[index])
-            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+            .text(character === "?" ? key : this.positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '.8rem');
 
         if (character === "?"){
-          positioned[index].pop();
+          this.positioned[index].pop();
         }
       }
 
@@ -1703,47 +1768,43 @@ export default {
 
       console.log(__sets_identifiers);
 
-      let positioned = {
-        '.': [],
-      };
-
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
         // this is done because a single position can be taken by multiple "x"
         // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-        if (positioned[index] === undefined){
-          positioned[index] = [];
-          positioned[index].push(key);
+        if (this.positioned[index] === undefined){
+          this.positioned[index] = [];
+          this.positioned[index].push(key);
         } else {
-          positioned[index].push(key);
+          this.positioned[index].push(key);
         }
 
         console.log(index, "pos, key, index");
         // background for the text
         g.append("circle")
-            .attr("r", 10 + positioned[index].length * 3)
+            .attr("r", 10 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
         g.append("text")
             .text(character)
-            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (positioned[index].length -1)*4)
+            .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1rem');
         // the variable
         g.append("text")
-            .text(character === "?" ? key : positioned[index])
-            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (positioned[index].length -1)*4)
+            .text(character === "?" ? key : this.positioned[index])
+            .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
             .style('fill', '#323232')
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '.7rem');
 
         if (character === "?"){
-          positioned[index].pop();
+          this.positioned[index].pop();
         }
       }
 
@@ -1886,6 +1947,9 @@ export default {
     if (this.thisInstanceWillActAsUserInput){
       this.mouseHatching = true;
     }
+    this.positioned = {
+      '.': [],
+    };
     switch (this.vennSize) {
       case 1:
         this.venn1();
