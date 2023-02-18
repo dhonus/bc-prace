@@ -24,11 +24,10 @@
     </div>-->
     <div class="entry_variable">
       <p>Proměnná</p>
-      <input type="text" maxlength="1" v-model="entryVariable" placeholder="x"/>
+      <input type="text" maxlength="1" v-model="entryVariable" ref="entryVariableInput" placeholder="x"/>
     </div>
     <svg width="600" height="400" ref="canvas"></svg>
-    <img ref="canvasExportImage">
-    <button class="accept_button" v-if="thisInstanceWillActAsUserInput">Provést kontrolu</button>
+    <button class="accept_button" @click="emitSolve" v-if="thisInstanceWillActAsUserInput">Provést kontrolu</button>
   </div>
 </template>
 
@@ -101,9 +100,14 @@ export default {
       limit: false,
       mouseHatching: false,
       positioned: Object,
+      areas_of_diagram: [],
     };
   },
   methods: {
+    emitSolve: function (){
+      this.$emit('solve', this.areas_of_diagram);
+      console.log("emitted")
+    },
     // sets the current active button to the one that was clicked on
     activate: function(button){
       if(this.currentModifierButton !== null){
@@ -191,7 +195,6 @@ export default {
     },
     venn1: function (){
       let g = this.prepare();
-      let areas_of_diagram = [];
 
       // center of first circle
       const centerX_1 = 280;
@@ -206,7 +209,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-      areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g));
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -298,7 +301,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -307,22 +310,22 @@ export default {
               .attr("class", "segment")
               .attr("fill", sunFill)
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
         }
         i++;
       }
 
       // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("click", function () {
-        const svg = d3.select(this);
+      g.selectAll("path.segment").on("click", (e) => {
+        const svg = d3.select(e.currentTarget)
         console.log(svg);
         console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+        if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+          let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
           svg.transition().attr("fill", area.color);
         } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          this.areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
           if (svg.attr('id') === "Universum") {
             svg.transition().attr("fill", "url(#universumHatch)");
           } else {
@@ -447,7 +450,6 @@ export default {
     },
     venn2: function (){
       let g = this.prepare();
-      let areas_of_diagram = [];
 
       // center of first circle
       const centerX_1 = 220;
@@ -463,7 +465,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-      areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g));
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -583,7 +585,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.5);
-          areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -592,7 +594,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", ironFill)
               .attr("opacity", 0.4);
-          areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
         }
 
         console.log(this.universal, "universal ", ironPointsNames[i]);
@@ -629,7 +631,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -638,30 +640,31 @@ export default {
               .attr("class", "segment")
               .attr("fill", sunFill)
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
         }
         i++;
       }
-      console.log(areas_of_diagram);
+      console.log(this.areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("click", function (){
-        const svg = d3.select(this);
+      g.selectAll("path.segment").on("click", (e) => {
+        const svg = d3.select(e.currentTarget)
+
         console.log(svg);
         console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+        if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
+          let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
           svg.transition().attr("fill", area.color);
         } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          this.areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
           if (svg.attr('id') === "Universum") {
             svg.transition().attr("fill", "url(#universumHatch)");
           } else {
             svg.transition().attr("fill", "url(#diagonalHatch)");
           }
         }
-        console.log(areas_of_diagram, " <- has been modified and our friend is ");
+        console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
       });
 
 
@@ -716,21 +719,27 @@ export default {
 
         // this is done because a single position can be taken by multiple "x"
         // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-        if (this.positioned[index] === undefined || this.positioned[index].length === 0) {
-          this.positioned[index] = [];
-          this.positioned[index].push(key);
-        } else {
-          this.positioned[index].push(key);
+        if (key !== undefined){
+          if (this.positioned[index] === undefined || this.positioned[index].length === 0) {
+            this.positioned[index] = [];
+            this.positioned[index].push(key);
+          } else {
+            this.positioned[index].push(key);
+          }
+        } else if (this.positioned[index].length === 0){
+          return el;
         }
 
         console.log(index, "pos, key, index");
         // background for the text
-        el.circle = g.append("circle")
+        el.circle = g.append("circle");
+        el.circle
             .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
             .attr("class", character === "?" ? "question-background" : "set-background")
         // the "X" or "?"
-        el.text = g.append("text")
+        el.text = g.append("text");
+        el.text
             .text(character)
             .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 5)
@@ -738,7 +747,8 @@ export default {
             .attr("class", character === "?" ? "question-text" : "set-text")
             .style('font-size', '1.2rem');
         // the variable
-        el.var = g.append("text")
+        el.var = g.append("text");
+        el.var
             .text(character === "?" ? key : this.positioned[index])
             .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
             .attr("y", pos[1] - 1)
@@ -789,8 +799,6 @@ export default {
         return this.wipe(index);
       };
 
-
-
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("contextmenu", (e) => {
         const svg = d3.select(e.currentTarget)
@@ -801,37 +809,49 @@ export default {
         if (theVar === undefined || theVar === null || theVar.length === 0){
           theVar = "x";
         }
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).question === false) {
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'));
-          area.question = true;
-          let i = 0;
-          for (const ass in __sets_identifiers){
-            console.log(ass);
-            if (compareArrays(__sets_identifiers[ass], area.assignment)){
-              console.log("found it at index: " + i);
-              if (this.entryVariable === undefined
-                  || this.entryVariable === null
-                  || this.entryVariable.length === 0){
-                area.questionElement = position_me(i, "x", "x");
-              } else {
-                area.questionElement = position_me(i, this.entryVariable, "x");
-              }
-            }
-            i++;
-          }
+        // check if theVar is a lowercase letter
+        if (theVar.length !== 1 || !theVar.match(/[a-z]/i)){
+          // set class of ref
+          this.$refs.entryVariableInput.classList.add("bad");
+          theVar = "x"
+          this.entryVariable = "x";
         } else {
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'));
-
-          area.question = false;
-          area.questionElement.circle.remove();
-          area.questionElement.text.remove();
-          area.questionElement.var.remove();
-
-          console.log("okok", wipe(area.questionElement.index)) // !!!!! inside questionElement
+          this.$refs.entryVariableInput.classList.remove("bad");
         }
-        console.log(areas_of_diagram, " <- has been modified and our friend is ");
-      }).then(() => {
-        console.log("done");
+        let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'));
+
+
+        let found = false;
+        if (area.questionElement.index !== -1)
+          for (let i = 0; i < this.positioned[area.questionElement.index].length; i++){
+            if (this.positioned[area.questionElement.index][i] === theVar){
+              this.positioned[area.questionElement.index].splice(i, 1);
+              found = true;
+            }
+          }
+
+        if (area.questionElement.circle !== null){
+          try {
+            area.questionElement.circle.remove();
+            area.questionElement.text.remove();
+            area.questionElement.var.remove();
+          } catch (e) {
+            console.log(e);
+          }
+
+        }
+
+        let i = 0;
+        for (const ass in __sets_identifiers){
+          console.log(ass);
+          if (compareArrays(__sets_identifiers[ass], area.assignment)){
+            console.log("found it at index: " + i);
+            area.questionElement = position_me(i, found ? undefined : theVar, "x");
+          }
+          i++;
+        }
+
+        console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
       });
 
       g.append("text")
@@ -856,7 +876,6 @@ export default {
     },
     venn3: function(){
       let g = this.prepare();
-      let areas_of_diagram = [];
 
       // center of first circle
       const centerX_1 = 220;
@@ -872,7 +891,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-      areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g));
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -1004,7 +1023,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.5);
-          areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1013,7 +1032,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", ironFill)
               .attr("opacity", 0.4);
-          areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
         }
 
         console.log(this.universal, "universal ", ironPointsNames[i]);
@@ -1050,7 +1069,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1059,7 +1078,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", sunFill)
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", sunFill, sunPointsNames[i]));
         }
         i++;
       }
@@ -1091,7 +1110,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", "#929292", roundedTriNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", "#929292", roundedTriNames[0]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1100,23 +1119,23 @@ export default {
               .attr("class", "segment")
               .attr("fill", "#929292")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", "#929292", roundedTriNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "clear", "#929292", roundedTriNames[0]));
         }
       }
 
-      console.log(areas_of_diagram);
+      console.log(this.areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("click", function () {
-        const svg = d3.select(this);
+      g.selectAll("path.segment").on("click", (e) => {
+        const svg = d3.select(e.currentTarget)
         console.log(svg);
         console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+        if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+          let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
           svg.transition().attr("fill", area.color);
         } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          this.areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
           if (svg.attr('id') === "Universum") {
               svg.transition().attr("fill", "url(#universumHatch)");
             } else {
@@ -1316,7 +1335,6 @@ export default {
     },
     venn4: function(){
       let g = this.prepare();
-      let areas_of_diagram = [];
 
       // center of first circle
       const centerX_1 = 220;
@@ -1335,7 +1353,7 @@ export default {
       const centerX_4 = centerX_1 + offset;
       const centerY_4 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-      areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g));
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -1552,7 +1570,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "hashed", ironFill, twoSetAreasNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, twoSetAreasNames[i]));
         } else {
           g.append("path")
               .attr("id", theId)
@@ -1560,7 +1578,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", ironFill)
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "clear", ironFill, twoSetAreasNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", ironFill, twoSetAreasNames[i]));
         }
         i++;
       }
@@ -1594,7 +1612,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "hashed", sunFill, singleSetAreaNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, singleSetAreaNames[i]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1603,7 +1621,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", sunFill)
               .attr("opacity", 1);
-          areas_of_diagram.push(new Area(theId, "clear", sunFill, singleSetAreaNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "clear", sunFill, singleSetAreaNames[i]));
         }
         i++;
       }
@@ -1635,7 +1653,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "hashed", "#868585", intersectionOfThreeAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", "#868585", intersectionOfThreeAreasNames[0]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1644,7 +1662,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "#868585")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "clear", "#868585", intersectionOfThreeAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "clear", "#868585", intersectionOfThreeAreasNames[0]));
         }
       }
 
@@ -1667,7 +1685,7 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "hashed", "#626262", intersectionOfFourAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", "#626262", intersectionOfFourAreasNames[0]));
         } else {
           console.log("dont hatch it");
           g.append("path")
@@ -1676,23 +1694,23 @@ export default {
               .attr("class", "segment")
               .attr("fill", "#626262")
               .attr("opacity", 0.8);
-          areas_of_diagram.push(new Area(theId, "clear", "#626262", intersectionOfFourAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "clear", "#626262", intersectionOfFourAreasNames[0]));
         }
       }
 
-      console.log(areas_of_diagram);
+      console.log(this.areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
-      g.selectAll("path.segment").on("click", function () {
-        const svg = d3.select(this);
+      g.selectAll("path.segment").on("click", (e) => {
+        const svg = d3.select(e.currentTarget)
         console.log(svg);
         console.log(svg.attr('id'));
-        if (areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
-          let area = areas_of_diagram.find(e => e.id === svg.attr('id'))
+        if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
+          let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
           svg.transition().attr("fill", area.color);
         } else {
-          areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
+          this.areas_of_diagram.find(e => e.id === svg.attr('id')).state = "hashed"; // mark the area as hatched
           if (svg.attr('id') === "Universum") {
             svg.transition().attr("fill", "url(#universumHatch)");
           } else {

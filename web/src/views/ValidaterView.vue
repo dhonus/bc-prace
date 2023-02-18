@@ -54,6 +54,7 @@
         <div id="venn_four"></div>
         <div id="venn_five"></div>
         <div id="venn_six"></div>
+
         <div id="venn"></div>
 
         <div id="container">
@@ -88,7 +89,7 @@
             </div>
             <div>
               <img src="../assets/icons/iconmonstr-mouse-14.svg" title="Přidat otazník">
-              <p>Přidat otazník</p>
+              <p>Přidat křížek</p>
             </div>
           </div>
           <p>Následuje tabulka <b>podporovaných symbolů</b> a jejich <b>povolených variant</b>. Tyto symboly <br>mohou být libovolně kombinovány.</p>
@@ -199,6 +200,10 @@ export default {
     }
   },
   methods: {
+    onSolve(areas_of_diagram) {
+      alert("hi")
+      console.log(areas_of_diagram);
+    },
     // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
       this.focused = key;
@@ -328,7 +333,13 @@ export default {
               step: false,
               thisInstanceWillActAsUserInput: true,
             });
+            // mount the instance to the DOM element with the id 'venn'
             this.resultVenn.mount('#venn');
+
+            // listen for the 'solve' event on the created instance
+            this.resultVenn.$on('solve', () => {
+              alert("hi");
+            });
 
           } else {
             if (this.resultVenn != null)

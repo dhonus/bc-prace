@@ -15,8 +15,8 @@ class MyTestCase(unittest.TestCase):
 
     def test_zero(self):
         p = [
-            "ExV(x) & K(x)",
-            "AxH(x) > !K(x)",
+            "Ex[V(x) & K(x)]",
+            "Ax[H(x) > !K(x)]",
         ]
         c = "Ex[V(x) & !H(x)]"
         self.assertEqual(True, main(p, c))  # add assertion here
