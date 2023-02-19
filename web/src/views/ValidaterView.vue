@@ -39,7 +39,7 @@
           </button>
         </div>
         <div style="height: 1px; background: #dddde0; margin: 1rem auto auto auto; width: 90%;"></div>
-        <div class="why">
+        <div class="why" ref="why">
           <p v-if="APIErrorMessage.length > 0" style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
           <span v-if="APIErrorMessage.length <= 0">
             <h3 v-if="validity === true" style="color:#129412;">Platný úsudek</h3>
@@ -54,13 +54,15 @@
         <div id="venn_four"></div>
         <div id="venn_five"></div>
         <div id="venn_six"></div>-->
-
-        <div id="venn"></div>
-        <div class="solution" v-if="solving">
-          <h4>Správné řešení</h4>
+        <div class="steps" ref="steps">
+          <div id="venn"></div>
+          <div class="solution" v-if="solving">
+            <h4>Správné řešení</h4>
+          </div>
+          <div ref="solutionTable"></div>
+          <div id="solution"></div>
         </div>
-        <div ref="solutionTable"></div>
-        <div id="solution"></div>
+
 
         <div id="container">
         </div>
@@ -290,6 +292,12 @@ export default {
     },
     // submits the form and requests the data from the API
     async submit(steps){
+
+      this.$refs.why.classList.remove("activated");
+      this.$refs.steps.classList.remove("activated");
+
+      setTimeout(() => this.$refs.why.classList.add("activated"), 100);
+      setTimeout(() => this.$refs.steps.classList.add("activated"), 100);
 
       let predicates = []
       for (let key of Object.keys(this.values)) {

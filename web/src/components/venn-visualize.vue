@@ -1,13 +1,12 @@
 <!-- https://axios-http.com/docs/post_example -->
 
 <template>
-  <div v-if="step" class="information">
-    <p ref="canvasPredicate">{{ canvasPredicate }}</p>
-    <p ref="canvasExplanation">{{ canvasExplanation }}</p>
-  </div>
-  <p v-if="limit" class="information">Pro tuto velikost není náhled Vennova diagramu k dispozici.</p>
-
   <div v-if="!limit" class="canvasWrapper" ref="canvasWrapper" oncontextmenu="return false;">
+    <div v-if="step" class="information">
+      <p ref="canvasPredicate">{{ canvasPredicate }}</p>
+      <p ref="canvasExplanation">{{ canvasExplanation }}</p>
+    </div>
+    <p v-if="limit" class="information">Pro tuto velikost není náhled Vennova diagramu k dispozici.</p>
     <!--<div class="canvasControls">
       <div class="left">
         <p>Funkce diagramu:</p>

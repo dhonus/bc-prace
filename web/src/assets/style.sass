@@ -275,7 +275,6 @@ text
     display: block
     margin: auto
 div.information
-  margin: 0 0 1rem 0
   padding: 1rem
   background: #f7f7f9
   border-radius: 25px
@@ -296,17 +295,6 @@ div.information
       font-weight: 600
       font-size: 1.2rem
       margin-bottom: .5rem
-  &:after, &:before
-    content: ""
-    position: absolute
-    width: 2px
-    height: 3rem
-    background-color: #dddde0
-    right: 2.4%
-    top: 80%
-  &:after
-    right: 1.5%
-
 
 .spinner
   position: fixed
@@ -407,7 +395,7 @@ div.information
 .out-info
   text-align: left
 
-.why
+div.why
   display: flex
   flex-direction: column
   text-align: left
@@ -417,6 +405,18 @@ div.information
   box-shadow: 0 0 10px 2px #c0c0c026
   margin: 1em 0
   border-radius: 25px
+  opacity: 0
+  transition: opacity 0.5s ease-in-out
+  &.activated
+    opacity: 1
+    transition: opacity 0.5s ease-in-out
+div.steps
+  opacity: 0
+  transition: none
+  &.activated
+    opacity: 1
+    transition: all 0.3s ease-in
+
 
 blockquote
   position: relative
