@@ -22,12 +22,20 @@
         </div>
       </div>
     </div>-->
-    <div class="entry_variable">
+    <div class="entry_variable" v-if="thisInstanceWillActAsUserInput">
       <p>Proměnná</p>
-      <input type="text" maxlength="1" v-model="entryVariable" ref="entryVariableInput" placeholder="x"/>
+      <input type="text"
+             maxlength="1"
+             v-model="entryVariable"
+             ref="entryVariableInput"
+             placeholder="x" />
     </div>
     <svg width="600" height="400" ref="canvas"></svg>
-    <button class="accept_button" @click="emitSolve" v-if="thisInstanceWillActAsUserInput">Provést kontrolu</button>
+    <button class="accept_button"
+            @click="emitSolve"
+            v-if="thisInstanceWillActAsUserInput">
+      Provést kontrolu
+    </button>
   </div>
 </template>
 

@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-    <HelloWorld msg="Bc. Práce" />
+    <HelloWorld msg="Bc. Práce" style="display: none;"/>
     <div class="input_wrapper" @keyup.ctrl.enter.exact="submitWithKey" @keyup.shift.enter.exact="submitWithKeySteps">
       <div class="predicates bubble">
         <div v-for="key in count" :key="key">
@@ -48,14 +48,19 @@
           </span>
         </div>
 
-        <div id="venn_one"></div>
+        <!--<div id="venn_one"></div>
         <div id="venn_two"></div>
         <div id="venn_three"></div>
         <div id="venn_four"></div>
         <div id="venn_five"></div>
-        <div id="venn_six"></div>
+        <div id="venn_six"></div>-->
 
         <div id="venn"></div>
+        <div class="solution" v-if="solving">
+          <h4>Správné řešení</h4>
+        </div>
+        <div ref="solutionTable"></div>
+        <div id="solution"></div>
 
         <div id="container">
         </div>
@@ -176,7 +181,7 @@ import axios from "axios";
 import qs from "qs";
 import VennVisualizer from "@/components/venn-visualize";
 import { createApp } from 'vue'
-
+import { h } from 'vue'
 
 export default {
   name: 'HomeView',
@@ -194,15 +199,43 @@ export default {
       validity: null,
       myChart: null,
       resultVenn: null,
+      solvedVenn: null,
       Explanation: '',
       containers: [null, null, null, null, null, null],
-      container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"]
+      container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"],
+      rootProps: {},
+      solving: false,
     }
   },
   methods: {
-    onSolve(areas_of_diagram) {
-      alert("hi")
-      console.log(areas_of_diagram);
+      onSolve(areas_of_diagram_proxy) {
+      if (areas_of_diagram_proxy){
+        try {
+          this.solving = true;
+          console.log(areas_of_diagram_proxy[0], "areas_of_diagram");
+          try {
+            this.solvedVenn.unmount();
+          } catch (error) {
+            // probably ok
+          }
+
+          this.solvedVenn = createApp(VennVisualizer, this.rootProps);
+          // mount the instance to the DOM element with the id 'venn'
+          this.solvedVenn.mount('#solution');
+
+          // Get the reference to the table container
+          let tableContainer = this.$refs.solutionTable;
+          console.log("This is the table container: ", this.rootProps);
+
+          // Create a new table element
+          const table = document.createElement('table');
+          tableContainer.appendChild(table);
+
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      console.log(areas_of_diagram_proxy);
     },
     // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
@@ -265,6 +298,13 @@ export default {
           predicates.push(this.values[key]);
       }
 
+      this.solving = false;
+      try {
+        this.solvedVenn.unmount();
+      } catch (error) {
+        // probably ok
+      }
+
       let conclusion = this.$refs.zaver.value;
 
       try {
@@ -321,7 +361,23 @@ export default {
               if (this.containers[i] != null) this.containers[i].unmount();
             }
 
-            this.resultVenn = createApp(VennVisualizer, {
+            const comp = h(VennVisualizer, {
+              onSolve: e => this.onSolve(e),
+            })
+
+            this.rootProps = {
+              vennSize: response.data["sets"].length,
+              sets: response.data["sets"].sort(),
+              predicates: response.data["predicates"],
+              explanations: response.data["explanations"],
+              bad: response.data["bad"],
+              // solutions
+              existential: existential_sorted,
+              universal: universal_sorted,
+              step: false,
+            }
+
+            this.resultVenn = createApp(comp, {
               vennSize: response.data["sets"].length,
               sets: response.data["sets"].sort(),
               predicates: response.data["predicates"],
@@ -336,10 +392,6 @@ export default {
             // mount the instance to the DOM element with the id 'venn'
             this.resultVenn.mount('#venn');
 
-            // listen for the 'solve' event on the created instance
-            this.resultVenn.$on('solve', () => {
-              alert("hi");
-            });
 
           } else {
             if (this.resultVenn != null)
