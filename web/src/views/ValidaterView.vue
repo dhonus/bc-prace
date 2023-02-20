@@ -57,9 +57,10 @@
         <div class="steps" ref="steps">
           <div id="venn"></div>
           <div class="solution" v-if="solving">
-            <h4>Správné řešení</h4>
           </div>
+          <h3 class="small-title">Vaše řešení</h3>
           <div ref="solutionTable"></div>
+          <h3 class="small-title">Správné řešení</h3>
           <div id="solution"></div>
         </div>
 
@@ -192,6 +193,7 @@ export default {
   },
   data() {
     return {
+      currentResponse: null,
       optionalPredicate:false,
       count: 3,
       values: {},
@@ -211,12 +213,13 @@ export default {
   },
   methods: {
       onSolve(areas_of_diagram_proxy) {
-      if (areas_of_diagram_proxy){
+      if (areas_of_diagram_proxy && this.currentResponse !== null){
         try {
           this.solving = true;
-          console.log(areas_of_diagram_proxy[0], "areas_of_diagram");
+          console.log(areas_of_diagram_proxy, "areas_of_diagram");
           try {
             this.solvedVenn.unmount();
+            this.$refs.solutionTable.innerHTML = '';
           } catch (error) {
             // probably ok
           }
@@ -227,10 +230,136 @@ export default {
 
           // Get the reference to the table container
           let tableContainer = this.$refs.solutionTable;
-          console.log("This is the table container: ", this.rootProps);
 
-          // Create a new table element
+          // Define the areas list
+          const areas = this.currentResponse.sets;
+          //const areas = ['A', 'B', 'C'];
+
+          // Create the table element
           const table = document.createElement('table');
+
+          // Create the table header row
+          const headerRow = document.createElement('tr');
+
+          // Create the header cells
+          const areaHeader = document.createElement('th');
+          areaHeader.textContent = 'Plocha';
+          headerRow.appendChild(areaHeader);
+
+          const predicateHeader = document.createElement('th');
+          predicateHeader.textContent = 'Predikát';
+          headerRow.appendChild(predicateHeader);
+
+          const stateHeader = document.createElement('th');
+          stateHeader.textContent = 'Správný stav';
+          headerRow.appendChild(stateHeader);
+
+          const explanationHeader = document.createElement('th');
+          explanationHeader.textContent = 'Vysvětlení';
+          headerRow.appendChild(explanationHeader);
+
+          const correctHeader = document.createElement('th');
+          correctHeader.textContent = 'Správně';
+          headerRow.appendChild(correctHeader);
+
+          // Add the header row to the table
+          table.appendChild(headerRow);
+
+          // Create the table rows for each area
+          for (let i = 0; i < areas.length; i++) {
+            // Create the row for the individual area
+            const individualAreaRow = document.createElement('tr');
+
+            let found;
+
+            for (const obj in areas_of_diagram_proxy){
+              if (areas_of_diagram_proxy[obj].assignment.length === 1
+                  && areas_of_diagram_proxy[obj].assignment[0] === areas[i]){
+                found = areas_of_diagram_proxy[obj];
+                console.log("found", found);
+                break;
+              }
+            }
+
+            // Create the area cell
+            const individualAreaCell = document.createElement('td');
+            individualAreaCell.textContent = found.assignment.toString();
+            individualAreaRow.appendChild(individualAreaCell);
+
+            // Create the predicate, explanation, and correct cells
+            const predicateCell = document.createElement('td');
+            predicateCell.textContent = 'Predicate';
+            individualAreaRow.appendChild(predicateCell);
+
+            const stateCell = document.createElement('td');
+            stateCell.textContent = '';
+
+            let foundState = false;
+            for (const obj in this.currentResponse.universal){
+              if (this.currentResponse.universal[obj].length === 1
+                  && this.currentResponse.universal[obj][0] === areas[i]){
+                foundState = true;
+                break;
+              }
+            }
+
+            stateCell.classList.add(foundState ? 'hatched-cell' : 'clear-cell');
+            stateCell.textContent = (foundState ? 'vyšrafovaná' : 'prázdná')
+            individualAreaRow.appendChild(stateCell);
+
+            const explanationCell = document.createElement('td');
+            explanationCell.textContent = 'Explanation';
+            individualAreaRow.appendChild(explanationCell);
+
+            const correctCell = document.createElement('td');
+            console.log(found, "found")
+            let checkBox = document.createElement('input');
+            checkBox.type = "checkbox";
+            checkBox.checked = (foundState === (found.state === "hashed"));
+            checkBox.disabled = true;
+            correctCell.appendChild(checkBox);
+            //correctCell.textContent = (foundState === (found.state === "hashed") ? 'Ano' : 'Ne');
+            individualAreaRow.appendChild(correctCell);
+
+            // Add the row to the table
+            table.appendChild(individualAreaRow);
+
+            for (let j = i + 1; j < areas.length; j++) {
+              const areaCombination = areas[i] + areas[j];
+
+              // Create the table row
+              const row = document.createElement('tr');
+
+              // Create the area cell
+              const areaCell = document.createElement('td');
+              areaCell.textContent = areaCombination;
+              row.appendChild(areaCell);
+
+              // Create the predicate, explanation, and correct cells
+              const predicateCell = document.createElement('td');
+              predicateCell.textContent = 'Predicate';
+              row.appendChild(predicateCell);
+
+              const stateCell = document.createElement('td');
+              stateCell.textContent = 'State';
+              row.appendChild(stateCell);
+
+              const explanationCell = document.createElement('td');
+              explanationCell.textContent = 'Explanation';
+              row.appendChild(explanationCell);
+
+              const correctCell = document.createElement('td');
+              correctCell.textContent = '[]';
+              row.appendChild(correctCell);
+
+              // Add the row to the table
+              table.appendChild(row);
+            }
+          }
+
+          // Append the table to the tableContainer ref
+          //this.$refs.tableContainer.appendChild(table);
+
           tableContainer.appendChild(table);
 
         } catch (error) {
@@ -324,6 +453,8 @@ export default {
           }
         }).then((response) => {
           console.log(response);
+
+          this.currentResponse = response.data;
 
           this.APIErrorMessage = response.data['notes'] !== "OK" ? response.data['notes'] : "";
           this.validity = response.data["valid"];
@@ -462,8 +593,8 @@ export default {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
     //setTimeout(() => this.$refs.spinner.style.display = "none", 0);
-    setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
-    setTimeout(() => this.$refs.spinner.style.display = "none", 1300);
+    setTimeout(() => this.$refs.spinner.style.opacity = "0", 600);
+    setTimeout(() => this.$refs.spinner.style.display = "none", 900);
   },
 }
 </script>

@@ -394,8 +394,8 @@ export default {
     console.log("Mounted!")
     document.getElementById("predicate1").focus();
     //setTimeout(() => this.$refs.spinner.style.display = "none", 0);
-    setTimeout(() => this.$refs.spinner.style.opacity = "0", 1000);
-    setTimeout(() => this.$refs.spinner.style.display = "none", 1300);
+    setTimeout(() => this.$refs.spinner.style.opacity = "0", 600);
+    setTimeout(() => this.$refs.spinner.style.display = "none", 900);
   },
 }
 </script>
