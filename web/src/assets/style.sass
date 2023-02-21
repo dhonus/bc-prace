@@ -431,24 +431,39 @@ div.steps
       th
         padding: 0.5rem
         text-align: left
+        border-left: 1px solid #dddde0
+        &:first-child
+          border-left: none
       td
         padding: 0.5rem
         text-align: left
+        border-left: 1px solid #dddde0
         &:first-child
           font-weight: 600
           color: #2c2c2c
           font-size: 1.1rem
+          border-left: none
         &:last-child
           font-size: 0.9rem
           color: #2c2c2c
           font-weight: 400
           text-align: left
-          padding: 0.5rem 0.5rem 0.5rem 1rem
           border-left: 1px solid #dddde0
           &:first-child
             border-left: none
+        input
+          height: 1.3rem
+          margin: 0.3rem auto!important
+        input[type="checkbox"]:disabled
+          cursor: not-allowed
         &.hatched-cell
           background: #e2e2e2
+      &.incorrect-row
+        background: #d9a4a4de
+        .hatched-cell
+          background: #ac3131de
+          color: white
+          font-weight: bold
 
 h3.small-title
   text-align: left

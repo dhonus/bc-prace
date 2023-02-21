@@ -233,6 +233,7 @@ export default {
 
           // Define the areas list
           const areas = this.currentResponse.sets;
+          console.log(areas, "THE AREAS")
           //const areas = ['A', 'B', 'C'];
 
           // Create the table element
@@ -265,6 +266,36 @@ export default {
           // Add the header row to the table
           table.appendChild(headerRow);
 
+          let provideExplanation = (findMe) => {
+            if (this.currentResponse.steps.length < 1){
+              if (this.currentResponse.explanations.length < 1)
+                return {
+                  explanation: "Žádné vysvětlení není k dispozici.",
+                  p_index: "-",
+                };
+              return {
+                explanation: this.currentResponse.explanations[0],
+                p_index: this.currentResponse.p_index,
+              };
+            }
+            for (let step in this.currentResponse.steps){
+              for (let universal in this.currentResponse.steps[step].universal){
+                if (this.currentResponse.steps[step].universal[universal].length === findMe.length
+                    && this.currentResponse.steps[step].universal[universal].every((v,i)=>v === findMe[i])){
+                  console.log("returning", this.currentResponse.steps[step].explanations)
+                  return {
+                    explanation: this.currentResponse.steps[step].explanations[1],
+                    p_index: this.currentResponse.steps[step].p_index,
+                  };
+                }
+              }
+            }
+            return {
+              explanation: "Žádný predikát neovlivňuje tuto plochu.",
+              p_index: "-",
+            }
+          }
+
           // Create the table rows for each area
           for (let i = 0; i < areas.length; i++) {
             // Create the row for the individual area
@@ -286,9 +317,11 @@ export default {
             individualAreaCell.textContent = found.assignment.toString();
             individualAreaRow.appendChild(individualAreaCell);
 
+            const expl = provideExplanation([areas[i]]);
+
             // Create the predicate, explanation, and correct cells
             const predicateCell = document.createElement('td');
-            predicateCell.textContent = 'Predicate';
+            predicateCell.textContent = (expl.p_index === "-") ? "" : this.currentResponse.predicates[expl.p_index];
             individualAreaRow.appendChild(predicateCell);
 
             const stateCell = document.createElement('td');
@@ -308,7 +341,8 @@ export default {
             individualAreaRow.appendChild(stateCell);
 
             const explanationCell = document.createElement('td');
-            explanationCell.textContent = 'Explanation';
+            //explanationCell.textContent = 'Explanation';
+            explanationCell.textContent = expl.explanation;
             individualAreaRow.appendChild(explanationCell);
 
             const correctCell = document.createElement('td');
@@ -318,14 +352,25 @@ export default {
             checkBox.checked = (foundState === (found.state === "hashed"));
             checkBox.disabled = true;
             correctCell.appendChild(checkBox);
+            individualAreaRow.classList.add(foundState === (found.state === "hashed") ? 'correct-row' : 'incorrect-row');
             //correctCell.textContent = (foundState === (found.state === "hashed") ? 'Ano' : 'Ne');
             individualAreaRow.appendChild(correctCell);
 
             // Add the row to the table
             table.appendChild(individualAreaRow);
 
+
             for (let j = i + 1; j < areas.length; j++) {
+
               const areaCombination = areas[i] + areas[j];
+
+              for (const obj in areas_of_diagram_proxy){
+                if (areas_of_diagram_proxy[obj].assignment.length === 2 && areas_of_diagram_proxy[obj].assignment.every((v,i)=>v === areaCombination[i])){
+                  found = areas_of_diagram_proxy[obj];
+                  console.log("found this", found);
+                  break;
+                }
+              }
 
               // Create the table row
               const row = document.createElement('tr');
@@ -335,21 +380,44 @@ export default {
               areaCell.textContent = areaCombination;
               row.appendChild(areaCell);
 
+              const expl = provideExplanation(areaCombination);
+
               // Create the predicate, explanation, and correct cells
               const predicateCell = document.createElement('td');
-              predicateCell.textContent = 'Predicate';
+              predicateCell.textContent = (expl.p_index === "-") ? "" : this.currentResponse.predicates[expl.p_index];
               row.appendChild(predicateCell);
 
+              let foundState = false;
+              for (const obj in this.currentResponse.universal){
+                console.log(this.currentResponse.universal[obj], "this.currentResponse.universal[obj]")
+                if (this.currentResponse.universal[obj].length === 2 ){
+                  // if arrays are identical
+                  if (this.currentResponse.universal[obj].every((v,i)=>v === areaCombination[i])){
+                    foundState = true;
+                    break;
+                  }
+                }
+              }
+              console.log("foundState", foundState)
+
               const stateCell = document.createElement('td');
-              stateCell.textContent = 'State';
+              stateCell.textContent = (expl.p_index === "-") ? 'prázdná' : 'vyškrtaná';
               row.appendChild(stateCell);
 
               const explanationCell = document.createElement('td');
-              explanationCell.textContent = 'Explanation';
+              //explanationCell.textContent = 'Explanation';
+              explanationCell.textContent = expl.explanation;
               row.appendChild(explanationCell);
 
               const correctCell = document.createElement('td');
-              correctCell.textContent = '[]';
+              console.log(found, "found")
+              let checkBox = document.createElement('input');
+              checkBox.type = "checkbox";
+              checkBox.checked = (foundState === (found.state === "hashed"));
+              checkBox.disabled = true;
+              correctCell.appendChild(checkBox);
+              row.classList.add(foundState === (found.state === "hashed") ? 'correct-row' : 'incorrect-row');
+              //correctCell.textContent = (foundState === (found.state === "hashed") ? 'Ano' : 'Ne');
               row.appendChild(correctCell);
 
               // Add the row to the table
@@ -455,6 +523,7 @@ export default {
           console.log(response);
 
           this.currentResponse = response.data;
+          this.$refs.solutionTable.innerHTML = '';
 
           this.APIErrorMessage = response.data['notes'] !== "OK" ? response.data['notes'] : "";
           this.validity = response.data["valid"];
