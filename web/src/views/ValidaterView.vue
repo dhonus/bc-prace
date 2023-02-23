@@ -212,6 +212,243 @@ export default {
     }
   },
   methods: {
+      onSolveNew(areas_of_diagram_proxy){
+        if (areas_of_diagram_proxy && this.currentResponse !== null){
+          try {
+            this.solving = true;
+            console.log(areas_of_diagram_proxy, "areas_of_diagram");
+            try {
+              this.solvedVenn.unmount();
+              this.$refs.solutionTable.innerHTML = '';
+            } catch (error) {
+              // probably ok
+            }
+
+            this.solvedVenn = createApp(VennVisualizer, this.rootProps);
+            // mount the instance to the DOM element with the id 'venn'
+            this.solvedVenn.mount('#solution');
+
+            // Get the reference to the table container
+            let tableContainer = this.$refs.solutionTable;
+
+            // Define the areas list
+            const areas = this.currentResponse.sets;
+            console.log(areas, "THE AREAS")
+            //const areas = ['A', 'B', 'C'];
+
+            // Create the table element
+            const table = document.createElement('table');
+
+            // Create the table header row
+            const headerRow = document.createElement('tr');
+
+            // Create the header cells
+            const areaHeader = document.createElement('th');
+            areaHeader.textContent = 'Plocha';
+            headerRow.appendChild(areaHeader);
+
+            const predicateHeader = document.createElement('th');
+            predicateHeader.textContent = 'Predikát';
+            headerRow.appendChild(predicateHeader);
+
+            const stateHeader = document.createElement('th');
+            stateHeader.textContent = 'Správný stav';
+            headerRow.appendChild(stateHeader);
+
+            const explanationHeader = document.createElement('th');
+            explanationHeader.textContent = 'Vysvětlení';
+            headerRow.appendChild(explanationHeader);
+
+            const correctHeader = document.createElement('th');
+            correctHeader.textContent = 'Správně';
+            headerRow.appendChild(correctHeader);
+
+            // Add the header row to the table
+            table.appendChild(headerRow);
+
+            let provideExplanation = (findMe) => {
+              if (findMe.length === 1 && findMe[0] === 'Ω'){
+                if (this.currentResponse.universal.flat().includes('Ω')) {
+                  // find which array within the universal array contains the omega
+                  let findMeIndex = this.currentResponse.universal.findIndex((element) => element.includes('Ω'));
+                  return {
+                    explanation: this.currentResponse.explanations[0],
+                    p_index: findMeIndex,
+                  };
+                }
+                return {
+                  explanation: "Universum není vyšrafováno.",
+                  p_index: "-",
+                }
+              }
+              if (this.currentResponse.steps.length < 1){
+                if (this.currentResponse.explanations.length < 1)
+                  return {
+                    explanation: "Žádné vysvětlení není k dispozici.",
+                    p_index: "-",
+                  };
+                return {
+                  explanation: this.currentResponse.explanations[0],
+                  p_index: 0,
+                };
+              }
+              for (let step in this.currentResponse.steps){
+                for (let universal in this.currentResponse.steps[step].universal){
+                  if (this.currentResponse.steps[step].universal[universal].length === findMe.length
+                      && this.currentResponse.steps[step].universal[universal].every((v,i)=>v === findMe[i])){
+                    console.log("returning", this.currentResponse.steps[step].explanations)
+                    return {
+                      explanation: this.currentResponse.steps[step].explanations[1],
+                      p_index: this.currentResponse.steps[step].p_index,
+                    };
+                  }
+                }
+              }
+              return {
+                explanation: "Žádný predikát neovlivňuje tuto plochu.",
+                p_index: "-",
+              }
+            }
+
+            let generateCombinations = (arr) => {
+              if (arr.length === 0) {
+                return [[]];
+              } else {
+                const first = arr[0];
+                const rest = arr.slice(1);
+                const combinationsWithoutFirst = generateCombinations(rest);
+                const combinationsWithFirst = combinationsWithoutFirst.map((c) => [first, ...c]);
+                return [...combinationsWithoutFirst, ...combinationsWithFirst];
+              }
+            }
+
+            const combinations = generateCombinations(areas).sort((a, b) => {
+              if (a.length !== b.length) {
+                return a.length - b.length;
+              } else {
+                return a.join('').localeCompare(b.join(''));
+              }
+            });
+            // add to combinations
+            let univ = provideExplanation(['Ω']);
+            let foundState = (this.currentResponse.universal.flat().includes('Ω'));
+
+            let found;
+
+            for (const obj in areas_of_diagram_proxy){
+              if (areas_of_diagram_proxy[obj].id === 'Universum'){
+                found = areas_of_diagram_proxy[obj];
+                console.log("found universum", found);
+                break;
+              }
+            }
+
+            const universalRow = document.createElement('tr');
+
+            const universalCell = document.createElement('td');
+            universalCell.textContent = 'Ω';
+            universalRow.appendChild(universalCell);
+
+            const predicateCell = document.createElement('td');
+            predicateCell.textContent = (univ.p_index === "-") ? "" : this.currentResponse.predicates[univ.p_index];
+            universalRow.appendChild(predicateCell);
+
+            const stateCell = document.createElement('td');
+            stateCell.classList.add('state-cell');
+            stateCell.textContent = (foundState ? 'vyšrafovaná' : 'prázdná')
+            universalRow.appendChild(stateCell);
+
+            const explanationCell = document.createElement('td');
+            explanationCell.textContent = univ.explanation;
+            universalRow.appendChild(explanationCell);
+
+            const correctCell = document.createElement('td');
+            let checkBox = document.createElement('input');
+            checkBox.type = "checkbox";
+            checkBox.checked = (foundState === (found.state === "hashed"));
+            checkBox.disabled = true;
+            correctCell.appendChild(checkBox);
+            universalRow.classList.add(foundState === (found.state === "hashed") ? 'correct-row' : 'incorrect-row');
+            //correctCell.textContent = (foundState === (found.state === "hashed") ? 'Ano' : 'Ne');
+            universalRow.appendChild(correctCell);
+
+            table.appendChild(universalRow);
+
+            for (let combination in combinations){
+              let curr = combinations[combination]
+              if (curr.length === 0)
+                continue;
+
+              const expl = provideExplanation(curr);
+
+              found;
+
+              for (const obj in areas_of_diagram_proxy){
+                if (areas_of_diagram_proxy[obj].assignment.length === curr.length
+                    && areas_of_diagram_proxy[obj].assignment.every((v,i)=>v === curr[i])){
+                  found = areas_of_diagram_proxy[obj];
+                  console.log("found", found);
+                  break;
+                }
+              }
+
+
+              // Create the row for the individual area
+              const individualAreaRow = document.createElement('tr');
+
+              const individualAreaCell = document.createElement('td');
+              individualAreaCell.textContent = curr.join('∪')
+              individualAreaRow.appendChild(individualAreaCell);
+
+              const predicateCell = document.createElement('td');
+              predicateCell.textContent = (expl.p_index === "-") ? "" : this.currentResponse.predicates[expl.p_index];
+              individualAreaRow.appendChild(predicateCell);
+
+              const stateCell = document.createElement('td');
+              stateCell.textContent = '';
+
+              let foundState = false;
+              for (const obj in this.currentResponse.universal){
+                if (this.currentResponse.universal[obj].length === curr.length
+                    && this.currentResponse.universal[obj].every((v,i)=>v === curr[i])) {
+                  foundState = true;
+                  break;
+                }
+              }
+
+              stateCell.classList.add('state-cell');
+              stateCell.textContent = (foundState ? 'vyšrafovaná' : 'prázdná')
+              individualAreaRow.appendChild(stateCell);
+
+              const explanationCell = document.createElement('td');
+              //explanationCell.textContent = 'Explanation';
+              explanationCell.textContent = expl.explanation;
+              individualAreaRow.appendChild(explanationCell);
+
+              const correctCell = document.createElement('td');
+              console.log(found, "found")
+              let checkBox = document.createElement('input');
+              checkBox.type = "checkbox";
+              checkBox.checked = (foundState === (found.state === "hashed"));
+              checkBox.disabled = true;
+              correctCell.appendChild(checkBox);
+              individualAreaRow.classList.add(foundState === (found.state === "hashed") ? 'correct-row' : 'incorrect-row');
+              //correctCell.textContent = (foundState === (found.state === "hashed") ? 'Ano' : 'Ne');
+              individualAreaRow.appendChild(correctCell);
+
+
+              // Add the row to the table
+              table.appendChild(individualAreaRow);
+            }
+
+            tableContainer.appendChild(table);
+
+
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      },
       onSolve(areas_of_diagram_proxy) {
       if (areas_of_diagram_proxy && this.currentResponse !== null){
         try {
@@ -570,7 +807,7 @@ export default {
             }
 
             const comp = h(VennVisualizer, {
-              onSolve: e => this.onSolve(e),
+              onSolve: e => this.onSolveNew(e),
             })
 
             this.rootProps = {
