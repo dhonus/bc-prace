@@ -80,16 +80,12 @@ export default {
                 return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
             }
 
-            console.log("our universal friends are ", this.universal)
-
-
             // find common
             let hash_these = sunPointsNames.filter((arr) => {
                 return this.universal.some((arr2) => {
                     return compareArrays(arr, arr2);
                 });
             });
-            console.log(hash_these, "hash these");
 
             let i = 0;
             let sunFill = "#e2e2e2";
@@ -129,9 +125,6 @@ export default {
           // this is the function that will be called when the user clicks on a segment
           g.selectAll("path.segment").on("click", (e) => {
             const svg = d3.select(e.currentTarget)
-
-            console.log(svg);
-            console.log(svg.attr('id'));
             if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
               let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
               area.state = "clear";
@@ -144,7 +137,6 @@ export default {
                 svg.transition().attr("fill", "url(#diagonalHatch)");
               }
             }
-            console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
           });
 
             let tooltip = d3.select("body")
@@ -154,7 +146,6 @@ export default {
                 .style("visibility", "hidden")
                 .style("background-color", "rgb(54, 54, 54)")
                 .style("padding", ".8rem");
-
 
             // hover over a segment and get its description
             g.selectAll("path.segment").on("mousemove", function (event) {
@@ -170,7 +161,6 @@ export default {
                 const svg = d3.select(this);
             });
 
-
             let __sets_identifiers = [
                 [this.sets[0]],
             ];
@@ -179,9 +169,6 @@ export default {
             let __sets_positions = [
                 [centerX_1 + 20, centerY_1+10],
             ];
-
-            console.log(__sets_identifiers);
-
 
           let position_me = (index, key, character) => {
             const pos = __sets_positions[index];
@@ -202,7 +189,6 @@ export default {
               return el;
             }
 
-            console.log(index, "pos, key, index");
             // background for the text
             el.circle = g.append("circle");
             el.circle
@@ -235,15 +221,10 @@ export default {
           }
 
             // existential
-            console.log(this.existential, "existential");
             for (const position in __sets_identifiers){
                 for(let key in this.existential) {
-                    console.log("the size is: " + this.existential[key].length);
-
                     for (let all in this.existential[key]) {
                         if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
-                            console.log(this.existential[key][all], __sets_identifiers[position]);
-                            console.log("bad", this.bad);
                             // if this.existential[key][any] is in bad[key] then it is a bad existential
                             if (this.bad[key] !== undefined && this.bad[key].length > 0){
                                 for (let bad in this.bad[key]){
@@ -268,9 +249,6 @@ export default {
           // this is the function that will be called when the user clicks on a segment
           g.selectAll("path.segment").on("contextmenu", (e) => {
             const svg = d3.select(e.currentTarget)
-            console.log(svg);
-            console.log(svg.attr('id'));
-
             let theVar = this.entryVariable;
             if (theVar === undefined || theVar === null || theVar.length === 0){
               theVar = "x";
@@ -285,7 +263,6 @@ export default {
               this.$refs.entryVariableInput.classList.remove("bad");
             }
             let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'));
-
 
             let found = false;
             if (area.questionElement.index !== -1)
@@ -310,7 +287,6 @@ export default {
             for (const ass in __sets_identifiers){
               console.log(ass);
               if (compareArrays(__sets_identifiers[ass], area.assignment)){
-                console.log("found it at index: " + i);
                 area.questionElement = position_me(i, found ? undefined : theVar, "x");
                 if (found){
                   // remove theVar from the existential
@@ -325,22 +301,20 @@ export default {
               }
               i++;
             }
-
-            console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
           });
 
-            g.append("text")
-                .text("Ω")
-                .attr("x", (this.width - 30))
-                .attr("y", 50)
-                .style('fill', '#323232')
-                .style('font-size', '1.5rem');
+          g.append("text")
+              .text("Ω")
+              .attr("x", (this.width - 30))
+              .attr("y", 50)
+              .style('fill', '#323232')
+              .style('font-size', '1.5rem');
 
-            g.append("text")
-                .text(this.sets[0])
-                .attr("x", centerX_1 + vennRadius - 20)
-                .attr("y", centerY_1 - vennRadius*0.8)
-                .style('fill', '#323232');
+          g.append("text")
+              .text(this.sets[0])
+              .attr("x", centerX_1 + vennRadius - 20)
+              .attr("y", centerY_1 - vennRadius*0.8)
+              .style('fill', '#323232');
         },
     }
 }
