@@ -59,7 +59,10 @@
           <div class="solution" v-if="solving">
           </div>
           <h3 class="small-title">Vaše řešení</h3>
+          <h4 class="small-title">Univerzální predikáty</h4>
           <div ref="solutionTable"></div>
+          <h4 class="small-title">Existenciální predikáty</h4>
+          <div ref="solutionTableExistential"></div>
           <h3 class="small-title">Správné řešení</h3>
           <div id="solution"></div>
         </div>
@@ -400,11 +403,11 @@ export default {
               individualAreaCell.textContent = curr.join('∪')
               individualAreaRow.appendChild(individualAreaCell);
 
-              const predicateCell = document.createElement('td');
+              let predicateCell = document.createElement('td');
               predicateCell.textContent = (expl.p_index === "-") ? "" : this.currentResponse.predicates[expl.p_index];
               individualAreaRow.appendChild(predicateCell);
 
-              const stateCell = document.createElement('td');
+              let stateCell = document.createElement('td');
               stateCell.textContent = '';
 
               let foundState = false;
@@ -420,12 +423,12 @@ export default {
               stateCell.textContent = (foundState ? 'vyšrafovaná' : 'prázdná')
               individualAreaRow.appendChild(stateCell);
 
-              const explanationCell = document.createElement('td');
+              let explanationCell = document.createElement('td');
               //explanationCell.textContent = 'Explanation';
               explanationCell.textContent = expl.explanation;
               individualAreaRow.appendChild(explanationCell);
 
-              const correctCell = document.createElement('td');
+              let correctCell = document.createElement('td');
               console.log(found, "found")
               let checkBox = document.createElement('input');
               checkBox.type = "checkbox";
@@ -439,9 +442,110 @@ export default {
 
               // Add the row to the table
               table.appendChild(individualAreaRow);
+
+              // existential row
+              const existentialRow = document.createElement('tr');
+
+              const existentialCell = document.createElement('td');
+              existentialCell.textContent = '→';
+              existentialRow.appendChild(existentialCell);
+
+              predicateCell = document.createElement('td');
+              predicateCell.textContent = (expl.p_index === "-") ? "" : this.currentResponse.predicates[expl.p_index];
+              existentialRow.appendChild(predicateCell);
+
+              stateCell = document.createElement('td');
+              let correctVars = [];
+              let correctVarsDict = {};
+
+              // for each key in this.currentResponse.existential
+              console.log(this.currentResponse.existential, "existential")
+              console.log(curr, 'curr');
+              for (const key in this.currentResponse.existential){
+                console.log(key, "key", this.currentResponse.existential[key], "value")
+                for (const obj in this.currentResponse.existential[key]){
+                  console.log(this.currentResponse.existential[key][obj], "obj")
+                  if (this.currentResponse.existential[key][obj].length === curr.length
+                      && this.currentResponse.existential[key][obj].every((v,i)=>v === curr[i])) {
+                    correctVars.push(key);
+
+                    break;
+                  }
+                }
+              }
+
+              console.log("correctVars", correctVars)
+              console.log("correctVarsDict", correctVarsDict)
+              stateCell.textContent = (correctVars.length === 0) ? "" : "(" + correctVars.toString() + ")";
+              existentialRow.appendChild(stateCell);
+
+              explanationCell = document.createElement('td');
+
+              console.log(areas_of_diagram_proxy, "areas_of_diagram_proxy");
+
+              let lacking = [];
+              let extras = [];
+              for (const obj in areas_of_diagram_proxy){
+                if (areas_of_diagram_proxy[obj].assignment.length !== curr.length
+                    || !areas_of_diagram_proxy[obj].assignment.every((v,i)=>v === curr[i])){
+                  continue;
+                }
+                console.log("checking", areas_of_diagram_proxy[obj]);
+                for (let ex in areas_of_diagram_proxy[obj].existential){
+                  const finding = areas_of_diagram_proxy[obj].existential[ex];
+                  console.log("under", finding);
+                  // if the area is in the correct vars
+                  if (!correctVars.includes(finding)){
+                    extras.push(finding);
+                    continue;
+                  }
+                  lacking.push(finding);
+                }
+              }
+
+              lacking = correctVars.filter(n => !lacking.includes(n));
+
+              console.log("lacking", lacking);
+              console.log("extras", extras);
+
+              if (lacking.length === 0 && extras.length === 0){
+                explanationCell.textContent = "Všechny proměnné jsou vyplněny správně.";
+              } else {
+                if (lacking.length > 0){
+                  explanationCell.textContent += "Následující proměnné chybí: " + lacking.toString() + ". ";
+                }
+                if (extras.length > 0){
+                  explanationCell.textContent += "Následující proměnné jsou navíc: " + extras.toString() + ". ";
+                }
+              }
+
+              existentialRow.appendChild(explanationCell);
+
+              existentialRow.classList.add(lacking.length === 0 && extras.length === 0 ? 'correct-row' : 'incorrect-row');
+
+              correctCell = document.createElement('td');
+              console.log(found, "found")
+              checkBox = document.createElement('input');
+              checkBox.type = "checkbox";
+              checkBox.checked = (lacking.length === 0 && extras.length === 0);
+              checkBox.disabled = true;
+              correctCell.appendChild(checkBox);
+              existentialRow.classList.add(lacking.length === 0 && extras.length === 0 ? 'correct-row' : 'incorrect-row');
+              existentialRow.appendChild(correctCell);
+
+              table.appendChild(existentialRow);
+
             }
 
             tableContainer.appendChild(table);
+
+
+
+            /*
+             * EXISTENTIAL
+             */
+            // Get the reference to the table container
+
 
 
           } catch (error) {
