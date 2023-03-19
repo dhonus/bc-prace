@@ -55,7 +55,6 @@ class Evaluator:
                 self.__get_variables(tree.right)
             case _:
                 raise TypeError(f'Unknown type passed to evaluator: {type(tree).__name__}')
-        # print(self.__objects, " :p ")
 
     def __universal_solve(self, node: Node) -> list[str]:
         """ solves a universal predicate and produces list of crossed out areas """
@@ -383,59 +382,6 @@ class Evaluator:
                 return ret + ")"
             case _:
                 return str(param)
-
-
-
-"""
-    def validity(self, solution: dict[str, list[str]]):
-         checks the validity of the entire problem using the parsed existential and universal results 
-        variable = str(list(self.__conclusion_solved.keys())[0])  # the variable of the conclusion
-        print(variable, "solution")
-        solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
-        print(len(solution_candidates))
-        print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")
-        print(solution_candidates.intersection(set(self.__conclusion_solved[variable])))
-        if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
-            return False
-        return True
- """
-
-"""
-                    for var in self.__existential_solved.keys():
-                        for constant in constants:
-                            self.__existential_solved[var] += self.__existential_solved[constant.variable]
-                        # this should be OK, removing the inaccessible areas
-                        existential_solved_final[var] = adding
-                        self.__steps.append(
-                            {
-                                "Exists within": adding,
-                                "Crossed out": list(set(self.__universal_solved)),  # deduplicate
-                                "Explanations": self.__explanations.copy()
-                            }
-                        )
-                        for constant in constants:
-                            self.__existential_solved[var] += self.__existential_solved[constant.variable]
-                        # this should be OK, removing the inaccessible areas
-                        existential_solved_final[expr_tree.variable] = adding
-                        self.__conclusion_variable = conclusion_tree.variable
-                        if conclusion_tree.value == '∃' or conclusion_tree.value == 'E':
-                            self.__conclusion_solved[conclusion_tree.variable] = set(
-                                self.__existential_solve(conclusion_tree))
-                        else:
-                            self.__conclusion_solved[conclusion_tree.variable] = set(
-                                self.__universal_solve(conclusion_tree))
-
-                        print()
-                        print("STEPS")
-                        for step in self.__steps:
-                            print(step)
-                        print()
-
-                        return {
-                            "Exists within": existential_solved_final,
-                            "Crossed out": list(set(self.__universal_solved)),  # deduplicate
-                            "Explanations": self.__explanations
-                        }"""
 
 class LogicException(Exception):
     pass

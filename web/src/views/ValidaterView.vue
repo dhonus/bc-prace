@@ -151,9 +151,9 @@
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
-            <li>∃xA(x) ⊃ B(x)</li>
-            <li>∀x B(x) & C(x)</li>
-            <li>AxB(x)</li>
+            <li>∃x [A(x) ⊃ B(x)]</li>
+            <li>∀x [B(x) & C(x)]</li>
+            <li>Ax [B(x)]</li>
           </ul>
           <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kde proměnná je malé písmeno. Platné literály:</p>
           <ul>
@@ -167,7 +167,7 @@
           </ul>
           <h3>Příklad validního vstupu:</h3>
           <ul>
-            <li>∀x A(x) & !B(x)</li>
+            <li>∀x [A(x) & !B(x)]</li>
             <li>Ex [A(x) > C(x)]</li>
           </ul>
           <hr>
