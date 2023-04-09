@@ -17,7 +17,7 @@ class Evaluator:
         self.__variables = []
         self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram
         self.__sets_dict = {}
-        self.__universal_solved = []  # the universtal statement result
+        self.__universal_solved = []  # the universal statement result
         self.__existential_solved = {}
         self.__conclusion_solved = {}
         self.__conclusion_variable = None
@@ -109,14 +109,10 @@ class Evaluator:
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
-
-                # print(f"\nsolving {expr_tree.value} {expr_tree.p_index}")
                 self.__universal_solved += self.__universal_solve(expr_tree)
-                # print(set(self.__universal_solved), ";)")
 
                 for solved in set(self.__universal_solved):
                     area = list(solved)
-                    print(area)
                     # add list to list instead of joining
 
             elif expr_tree.value == '∃':
@@ -257,15 +253,12 @@ class Evaluator:
         variable = self.__conclusion_variable
 
         len_sum += len(solution['Exists within'][variable])
-        print(set(solution['Exists within'][variable]), variable)
-        print(set(solution['Crossed out']), "crossed out")
+        # print(set(solution['Exists within'][variable]), variable)
+        # print(set(solution['Crossed out']), "crossed out")
         var_set = set(solution['Exists within'][variable])
         crossed_out = set(solution['Crossed out'])
         # if an element in var_set is in crossed_out remove it from var_set
         var_set.difference_update(crossed_out)
-        print(var_set, "var_set")
-
-        print (len_sum, "len_sum")
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
         try:
@@ -279,8 +272,19 @@ class Evaluator:
 
         if self.__conclusion_existential:
             if len(var_set) == 0:
-                self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
-                return False
+                print("conclusion existential", self.__conclusion_solved[variable])
+                constants = []
+                for v in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                    if v in solution['Exists within'].keys():
+                        print(v, solution['Exists within'][v], "HAA")
+                        if not set(solution['Exists within'][v]).isdisjoint(self.__conclusion_solved[variable]):
+                            print("Hell yess", v)
+                            constants.append(v)
+                if len(constants) == 0:
+                    self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
+                    return False
+                self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení. Platné konstanty {', '.join(constants)}."]
+                return True
 
             # if any from var_set is in the conclusion, the problem is valid
             if not var_set.isdisjoint(self.__conclusion_solved[variable]):
@@ -295,39 +299,6 @@ class Evaluator:
             self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {self.__pretty_print(solution['Exists within'][variable])}."]
 
             return False
-
-            # here we solve the case in which only universal statements are provided
-            # we determine the validity by checking if the areas that should be crossed out are actually crossed out
-            if len_sum == 0:
-                checking = set(crossed_out) - set(self.__conclusion_solved[variable])
-                if set(self.__conclusion_solved[variable]).issubset(crossed_out):
-                    self.__explanations[0] = [f"Platí, že vyškrtání {checking} vystihuje aktuální řešení."]
-                    return True
-                else:
-                    self.__explanations[0] = [
-                        f"Toto nelze tvrdit. Všechny z {self.__conclusion_solved[variable]} musí být vyškrtány."]
-                    return False
-
-            # if we have 0 crosses, and it is not the case that the problem is purely
-            # universal, we can say that the problem is invalid
-            if len_sum == 0 and self.__existential_count != 0:
-                self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádná existenciální tvrzení."]
-                ret = False
-
-            if len_sum == 1:
-                if len(crossed_out) == 0:
-                    self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
-                                              f"Můžeme umístit {var_set} a jedná se o jediné řešení."]
-                else:
-                    self.__explanations[0] = [f"Pro '{variable}' nalezeno řešení. "
-                                              f"Můžeme umístit {var_set}, protože {self.__pretty_print(crossed_out)} jsou vyškrtány."]
-                ret = True
-            else:
-                self.__explanations[0] = [f"Pro '{variable}' není řešení. "
-                                          f"Nevíme kam umístit {self.__pretty_print(var_set)}"]
-                ret = False
-
-            return ret
 
         else:
             # here we solve the case in which only universal statements are provided
@@ -349,15 +320,6 @@ class Evaluator:
             self.__explanations[0] = [f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}."]
             return False
 
-
-    """
-     solution_candidates = set((solution['Exists within'][variable])).difference(solution['Crossed out'])
-            print(len(solution_candidates))
-            print(f"{solution_candidates}, {self.__conclusion_solved[variable]}")
-            print(solution_candidates.intersection(set(self.__conclusion_solved[variable])))
-            if len(solution_candidates.intersection(set(self.__conclusion_solved[variable]))) == 0:
-                ret = ret & False
-            ret = ret & True"""
 
     def __pretty_print(self, param):
         match param:
