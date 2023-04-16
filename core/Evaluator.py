@@ -253,14 +253,19 @@ class Evaluator:
         variable = self.__conclusion_variable
 
         len_sum += len(solution['Exists within'][variable])
-        # print(set(solution['Exists within'][variable]), variable)
-        # print(set(solution['Crossed out']), "crossed out")
+        print(set(solution['Exists within'][variable]), variable)
+        print(set(solution['Crossed out']), "crossed out")
         var_set = set(solution['Exists within'][variable])
         crossed_out = set(solution['Crossed out'])
+
+        print(var_set, "var set")
+        
         # if an element in var_set is in crossed_out remove it from var_set
         var_set.difference_update(crossed_out)
+        
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
+        
         try:
             print(self.__conclusion_solved[variable], "conclusion")
             # if the conclusion is not a subset of the var_set, the problem is invalid
@@ -279,7 +284,8 @@ class Evaluator:
                         print(v, solution['Exists within'][v], "HAA")
                         if not set(solution['Exists within'][v]).isdisjoint(self.__conclusion_solved[variable]):
                             print("Hell yess", v)
-                            constants.append(v)
+                            if v == self.__conclusion_variable or self.__conclusion_variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                                constants.append(v)
                 if len(constants) == 0:
                     self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
                     return False

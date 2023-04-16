@@ -1,9 +1,8 @@
 <!-- https://axios-http.com/docs/post_example -->
 
 <template>
-  <div class="noprint" style="padding: 0 0 2rem 0;">
+  <div v-if="msg" class="noprint" style="padding: 0 0 2rem 0;">
     <p>{{ msg }}</p>
-    <p><b style="color:#9981b4;">V případě chyby ve výsledku prosím o zaslání zadání na hon0102@vsb.cz včetně hash.</b></p>
   </div>
 </template>
 
@@ -21,7 +20,7 @@ export default {
     getMessage() {
       axios.get('/')
         .then((res) => {
-          this.msg = res.data;
+          //this.msg = res.data;
         })
         .catch((error) => {
           this.msg = "Nelze se připojit k serveru. Interní chyba: " + error.code + "."

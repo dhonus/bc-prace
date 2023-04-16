@@ -1,11 +1,5 @@
 <!-- https://axios-http.com/docs/post_example -->
 
-<template>
-  <div>
-    <p>{{ msg }}</p>
-  </div>
-</template>
-
 <script>
 import axios from 'axios';
 

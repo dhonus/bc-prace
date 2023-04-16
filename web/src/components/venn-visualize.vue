@@ -41,7 +41,7 @@ const margin = {
 };
 
 /*
-* In this file, a lot of the parts are duplicated, the refactoring would only make it more complicated to read.
+* In the other size files (VennOne ... VennFour), a lot of the code is duplicated, the refactoring would only make it more complicated to read.
 * In the end we just recalculate some variables for each size, because for each of them the positioning code is slightly different.
 * Enough to warrant this level of boilerplate.
 * */

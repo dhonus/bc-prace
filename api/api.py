@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, Query
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 # this is required to be able to access the fastapi server from VUE.js on another port
@@ -14,10 +12,9 @@ from core.Parser import Parser, EmptyInputException, InvalidExpressionException
 from core.Evaluator import Evaluator
 import logging
 from typing import List
-import main
 import git
 
-
+# this is used to pass data to the frontend
 class Item(BaseModel):
     existential: dict[str, set[tuple]] = {}
     bad: dict[str, set[tuple]] = {}
@@ -30,11 +27,10 @@ class Item(BaseModel):
     steps: list[Item] = []
     p_index: int = 0
 
-
-class Thing(BaseModel):
+# this is the model by which we receive the data from the frontend
+class PostModel(BaseModel):
     predicates: List[str]
     conclusion: str
-
 
 app = FastAPI()
 
@@ -52,12 +48,9 @@ app.add_middleware(
 
 
 @app.post("/api", response_model=Item)
-async def send_expression(item: Thing):
+async def send_expression(item: PostModel):
     logging.root.setLevel(logging.DEBUG)
-    """item.predicates = [
-        "AxA(x)|B(x)|C(x)|D(x)",
-        "Ex  B(x) & D(x)"    ]
-    item.conclusion = "AxA(x)|B(x)|C(x)|D(x)"""
+
     predicates = [predicate.replace(" ", "") for predicate in item.predicates]
 
     # we will return the enumerated predicates to the frontend to make sure the order is maintained
@@ -101,7 +94,6 @@ async def send_expression(item: Thing):
         for step in evaluator.get_steps():
             item = Item()
             item.sets = evaluator.get_sets()
-            print(f'problematic {step["Exists within"]}')
             item.existential = step["Exists within"]
             item.universal = step["Crossed out"]
             item.explanations = step["Explanations"]
