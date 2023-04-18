@@ -196,10 +196,43 @@ export default {
   methods: {
     // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
-      this.focused = key;
+      let orig;
       if(key === -1){
+        orig = this.focused;
         this.focused = document.getElementById("zaver");
-        return;
+        if (orig == null) {
+          return;
+        }
+      }
+      if (this.focused !== null && this.focused.value === ""){
+        this.focused.classList.remove("invalid");
+      }
+      if (this.focused !== null && this.focused.value !== ""){
+        if (!orig) orig = this.focused;
+        try {
+          axios.post('/val', {
+            predicate: this.focused.value.toString(),
+          }).then(response => {
+           if (response.data.valid) {
+             // good
+              orig.classList.remove("invalid");
+              this.$refs.why.classList.remove("bad");
+              this.Explanation = "";
+           }
+           else {
+             // color red
+              orig.classList.add("invalid");
+              console.log(orig);
+              this.Explanation = response.data.err;
+              this.validity = "";
+              this.$refs.why.classList.add("activated");
+              this.$refs.why.classList.add("bad");
+
+           }
+          });
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.focused = document.getElementById("predicate"+key);
     },
@@ -244,16 +277,22 @@ export default {
       this.focused.setRangeText(value_to_enter, start, end, 'end');
       this.focused.setSelectionRange(end+1,end+1);
       this.focused.focus();
-      this.focused.dispatchEvent(new Event('input')); // this is done because vue doesnt detect changes without an event
+      this.focused.dispatchEvent(new Event('input')); // this is done because vue doesn't detect changes without an event
     },
     // submits the form and requests the data from the API
     async submit(steps){
 
       this.$refs.why.classList.remove("activated");
+      this.$refs.why.classList.remove("bad");
       this.$refs.steps.classList.remove("activated");
 
       setTimeout(() => this.$refs.why.classList.add("activated"), 100);
       setTimeout(() => this.$refs.steps.classList.add("activated"), 100);
+
+      const invalids = document.getElementsByClassName("invalid");
+      for (let i = 0; i < invalids.length; i++) {
+        invalids[i].classList.remove("invalid");
+      }
 
 
       let predicates = []

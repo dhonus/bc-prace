@@ -39,14 +39,6 @@
           </button>
         </div>
         <div style="height: 1px; background: #dddde0; margin: 1rem auto auto auto; width: 90%;"></div>
-        <div class="why" ref="why">
-          <p v-if="APIErrorMessage.length > 0" style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
-          <span v-if="APIErrorMessage.length <= 0">
-            <h3 v-if="validity === true" style="color:#129412;">Platný úsudek</h3>
-            <h3 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h3>
-            <p>{{ Explanation }}</p>
-          </span>
-        </div>
 
         <!--<div id="venn_one"></div>
         <div id="venn_two"></div>
@@ -59,12 +51,18 @@
           <div class="solution" v-if="solving">
           </div>
           <h3 class="small-title">Vaše řešení</h3>
-          <h4 class="small-title">Univerzální predikáty</h4>
           <div ref="solutionTable"></div>
-          <h4 class="small-title">Existenciální predikáty</h4>
           <div ref="solutionTableExistential"></div>
           <h3 class="small-title">Správné řešení</h3>
           <div id="solution"></div>
+          <div class="why" ref="why">
+          <p v-if="APIErrorMessage.length > 0" style="color: #b01b1b;"><b> {{ APIErrorMessage }} </b></p>
+          <span v-if="APIErrorMessage.length <= 0 && solving">
+            <h3 v-if="validity === true" style="color:#129412;">Platný úsudek</h3>
+            <h3 v-else-if="validity === false" style="color:#7e2626;">Neplatný úsudek</h3>
+            <p>{{ Explanation }}</p>
+          </span>
+        </div>
         </div>
 
 
@@ -200,6 +198,7 @@ export default {
       optionalPredicate:false,
       count: 3,
       values: {},
+      valid: false,
       focused: null,
       zaver: null,
       APIErrorMessage: '',
@@ -779,10 +778,43 @@ export default {
     },
     // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
-      this.focused = key;
+      let orig;
       if(key === -1){
+        orig = this.focused;
         this.focused = document.getElementById("zaver");
-        return;
+        if (orig == null) {
+          return;
+        }
+      }
+      if (this.focused !== null && this.focused.value === ""){
+        this.focused.classList.remove("invalid");
+      }
+      if (this.focused !== null && this.focused.value !== ""){
+        if (!orig) orig = this.focused;
+        try {
+          axios.post('/val', {
+            predicate: this.focused.value.toString(),
+          }).then(response => {
+           if (response.data.valid) {
+             // good
+              orig.classList.remove("invalid");
+              this.$refs.why.classList.remove("bad");
+              this.Explanation = "";
+           }
+           else {
+             // color red
+              orig.classList.add("invalid");
+              console.log(orig);
+              this.Explanation = response.data.err;
+              this.validity = "";
+              this.$refs.why.classList.add("activated");
+              this.$refs.why.classList.add("bad");
+
+           }
+          });
+        } catch (e) {
+          console.log(e);
+        }
       }
       this.focused = document.getElementById("predicate"+key);
     },

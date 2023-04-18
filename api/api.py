@@ -32,12 +32,20 @@ class PostModel(BaseModel):
     predicates: List[str]
     conclusion: str
 
+class ValidityPostModel(BaseModel):
+    predicate: str
+
+class ValidOrNotModel(BaseModel):
+    valid: bool
+    err: str
+
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8080",
+        "http://localhost:8080/val",
         "http://10.0.0.117:8000",
         "http://130.162.49.62:8080",
     ],  # frontend address
@@ -46,6 +54,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.post("/val", response_model=ValidOrNotModel)
+async def validate(p: ValidityPostModel):
+    predicate = p.predicate.replace(" ", "")
+    try:
+        parser = Parser()
+        parser.attach(predicate, 0)
+        tree = parser.parse()
+        tree.validate()
+        model = ValidOrNotModel(valid=True, err="")
+        return model
+    except Exception as iee:
+        err = str(iee)
+        model = ValidOrNotModel(valid=False, err=err)
+        return model
 
 @app.post("/api", response_model=Item)
 async def send_expression(item: PostModel):

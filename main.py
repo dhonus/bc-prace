@@ -57,6 +57,17 @@ def main(predicates: List[str], conclusion: str) -> bool:
 
     return evaluator.validity(solution)
 
+def validate(predicate: str):
+    predicate = predicate.replace(" ", "")
+    try:
+        parser = Parser()
+        parser.attach(predicate, 0)
+        tree = parser.parse()
+        tree.validate()
+        return [True, ""]
+    except ValueError as iee:
+        err = str(iee)
+        return [False, err]
 
 if __name__ == "__main__":
 
@@ -72,4 +83,7 @@ if __name__ == "__main__":
 
     # c = "∃y[B(y) | C(y)]"
     c = "ExP(x) & R(x)"
-    main(p, c)
+    #main(p, c)
+
+    print(validate("∀x [P(x) > QaA(x)]"), ".(")
+

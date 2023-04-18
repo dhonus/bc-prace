@@ -149,6 +149,9 @@ class Parser:
                 if self.__current == '(':
                     return ExpressionTree(value='∃', variable=None, tree=None)
                 variable = self.__current
+                if not variable:
+                    raise ValueError('Chybí proměnná.')
+
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
@@ -159,7 +162,9 @@ class Parser:
                 if self.__current == '(':
                     return ExpressionTree(value='∃', variable=None, tree=None)
                 variable = self.__current
-                print(variable)
+                if not variable:
+                    raise ValueError('Chybí proměnná.')
+
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
