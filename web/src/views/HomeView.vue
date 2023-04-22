@@ -1,10 +1,11 @@
 <template>
+  <HelpHome v-if="help" @close="showHelp"/>
   <div class="spinner" ref="spinner">
     <img src="@/assets/spinner.gif" alt="Spinner" />
   </div>
   <div class="home">
     <div class="tablinks">
-      <div class="row">
+      <div class="col">
         <div class="single">
           <a href="/">
             <button class="tab active">Vyřešit</button>
@@ -15,6 +16,12 @@
           <button class="tab">Zkontrolovat</button>
           </a>
         </div>
+      </div>
+      <div class="col">
+        <div class="help-button" @click="showHelp">
+            <span class="download-text">Nápověda</span>
+            <img src="../assets/icons/iconmonstr-question-thin.svg" title="Nápověda">
+          </div>
       </div>
     </div>
     <HelloWorld msg="Bc. Práce" />
@@ -71,7 +78,6 @@
             <img src="../assets/icons/iconmonstr-save-thin.svg" title="Tisk">
           </div>
         </div>
-
       </div>
       <div class="left_section bubble">
         <div class="keyboard">
@@ -170,11 +176,13 @@ import axios from "axios";
 import qs from "qs";
 import VennVisualizer from "@/components/venn-visualize";
 import { createApp } from 'vue'
+import HelpHome from "@/components/HelpHome.vue";
 
 
 export default {
   name: 'HomeView',
   components: {
+    HelpHome,
     HelloWorld,
   },
   data() {
@@ -186,6 +194,7 @@ export default {
       zaver: null,
       APIErrorMessage: '',
       validity: null,
+      help: false,
       myChart: null,
       resultVenn: null,
       Explanation: '',
@@ -260,6 +269,13 @@ export default {
       setTimeout(() => {
         this.$refs.accept_button.classList.remove("activated");
       }, 250);
+    },
+    showHelp: function() {
+      if (!this.help) {
+        this.help = true;
+        return;
+      }
+      this.help = false;
     },
     submitWithKeySteps: function() {
       this.$refs.step_button.classList.add("activated");

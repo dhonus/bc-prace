@@ -12,13 +12,37 @@ p, h1, h2, h3, h4, h5, h6
 div.tablinks
   width: 100%
   padding: 1rem 0
-  div.row
-    margin: auto
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+  align-items: center
+  div.col
     padding: 0 2rem
     display: flex
     flex-direction: row
     justify-content: left
     gap: 1rem
+    .help-button
+      transition: all .3s ease
+      cursor: pointer
+      display: flex
+      flex-direction: row
+      align-items: center
+      justify-content: center
+      gap: .5rem
+      border: 1px solid transparent
+      border-radius: 8px
+      font-size: 1rem
+      color: #696969
+      padding: .4rem .6rem
+      &:hover
+        background: #f5ecf5
+        border-color: purple
+        transition: all .3s ease
+      img
+        width: 1.6rem
+        height: 1.6rem
+        filter: brightness(0.8)
     div.single
       button.tab
         border: 1px solid transparent
