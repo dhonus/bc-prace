@@ -94,7 +94,7 @@ class Parser:
         expr = self.__q_rule()
         if expr.variable is None:
             # we assume that this is a constant
-            # form like B(x) instead of Ex[B(x)]
+            # form like B(a) instead of Ex[B(x)]
             # constants behave differently to regular expressions
             # a variable of a constant is shared among other constants with any variable
             expr.constant = True
@@ -128,9 +128,6 @@ class Parser:
             raise Exception(f"Není uzavřena hranatými závorkami.")
         return expr
 
-    def __deduce_variable(self) -> str:
-        pass
-
     def __set_variable(self, var: str):
         if var == self.__variable:
             return
@@ -139,6 +136,7 @@ class Parser:
             return
         raise Exception(f"Nalezeny 2 různé proměnné ve výrazu -> '{self.__variable}' a '{var}'")
 
+    # refer to grammar in the thesis text
     # Q -> ∀V | ∃V
     def __q_rule(self) -> ExpressionTree | None:
         """ each quantifier different rules """

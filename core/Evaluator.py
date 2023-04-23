@@ -86,12 +86,12 @@ class Evaluator:
         self.__get_variables(conclusion_tree)
         if existential_validate == 0 and conclusion_tree.value == '∃':
             self.__valid_on_all = False
-            raise LogicException('Nesprávný úsudek. Všeobecné premisy nemohou implikovat existenci.')
+            raise LogicException('Nesprávný úsudek. Ze všeobecných premis nemůže vyplývat existence.')
 
-        # there is a limit to how many objects we can draw. This checks if we have exceeded said limit.
+        # there is a limit to how many sets we can draw. This checks if we have exceeded said limit.
         if len(self.__objects) > self.__sets_count_limit:  # +1 for quantifier
-            raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} objektů.\n'
-                            f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Objekty: {self.__objects}')
+            raise Exception(f'Je povoleno nejvýše {self.__sets_count_limit} množin.\n'
+                            f'Překročeno o {len(self.__objects) - self.__sets_count_limit}. Množiny: {self.__objects}')
 
         print(f"objects for the entire diagram: {self.__objects}")
         for var in self.__variables:
@@ -111,10 +111,6 @@ class Evaluator:
                 self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
                 self.__universal_solved += self.__universal_solve(expr_tree)
 
-                for solved in set(self.__universal_solved):
-                    area = list(solved)
-                    # add list to list instead of joining
-
             elif expr_tree.value == '∃':
                 self.__existential_count += 1
 
@@ -123,13 +119,9 @@ class Evaluator:
                 adding = set(
                     self.__existential_solve(expr_tree)
                 )  # we want this to be length 1
-                print(adding, "ADDING")
 
                 # now, of course we do NOT want the areas that we know are hatched (universal statements)
                 adding = adding - set(self.__universal_solved)
-
-                print(adding, "ADDING")
-                print(set(self.__universal_solved), "uni")
 
                 # we WANT this to be 1, because otherwise we don't know where to put the "x" in the diagram!
                 if len(adding) != 1:
@@ -184,7 +176,6 @@ class Evaluator:
 
             # here we just add the existential output of constants to all other variables
             for var in self.__existential_solved.keys():
-                print(f"var: {var}")
                 for constant in constants:
                     self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
                 # this should be OK, removing the inaccessible areas
@@ -214,7 +205,6 @@ class Evaluator:
             # this should be OK, removing the inaccessible areas
             existential_solved_final[var] = set(self.__existential_solved[var]) - set(self.__universal_solved)
 
-        print(f"\nsolving conclusion {conclusion_tree.p_index}")
         self.__conclusion_variable = conclusion_tree.variable
         if conclusion_tree.value == '∃' or conclusion_tree.value == 'E':
             self.__conclusion_existential = True
@@ -222,14 +212,6 @@ class Evaluator:
         else:
             self.__conclusion_existential = False
             self.__conclusion_solved[conclusion_tree.variable] = set(self.__universal_solve(conclusion_tree))
-
-        print(f"\n\nExplanations : {self.__explanations}\n\n")
-
-        print()
-        print("STEPS")
-        for step in self.__steps:
-            print(step)
-        print()
 
         return {
             "Exists within": existential_solved_final,
@@ -253,27 +235,14 @@ class Evaluator:
         variable = self.__conclusion_variable
 
         len_sum += len(solution['Exists within'][variable])
-        print(set(solution['Exists within'][variable]), variable)
-        print(set(solution['Crossed out']), "crossed out")
         var_set = set(solution['Exists within'][variable])
         crossed_out = set(solution['Crossed out'])
 
-        print(var_set, "var set")
-        
         # if an element in var_set is in crossed_out remove it from var_set
         var_set.difference_update(crossed_out)
         
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
-        
-        try:
-            print(self.__conclusion_solved[variable], "conclusion")
-            # if the conclusion is not a subset of the var_set, the problem is invalid
-            if not var_set.issubset(self.__conclusion_solved[variable]):
-                ret = False
-            print(set(self.__conclusion_solved[variable]), "conclusion")
-        except KeyError:
-            print("not the correct variable")
 
         if self.__conclusion_existential:
             if len(var_set) == 0:

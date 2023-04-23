@@ -15,16 +15,13 @@ class Venn:
         self.sets = []
         for var in self.variables:
             self.dict[var] = " "
-        print(self.dict)
 
         self.sets = {}
-
         self.area_combinations = []
 
         for i, the_set in enumerate(self.variables):
             for elem in itertools.combinations(self.variables, i+1):
                 self.area_combinations.append(elem)
-                print("===> ", self.area_combinations)
 
         for i, var in enumerate(self.variables):
             self.sets[var] = []
@@ -36,11 +33,11 @@ class Venn:
             self.explanations[var] = []
 
     def universal(self, tree: ExpressionTree) -> list[str]:
-        print(f"---------\nsets: {self.sets}")
-        print("explanations:", self.explanations)
         sol = self.__solver(tree.tree)
-        print(f"solution:: {sol}")
-        print(self.area_combinations)
+        # print(f"---------\nsets: {self.sets}")
+        # print("explanations:", self.explanations)
+        # print(f"solution:: {sol}")
+        # print(self.area_combinations)
         sol = self.__negate(sol)
 
         sol_universum_accounted = list()
@@ -62,22 +59,16 @@ class Venn:
         return sol_universum_accounted
 
     def existential(self, tree: ExpressionTree) -> list[str]:
-        print(f"---------\nexistential sets: {self.sets}")
-        print("explanations:", self.explanations)
+        # print(f"---------\nexistential sets: {self.sets}")
+        # print("explanations:", self.explanations)
 
         # deal with the tree
         solution = self.__solver(tree.tree)
-
-        print(f"solution:: {solution}")
-        print(self.area_combinations)
         sol_universum_accounted = list()
+
         # remove universe symbol from all but just itself
         # {'AΩ', 'Ω', 'BΩ'} -> {'A', 'Ω', 'B'}
         for item in solution:
-            # NOT SURE HERE
-            """if item[0] == 'Ω' and len(item) == 1:
-                sol_universum_accounted.append(item)
-                continue"""
             try:
                 idx = item.index('Ω')
                 item = item[:idx] + item[idx + 1:]
@@ -94,7 +85,7 @@ class Venn:
             for elem in value:
                 if elem not in to_negate:
                     new_values.append(elem)
-        print(f"negated to {new_values}")
+        # print(f"negated to {new_values}")
         return new_values
 
     def __solver(self, node) -> List[str]:
@@ -106,7 +97,6 @@ class Venn:
             case Neg() as n:
                 # remove current from all possible and return new set
                 left = self.__solver(n.left)
-                print(" -> neg", left)
                 return self.__negate(left)
             case Operation() as op:
                 left = self.__solver(op.left)
