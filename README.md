@@ -34,23 +34,40 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
         ABS:    #
     
     THE GRAMMAR:
-        S -> Q[E]
-        Q -> ∀V | ∃V
-        E -> B
-        B -> I | I <> B
-        I -> D | D > I
-        D -> C | C '|' D
-        C -> N | N & C
-        N -> F | !F
-        F = W(V)
-        V -> [a..z]
-        V' -> VV' | eps
-        W -> [A..Z] V'
+        vyraz ::= ”∀” ”[” E ”]” | ”∃” ”[” E ”]” | slovo ”(” konst ”)”
+        E ::= B
+        B ::= I | I ” ≡ ” B
+        I ::= D | D ” ⊃ ” I
+        D ::= C | C ” ∨ ” D
+        C ::= N | N ” ∧ ” C
+        N ::= literal | ”¬” literal
+        literal ::= ”(” B ”)” | slovo ”(” male ”)”
+        male = ”h” | ”i” | ... | ”y” | ”z”
+        velke = ”A” | ”B” | ... | ”Y ” | ”Z”
+        konst = ”a” | ”b” | ... | ”f ” | ”g”
+        slovo ::= velke, {male}
 
-npm install -g @vue/cli  
-pip install "fastapi[all]" # test removing all at the end  
-pip install "uvicorn[standard]"  
-npm install axios  
-npm install --save-dev node-sass sass-loader  
-npm install --save chart.js chartjs-chart-venn  
-npm i vue-chartjs chart.js   
+### How to install
+To install dependencies on Ubuntu 22.04 run:
+
+```bash
+sudo apt install npm python3 python3-pip
+```
+
+```bash
+pip install "fastapi[all]"
+pip install "uvicorn[standard]"
+cd web/
+npm install
+```
+
+### Run the API
+```bash
+python3 -m uvicorn api.api:app --reload --port=8000
+```
+
+### Run the web
+```bash
+cd web/
+npm run serve
+```
