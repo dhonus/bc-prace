@@ -140,17 +140,13 @@
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
-            <li>∃x [A(x) ⊃ B(x)]</li>
-            <li>∀x [B(x) & C(x)]</li>
-            <li>Ax [B(x)]</li>
+            <li>∃x [A(x) & B(x)]</li>
+            <li>∀x [B(x) ⊃ C(x)]</li>
           </ul>
-          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kde proměnná je malé písmeno. Platné literály:</p>
+          <p><b>Literál</b> je vždy ve tvaru Predikát(proměnná/konstanta), kde proměnná nebo konstanta je malé písmeno. Pro <b>konstanty</b> jsou vyhrazeny znaky [a..g] Platné literály:</p>
           <ul>
             <li>P(x)</li>
-            <li>Venn(y)</li>
-          </ul>
-          <p><b>Konstanty</b> se zapisují bez kvantifikátoru. Jsou pro ně vyhrazeny proměnné [a..g]:</p>
-          <ul>
+            <li>¬Venn(y)</li>
             <li>Q(a)</li>
             <li>P(g) ⊃ ¬Q(g)</li>
           </ul>

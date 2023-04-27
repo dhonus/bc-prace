@@ -290,13 +290,13 @@ export default {
           .attr("height", 0);
 
       // hover over a segment and get its description
-      g.selectAll("path.segment").on("mousemove", function (event) {
+      /*g.selectAll("path.segment").on("mousemove", function (event) {
         const svg = d3.select(this);
         tooltip.text("ID plochy: " + svg.attr('id'));
         tooltip.style("visibility", "visible");
         tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
         svg.style("", "url(#drop-shadow)");
-      });
+      });*/
 
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");
@@ -489,19 +489,19 @@ export default {
           .style('font-size', '1.5rem');
 
       g.append("text")
-          .text(this.sets[0])
+          .text(this.sets[0] + "'")
           .attr("x", centerX_1 - vennRadius)
           .attr("y", centerY_1 - vennRadius*0.8)
           .style('fill', '#323232');
 
       g.append("text")
-          .text(this.sets[1])
+          .text(this.sets[1] + "'")
           .attr("x", centerX_2 + vennRadius)
           .attr("y", centerY_2 - vennRadius*0.8)
           .style('fill', '#323232');
 
       g.append("text")
-          .text(this.sets[2])
+          .text(this.sets[2] + "'")
           .attr("x", centerX_3)
           .attr("y", centerY_3 + vennRadius*1.3)
           .style('fill', '#323232');

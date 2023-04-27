@@ -29,6 +29,8 @@ class Parser:
             string = string.replace(key, value)
         if not string:
             raise EmptyInputException
+        if string.find('Ω') != -1:
+            raise Exception("Nelze použít znak Ω, je rezervován pro výpis.")
         self.__expression = string
         self.__variable = ""
         self.__expression_generator = self.__make_expression_generator()  # create generator for the parser to iterate over

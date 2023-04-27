@@ -40,11 +40,11 @@ export default {
   }
   .help-body {
     margin: 1rem auto;
-    padding: 1rem;
+    padding: 1rem 3rem;
     background-color: white;
     border-radius: 0.5rem;
     width: 50%;
-    height: 50%;
+    height: fit-content;
     overflow: auto;
     text-align: left;
   }
@@ -74,7 +74,7 @@ export default {
     text-align: left;
   }
   img {
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
     display: block;
     border-radius: 7px;
