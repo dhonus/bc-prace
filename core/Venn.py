@@ -34,10 +34,6 @@ class Venn:
 
     def universal(self, tree: ExpressionTree) -> list[str]:
         sol = self.__solver(tree.tree)
-        # print(f"---------\nsets: {self.sets}")
-        # print("explanations:", self.explanations)
-        # print(f"solution:: {sol}")
-        # print(self.area_combinations)
         sol = self.__negate(sol)
 
         sol_universum_accounted = list()

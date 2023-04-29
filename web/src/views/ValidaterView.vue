@@ -522,10 +522,10 @@ export default {
                 explanationCell.textContent = "Všechny proměnné jsou vyplněny správně.";
               } else {
                 if (lacking.length > 0){
-                  explanationCell.textContent += "Následující proměnné chybí: " + lacking.toString() + ". ";
+                  explanationCell.textContent += "Následující proměnné/konstanty chybí: " + lacking.toString() + ". ";
                 }
                 if (extras.length > 0){
-                  explanationCell.textContent += "Následující proměnné jsou navíc: " + extras.toString() + ". ";
+                  explanationCell.textContent += "Následující proměnné/konstanty jsou navíc: " + extras.toString() + ". ";
                 }
               }
 

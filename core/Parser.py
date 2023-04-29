@@ -139,7 +139,6 @@ class Parser:
         raise Exception(f"Nalezeny 2 různé proměnné ve výrazu -> '{self.__variable}' a '{var}'")
 
     # refer to grammar in the thesis text
-    # Q -> ∀V | ∃V
     def __q_rule(self) -> ExpressionTree | None:
         """ each quantifier different rules """
         elem = self.__current
@@ -173,14 +172,12 @@ class Parser:
             case _:
                 return ExpressionTree(value='∃', variable=None, tree=None)
 
-    # E -> B # this is done because we can only have one expression
     def __e_rule(self, constant: bool) -> Operation | None:
         left = self.__b_rule()
         if not left:
             return None
         return left
 
-    #  B -> I | I <> B
     def __b_rule(self) -> Operation | None:
         left = self.__i_rule()
         if not left:
@@ -194,7 +191,6 @@ class Parser:
             return None
         return left
 
-    # I -> D | D > I
     def __i_rule(self) -> Operation | None:
         left = self.__d_rule()
         if not left:
@@ -205,7 +201,6 @@ class Parser:
                 return Operation(left, right, '>')
         return left
 
-    # D -> C | C '|' D
     def __d_rule(self) -> Operation | None:
         left = self.__c_rule()
         if not left:
@@ -216,7 +211,6 @@ class Parser:
                 return Operation(left, right, 'or')
         return left
 
-    # C -> N | N & C
     def __c_rule(self) -> Operation | Set | Neg | None:
         left = self.__neg_rule()
         if not left:
@@ -227,7 +221,6 @@ class Parser:
                 return Operation(left, right, '&')
         return left
 
-    # N -> F | !F
     def __neg_rule(self) -> Set | Neg | None:
         if self.__match('!'):
             left = self.__f_rule()
@@ -238,7 +231,6 @@ class Parser:
         left = self.__f_rule()
         return left
 
-    # F = W(V) | W[V]
     def __f_rule(self) -> Set | None:
         if self.__match('['):
             right = self.__b_rule()

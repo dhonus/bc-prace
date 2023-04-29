@@ -3,7 +3,9 @@ from core.Evaluator import Evaluator
 import logging
 from typing import List
 
-
+"""
+this file can serve to test out the API
+"""
 def main(predicates: List[str], conclusion: str) -> bool:
     logging.root.setLevel(logging.DEBUG)
 
@@ -70,20 +72,12 @@ def validate(predicate: str):
         return [False, err]
 
 if __name__ == "__main__":
-
-    """p = ["∀x[A(x) > B(x)]",
-         "∀y[B(y) > A(y) | C(y)]",
-         "∃y[B(y) | A(y)]",
-         "B(x) & C(x)"]"""
     p = [
         "∀x P(x) > Q(x)",
         "AxQ(x)>R(x)",
         "ExP(x)"
     ]
 
-    # c = "∃y[B(y) | C(y)]"
     c = "ExP(x) & R(x)"
-    #main(p, c)
 
     print(validate("∀x [P(x) > QaA(x)]"), ".(")
-
