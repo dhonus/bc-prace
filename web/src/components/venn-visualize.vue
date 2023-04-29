@@ -13,6 +13,7 @@
              maxlength="1"
              v-model="entryVariable"
              ref="entryVariableInput"
+             @input="smallOrNot"
              placeholder="x" />
     </div>
     <svg width="600" height="400" ref="canvas"></svg>
@@ -80,6 +81,17 @@ export default {
     emitSolve: function (){
       this.$emit('solve', this.areas_of_diagram);
       console.log("emitted")
+    },
+    smallOrNot: function() {
+      // get ref entryVariableInput
+      //check if entryVariable is lowercase
+      console.log(this.entryVariable)
+      if (this.entryVariable.toLowerCase() !== this.entryVariable) {
+        this.entryVariable = "";
+      }
+      if (this.entryVariable.toUpperCase() === this.entryVariable){
+        this.entryVariable = "";
+      }
     },
     // sets the current active button to the one that was clicked on
     activate: function(button){

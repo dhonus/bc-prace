@@ -380,6 +380,7 @@ export default {
               existential: existential_sorted,
               universal: universal_sorted,
               step: false,
+              thisInstanceWillActAsUserInput: false,
             });
             this.resultVenn.mount('#venn');
 
@@ -427,6 +428,7 @@ export default {
                 canvasPredicate: response.data["predicates"][step.p_index],
                 canvasExplanation: response.data["explanations"][step.p_index][0],
                 step: true,
+                thisInstanceWillActAsUserInput: false,
               });
               this.containers[i].mount(this.container_names[i++]);
             }

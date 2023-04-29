@@ -9,7 +9,6 @@ export default {
   methods: {
     venn3: function(){
       let g = this.prepare();
-
       // center of first circle
       const centerX_1 = 220;
       const centerY_1 = 150;
@@ -260,6 +259,9 @@ export default {
 
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("click", (e) => {
+        if (!this.thisInstanceWillActAsUserInput) {
+          return;
+        }
         const svg = d3.select(e.currentTarget)
         console.log(svg);
         console.log(svg.attr('id'));

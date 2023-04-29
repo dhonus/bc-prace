@@ -4,6 +4,9 @@ import Area from "@/components/Area";
 import d3Element from "@/components/d3Element";
 export default {
     methods: {
+        // inspiration taken from
+        // https://medium.com/@cmmyers/how-i-made-an-interactive-venn-diagram-with-d3-fa723c55a148
+        // also mentioned in thesis
         venn1: function (){
             let g = this.prepare();
 
@@ -124,6 +127,9 @@ export default {
 
           // this is the function that will be called when the user clicks on a segment
           g.selectAll("path.segment").on("click", (e) => {
+            if (!this.thisInstanceWillActAsUserInput) {
+              return;
+            }
             const svg = d3.select(e.currentTarget)
             if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
               let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))

@@ -299,6 +299,7 @@ export default {
         i++;
       }
 
+      i = 0;
       // find common
       hash_these = intersectionOfThreeAreasNames.filter((arr) => {
         return this.universal.some((arr2) => {
@@ -316,27 +317,26 @@ export default {
 
         // if points is contained in hash_these
         if (hash_these.some((arr) => {
-          return compareArrays(arr, intersectionOfThreeAreasNames[0]);
+          return compareArrays(arr, intersectionOfThreeAreasNames[i]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "hashed", "#868585", intersectionOfThreeAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", "#868585", intersectionOfThreeAreasNames[i]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "#868585")
               .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "clear", "#868585", intersectionOfThreeAreasNames[0]));
+          this.areas_of_diagram.push(new Area(theId, "clear", "#868585", intersectionOfThreeAreasNames[i]));
         }
+        i++;
       }
 
       for (const points of intersectionOfFourAreas) {
@@ -375,6 +375,9 @@ export default {
 
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("click", (e) => {
+        if (!this.thisInstanceWillActAsUserInput) {
+          return;
+        }
         const svg = d3.select(e.currentTarget)
         console.log(svg);
         console.log(svg.attr('id'));

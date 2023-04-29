@@ -193,6 +193,9 @@ export default {
 
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("click", (e) => {
+        if (!this.thisInstanceWillActAsUserInput) {
+          return;
+        }
         const svg = d3.select(e.currentTarget)
         if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed") {
           let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
