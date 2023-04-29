@@ -3,9 +3,7 @@ from core.Evaluator import Evaluator
 import logging
 from typing import List
 
-"""
-this file can serve to test out the API
-"""
+""" this file can serve to test out the API """
 def main(predicates: List[str], conclusion: str) -> bool:
     logging.root.setLevel(logging.DEBUG)
 
@@ -14,6 +12,7 @@ def main(predicates: List[str], conclusion: str) -> bool:
     # we will return the enumerated predicates to the frontend to make sure the order is maintained
     predicates_to_return = {}
     p_index = 1
+    evaluator = Evaluator()
     try:
         trees = []
         parser = Parser()
@@ -23,8 +22,6 @@ def main(predicates: List[str], conclusion: str) -> bool:
             tree = parser.parse()
             tree.validate()
             trees.append(tree)
-            print(tree.print())
-            print()
             p_index += 1
 
         predicates_to_return[p_index] = conclusion
@@ -36,11 +33,8 @@ def main(predicates: List[str], conclusion: str) -> bool:
             trees, key=lambda tr: tr.value
         )  # sort to have universal statements first
 
-        evaluator = Evaluator()
         solution = evaluator.eval(trees, conclusion_tree)
-        print(f" -- {evaluator.get_sets()} -- ")
         print(f"\n\n----------\nsolution: {solution}\n----------")
-        print(predicates_to_return)
         print(evaluator.validity(solution))
 
     except InvalidExpressionException as iee:
@@ -73,11 +67,9 @@ def validate(predicate: str):
 
 if __name__ == "__main__":
     p = [
-        "∀x P(x) > Q(x)",
-        "AxQ(x)>R(x)",
-        "ExP(x)"
+        "Ax[P(x) > !S(x)]",
+        "Ex[P(x) & B(x)]",
     ]
+    c = "Ex[B(x) & !S(x)]"
 
-    c = "ExP(x) & R(x)"
-
-    print(validate("∀x [P(x) > QaA(x)]"), ".(")
+    main(p, c)

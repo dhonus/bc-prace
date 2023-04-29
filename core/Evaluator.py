@@ -5,11 +5,6 @@ from typing import List, Set as tSet, Dict, Any, Set
 from core.Venn import *
 
 
-def deprecated(args):
-    print("This is an old function")
-    pass
-
-
 class Evaluator:
     def __init__(self):
         self.__existential_count = 0
@@ -66,7 +61,6 @@ class Evaluator:
 
     def __existential_solve(self, node: Node):
         """ solves an existential predicate; same alg as universal. Produces list of areas which contain elements """
-        print(self.__objects, " :D ", self.__sets_count_limit)
         if len(self.__objects) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__objects)}")
             venn = Venn(self.__objects.copy())
@@ -132,9 +126,8 @@ class Evaluator:
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
                         self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny."]
-                        self.__valid_on_all = False  # NOT SURE HERE
+                        self.__valid_on_all = False
 
-                    print("adding is not 1", self.__existential_solved)
                     for var in self.__existential_solved.keys():
                         for constant in constants:
                             self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
@@ -250,9 +243,7 @@ class Evaluator:
                 constants = []
                 for v in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     if v in solution['Exists within'].keys():
-                        print(v, solution['Exists within'][v], "HAA")
                         if not set(solution['Exists within'][v]).isdisjoint(self.__conclusion_solved[variable]):
-                            print("Hell yess", v)
                             if v == self.__conclusion_variable or self.__conclusion_variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                                 constants.append(v)
                 if len(constants) == 0:
