@@ -34,18 +34,20 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
         ABS:    #
     
     THE GRAMMAR:
-        vyraz ::= ”∀” ”[” E ”]” | ”∃” ”[” E ”]” | slovo ”(” konst ”)”
-        E ::= B
-        B ::= I | I ” ≡ ” B
-        I ::= D | D ” ⊃ ” I
-        D ::= C | C ” ∨ ” D
-        C ::= N | N ” ∧ ” C
-        N ::= literal | ”¬” literal
-        literal ::= ”(” B ”)” | slovo ”(” male ”)”
-        male = ”h” | ”i” | ... | ”y” | ”z”
-        velke = ”A” | ”B” | ... | ”Y ” | ”Z”
-        konst = ”a” | ”b” | ... | ”f ” | ”g”
-        slovo ::= velke, {male}
+        vyraz ::= all male "[" E "]" | exist male "[" E "]" | E
+        E ::= I | I "<>" E
+        I ::= D | D ">" I
+        D ::= C | C "|" D
+        C ::= N | N "&" C
+        N ::= literal | "!" literal
+        literal ::= "(" E ")" | slovo "(" male ")" | slovo "(" konst ")"
+        velke ::= ”A” | ”B” | ... | ”Y ” | ”Z”
+        male ::= ”h” | ”i” | ... | ”y” | ”z”
+        konst ::= ”a” | ”b” | ... | ”f ” | ”g”
+        libovolne ::= male | konst
+        all ::= "∀" | "A"
+        exist ::= "∃" | "E"
+        slovo ::= velke, {libovolne}
 
 ### How to install
 To install dependencies on Ubuntu 22.04 run:
