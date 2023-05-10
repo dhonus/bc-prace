@@ -266,7 +266,18 @@ class Evaluator:
                 except KeyError:
                     pass
 
-
+                print(self.__conclusion_solved[variable], "haha")
+                for v in list(self.__conclusion_solved.keys()):
+                    print("KEY", v)
+                    try:
+                        print(self.__bad[v], " should be subset of ", self.__conclusion_solved[variable])
+                        print(self.__bad[v].issubset(self.__conclusion_solved[variable]))
+                        if self.__bad[v].issubset(self.__conclusion_solved[variable]):
+                            self.__explanations[0] = [
+                                f"Pro '{variable}' bylo nalezeno řešení. Platí že existuje prvek, který spadá do {self.__pretty_print(self.__conclusion_solved[variable])}."]
+                            return True
+                    except KeyError:
+                        pass
 
                 if len(constants) == 0:
                     self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
@@ -285,7 +296,7 @@ class Evaluator:
 
                 return True
 
-            self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {self.__pretty_print(solution['Exists within'][variable])}."]
+            self.__explanations[0] = [f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr."]
 
             return False
 
