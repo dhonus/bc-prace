@@ -234,7 +234,8 @@ class Evaluator:
         crossed_out = set(solution['Crossed out'])
 
         # get all keys in self.__bad
-        for k in list(self.__bad.keys()):
+        keys = list(self.__bad.keys()) + variables
+        for k in keys:
             self.__conclusion_solved[k] = set(self.__conclusion_solved[variable])
             len_sum += len(solution['Exists within'][k])
             var_set = var_set.union(set(solution['Exists within'][k]))
@@ -265,14 +266,7 @@ class Evaluator:
                 except KeyError:
                     pass
 
-                print(self.__conclusion_solved[variable], "haha")
-                try:
-                    if self.__bad[variable].issubset(self.__conclusion_solved[variable]):
-                        self.__explanations[0] = [
-                            f"Pro '{variable}' bylo nalezeno řešení. Platí že existuje prvek, který spadá do {self.__pretty_print(self.__bad[variable])}."]
-                        return True
-                except KeyError:
-                    pass
+
 
                 if len(constants) == 0:
                     self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
