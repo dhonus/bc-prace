@@ -128,6 +128,7 @@ class Evaluator:
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
                         self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny."]
+                        self.__valid_on_all = False
 
                     for var in self.__existential_solved.keys():
                         for constant in constants:
