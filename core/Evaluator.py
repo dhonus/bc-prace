@@ -18,6 +18,7 @@ class Evaluator:
         self.__conclusion_variable = None
         self.__conclusion_existential = False
         self.__explanations = {}
+        self.__bad = {}
         self.__steps = []
         self.__valid_on_all = True  # if it so happens that something goes wrong, the validity is set to false
 
@@ -121,12 +122,12 @@ class Evaluator:
                 if len(adding) != 1:
                     # so if we DO NOT know where to put the "x", we will tell the user
                     # self.__valid_on_all = False
+
                     self.__explanations[expr_tree.p_index] = [f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0:
                         self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny."]
-                        self.__valid_on_all = False
 
                     for var in self.__existential_solved.keys():
                         for constant in constants:
@@ -159,6 +160,7 @@ class Evaluator:
                         self.__conclusion_variable = conclusion_tree.variable
                         self.__conclusion_solved[conclusion_tree.variable] = set(
                             self.__existential_solve(conclusion_tree))
+                        self.__bad[expr_tree.variable] = adding
 
                 else:
                     self.__existential_solved[expr_tree.variable] += self.__existential_solve(expr_tree)
@@ -182,7 +184,7 @@ class Evaluator:
             if not found:
                 self.__steps.append(
                     {
-                        "Bad": {},
+                        "Bad": self.__bad,
                         "Predicate": expr_tree.p_index,
                         "Exists within": existential_solved_final.copy(),
                         "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
@@ -216,7 +218,7 @@ class Evaluator:
         """ checks the validity of the entire problem using the parsed existential and universal results """
         variables = list(solution['Exists within'].keys())  # the variable of the conclusion
         print(variables, "solution")
-        print(self.__conclusion_variable, "conclusion")
+        print(self.__conclusion_solved, "conclusion")
 
         if not self.__valid_on_all:
             return False
@@ -231,21 +233,47 @@ class Evaluator:
         var_set = set(solution['Exists within'][variable])
         crossed_out = set(solution['Crossed out'])
 
+        # get all keys in self.__bad
+        for k in list(self.__bad.keys()):
+            self.__conclusion_solved[k] = set(self.__conclusion_solved[variable])
+            len_sum += len(solution['Exists within'][k])
+            var_set = var_set.union(set(solution['Exists within'][k]))
+            # var_set = var_set.union(self.__bad[k])L
+        print(self.__bad, "bad")
         # if an element in var_set is in crossed_out remove it from var_set
         var_set.difference_update(crossed_out)
-        
+
+        print(self.__conclusion_solved, "conclusion solved GOOD")
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
 
         if self.__conclusion_existential:
             if len(var_set) == 0:
                 print("conclusion existential", self.__conclusion_solved[variable])
+                print("self.bad", self.__bad)
                 constants = []
                 for v in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     if v in solution['Exists within'].keys():
                         if not set(solution['Exists within'][v]).isdisjoint(self.__conclusion_solved[variable]):
                             if v == self.__conclusion_variable or self.__conclusion_variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                                 constants.append(v)
+                # if conclusion_solved[variable] is the ame self.__bad[variable]
+                try:
+                    if self.__conclusion_solved[variable].issubset(self.__bad[variable]):
+                        self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení. Platí že {self.__pretty_print(self.__bad[variable])} není vyškrtáno a splňuje tím podmínku závěru."]
+                        return True
+                except KeyError:
+                    pass
+
+                print(self.__conclusion_solved[variable], "haha")
+                try:
+                    if self.__bad[variable].issubset(self.__conclusion_solved[variable]):
+                        self.__explanations[0] = [
+                            f"Pro '{variable}' bylo nalezeno řešení. Platí že existuje prvek, který spadá do {self.__pretty_print(self.__bad[variable])}."]
+                        return True
+                except KeyError:
+                    pass
+
                 if len(constants) == 0:
                     self.__explanations[0] = [f"Pro '{variable}' nebylo nalezeno řešení. Žádný existenciální predikát pro '{variable}' nebyl vhodný."]
                     return False
@@ -253,6 +281,7 @@ class Evaluator:
                 return True
 
             # if any from var_set is in the conclusion, the problem is valid
+
             if not var_set.isdisjoint(self.__conclusion_solved[variable]):
                 if variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     self.__explanations[0] = [
