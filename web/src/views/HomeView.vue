@@ -201,11 +201,12 @@ export default {
   methods: {
     // sets the active input field to the one that was clicked on
     focusOnMe: function(key){
+      console.log(key);
       let orig;
       if(key === -1){
         orig = this.focused;
         this.focused = document.getElementById("zaver");
-        if (orig == null) {
+        if (orig != null) {
           return;
         }
       }

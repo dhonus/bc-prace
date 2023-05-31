@@ -793,7 +793,7 @@ export default {
       if(key === -1){
         orig = this.focused;
         this.focused = document.getElementById("zaver");
-        if (orig == null) {
+        if (orig != null) {
           return;
         }
       }
