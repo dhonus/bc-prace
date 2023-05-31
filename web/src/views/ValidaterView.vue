@@ -29,7 +29,7 @@
       <div class="predicates bubble">
         <div v-for="key in count" :key="key">
           <Transition>
-            <input @focus="focusOnMe(key)" :rel="'predicate'+key" type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print">
+            <input @focus="focusOnMe(key)" :rel="'predicate'+key" :ref="'predicate'+key"  type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print">
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
@@ -836,6 +836,8 @@ export default {
     },
     // removes the last input field
     removeP: function(){
+      // remove text from the field
+      this.values['dynamic-field-' + this.count] = ''; // Set the value to an empty string
       if (this.count > 1)
         this.count--;
     },

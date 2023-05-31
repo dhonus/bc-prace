@@ -248,6 +248,7 @@ export default {
     },
     // removes the last input field
     removeP: function(){
+      this.values['dynamic-field-' + this.count] = ''; // Set the value to an empty string
       if (this.count > 1)
         this.count--;
     },
