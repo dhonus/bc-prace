@@ -60,6 +60,7 @@ class Venn:
 
         # deal with the tree
         solution = self.__solver(tree.tree)
+
         sol_universum_accounted = list()
 
         # remove universe symbol from all but just itself

@@ -10,211 +10,207 @@ export default {
       let g = this.prepare();
 
       // center of first circle
-      const centerX_1 = 220;
-      const centerY_1 = 150;
-      const vennRadius = 100;
+      let centerX_1 = 190;
+      let centerY_1 = 150;
+      const vennRadius = 110;
 
       const factor = 1.10;
       const offset = factor * vennRadius;
       // center of second circle
-      const centerX_2 = centerX_1 + offset;
-      const centerY_2 = centerY_1; //creating new var for clarity
+      let centerX_2 = centerX_1 + offset;
+      let centerY_2 = centerY_1; //creating new var for clarity
       // center of third circle
       const centerX_3 = centerX_1;
-      const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
+      const centerY_3 = centerY_1 + vennRadius*1.3/2;
       // center of fourth circle
-      const centerX_4 = centerX_1 + offset;
-      const centerY_4 = centerY_1 + (Math.sqrt(3) * offset) / 2;
+      const centerX_4 = centerX_1 + vennRadius*1.5/2;
+      const centerY_4 = centerY_1;
 
       this.areas_of_diagram.push(this.universum_hatch_check(g));
 
-      // add circles to svg (The ones with _ are background circles)
-      let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
+      let rect1__ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("width", vennRadius*3.6).attr("height", vennRadius*1.3)
+          .attr("class", "circle-background-white");
+      let rect2__ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("height", vennRadius*3).attr("width", vennRadius * 1.5)
+          .attr("class", "circle-background-white");
+      let rect3__ = g.append("rect").attr("x", centerX_3 - vennRadius).attr("y", centerY_3 - vennRadius).attr("width", vennRadius*3).attr("height", vennRadius*1.3)
+          .attr("class", "circle-background-white");
+      let rect4__ = g.append("rect").attr("x", centerX_4 - vennRadius).attr("y", centerY_4 - vennRadius).attr("height", vennRadius*2.6).attr("width", vennRadius*1.5)
+          .attr("class", "circle-background-white");
+
+      let rect1_ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("width", vennRadius*3.6).attr("height", vennRadius*1.3)
           .attr("class", "circle-background");
-      let circle2_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")")
+      let rect2_ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("height", vennRadius*3).attr("width", vennRadius * 1.5)
           .attr("class", "circle-background");
-      let circle3_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_3 + "," + centerY_3 + ")")
+      let rect3_ = g.append("rect").attr("x", centerX_3 - vennRadius).attr("y", centerY_3 - vennRadius).attr("width", vennRadius*3).attr("height", vennRadius*1.3)
           .attr("class", "circle-background");
-      let circle4_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_4 + "," + centerY_4 + ")")
+      let rect4_ = g.append("rect").attr("x", centerX_4 - vennRadius).attr("y", centerY_4 - vennRadius).attr("height", vennRadius*2.6).attr("width", vennRadius*1.5)
           .attr("class", "circle-background");
 
-      let circle1 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")");
-      let circle2 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_2 + "," + centerY_2 + ")");
-      let circle3 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_3 + "," + centerY_3 + ")");
-      let circle4 = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_4 + "," + centerY_4 + ")");
 
-      // calculate points of intersections
-      const generalHeight = Math.sqrt(vennRadius ** 2 - (offset / 2) ** 2);
+      let rect1 = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("width", vennRadius*3.6).attr("height", vennRadius*1.3)
+          .attr("class", "circle");
+      let rect2 = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("height", vennRadius*3).attr("width", vennRadius * 1.5)
+          .attr("class", "circle");
+      let rect3 = g.append("rect").attr("x", centerX_3 - vennRadius).attr("y", centerY_3 - vennRadius).attr("width", vennRadius*3).attr("height", vennRadius*1.3)
+          .attr("class", "circle");
+      let rect4 = g.append("rect").attr("x", centerX_4 - vennRadius).attr("y", centerY_4 - vennRadius).attr("height", vennRadius*2.6).attr("width", vennRadius*1.5)
+          .attr("class", "circle");
 
-      //treat "triHeight" as the hypoteneuse of a 30.60.90 triangle.
-      //this tells us the shift from the midpoint of a leg of the triangle
-      //to the point of intersection
-      const triHeight = Math.sqrt(vennRadius**2 - (offset / 2)**2)
-      const xDelta = (generalHeight * Math.sqrt(3)) / 2;
-      const yDelta = triHeight;
+      let center = {"x": centerX_1 - vennRadius * 1.2, "y": centerY_1-vennRadius};
 
-      //https://cs.wikibooks.org/wiki/Geometrie/Numerick%C3%BD_v%C3%BDpo%C4%8Det_pr%C5%AFniku_dvou_kru%C5%BEnic
-      const getCenter = (firstX, secondX, firstY, secondY, flip) => {
-        let d = Math.sqrt((firstX - secondX) ** 2 + (firstY - secondY) ** 2);
-        let sx = firstX  + ((d/2)/d)*(secondX - firstX);
-        let sy = firstY  + ((d/2)/d)*(secondY - firstY);
-        let m = d/2;
-        let v = Math.sqrt((vennRadius ** 2) - (m) ** 2);
-        if (flip)
-          return {
-            "x": (sx + (v/d)*(firstY - secondY)),
-            "y": (sy - (v/d)*(firstX - secondX))
-          }
-        else
-          return {
-            "x": (sx - (v/d)*(firstY - secondY)),
-            "y": (sy + (v/d)*(firstX - secondX))
-          }
-      }
+      let origin = {"x": centerX_1 - vennRadius, "y": centerY_1-vennRadius};
+      const x_intersect_1 = origin["x"];
+      const y_intersect_1 = origin["y"]
+      console.log(center)
 
-      let center;
-      const xMidpointC1C3 = (centerX_1 + centerX_3) / 2;
-      const xMidpointC2C3 = (centerX_2 + centerX_3) / 2;
-      const yMidpointBoth = (centerY_1 + centerY_2) / 2;
+      // this looks more complicated than it is.
+      const row_2_X = origin["x"] + vennRadius*3*1.5/2 - vennRadius*1.5;
 
-      center = getCenter(centerX_1, centerX_2, centerY_1, centerY_2, false);
-      const x_intersect_1 = center["x"];
-      const y_intersect_1 = center["y"];
+      const x_intersect_2 = origin["x"] + vennRadius* 3.6;
+      const y_intersect_2 = origin["y"];
 
-      center = getCenter(centerX_1, centerX_3, centerY_1, centerY_3, true);
-      const x_intersect_2 = center["x"];
-      const y_intersect_2 = center["y"];
+      const x_intersect_3 = origin["x"];
+      const y_intersect_3 = origin["y"] + vennRadius*1.3;
 
-      center = getCenter(centerX_4, centerX_3, centerY_4, centerY_3, false);
-      const x_intersect_3 = center["x"];
-      const y_intersect_3 = center["y"];
+      const x_intersect_4 = origin["x"] + vennRadius*3.6;
+      const y_intersect_4 = origin["y"] + vennRadius*1.3;
 
-      center = getCenter(centerX_4, centerX_2, centerY_4, centerY_2, true);
-      const x_intersect_4 = center["x"];
-      const y_intersect_4 = center["y"];
+      const x_intersect_5 = origin["x"] + vennRadius*1.5;
+      const y_intersect_5 = origin["y"];
 
-      center = getCenter(centerX_3, centerX_2, centerY_3, centerY_2, false);
-      const x_intersect_5 = center["x"];
-      const y_intersect_5 = center["y"];
+      const x_intersect_6 = origin["x"];
+      const y_intersect_6 = origin["y"] + vennRadius*3;
 
-      center = getCenter(centerX_1, centerX_4, centerY_1, centerY_4, false);
-      const x_intersect_6 = center["x"];
-      const y_intersect_6 = center["y"];
+      const x_intersect_7 = origin["x"] + vennRadius*1.5;
+      const y_intersect_7 = origin["y"] + vennRadius*3;
 
-      center = getCenter(centerX_2, centerX_3, centerY_2, centerY_3, false);
-      const x_intersect_7 = center["x"];
-      const y_intersect_7 = center["y"];
+      const x_intersect_8 = origin["x"] + vennRadius*3;
+      const y_intersect_8 = origin["y"] + vennRadius*1.3;
 
-      center = getCenter(centerX_1, centerX_4, centerY_1, centerY_4, true);
-      const x_intersect_8 = center["x"];
-      const y_intersect_8 = center["y"];
+      const x_intersect_9 = origin["x"] + vennRadius*1.5;
+      const y_intersect_9 = origin["y"] + vennRadius*2.6;
 
-      center = getCenter(centerX_2, centerX_4, centerY_2, centerY_4, true);
-      const x_intersect_9 = center["x"];
-      const y_intersect_9 = center["y"];
+      const x_intersect_10 = origin["x"] + vennRadius*3*1.5/2;
+      const y_intersect_10 = origin["y"];
 
-      center = getCenter(centerX_1, centerX_3, centerY_1, centerY_3, false);
-      const x_intersect_10 = center["x"];
-      const y_intersect_10 = center["y"];
+      const x_intersect_11 = origin["x"] + vennRadius*3*1.5/2;
+      const y_intersect_11 = origin["y"] + vennRadius*1.3;
 
-      center = getCenter(centerX_3, centerX_4, centerY_3, centerY_4, false);
-      const x_intersect_11 = center["x"];
-      const y_intersect_11 = center["y"];
+      const x_intersect_12 = origin["x"] + vennRadius*3*1.5/2;
+      const y_intersect_12 = origin["y"] + vennRadius*2.6;
 
-      center = getCenter(centerX_1, centerX_2, centerY_1, centerY_2, true);
-      const x_intersect_12 = center["x"];
-      const y_intersect_12 = center["y"];
+      const x_intersect_13 = row_2_X
+      const y_intersect_13 = origin["y"] + vennRadius*1.3;
 
+      const x_intersect_14 = row_2_X;
+      const y_intersect_14 = origin["y"];
 
-      let xPoints = [x_intersect_1, x_intersect_2, x_intersect_3, x_intersect_4, x_intersect_5, x_intersect_6, x_intersect_7, x_intersect_8, x_intersect_9, x_intersect_10, x_intersect_11, x_intersect_12];
-      let yPoints = [y_intersect_1, y_intersect_2, y_intersect_3, y_intersect_4, y_intersect_5, y_intersect_6, y_intersect_7, y_intersect_8, y_intersect_9, y_intersect_10, y_intersect_11, y_intersect_12];
+      const x_intersect_15 = centerX_3 - vennRadius;
+      const y_intersect_15 = centerY_3 - vennRadius;
 
+      const x_intersect_16 = row_2_X;
+      const y_intersect_16 = centerY_3 - vennRadius;
 
-      // three functions to create the paths using the points of intersection
-      const intersectionOfTwoArea = ([x1, x2, x3, x4, y1, y2, y3, y4]) => {
-        let path = `M ${x1} ${y1}
-             A ${vennRadius} ${vennRadius} 0 0 1 ${x2} ${y2}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x3} ${y3}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x4} ${y4}
-             A ${vennRadius} ${vennRadius} 0 0 1 ${x1} ${y1}`;
-        return path;
-      };
+      const x_intersect_17 = origin["x"] + vennRadius*1.5;
+      const y_intersect_17 = centerY_3 - vennRadius;
 
-      const singleSetArea = ([x1, x2, x3, y1, y2, y3]) => {
-        let path = `M ${x1} ${y1}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x2} ${y2}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x3} ${y3}
-             A ${vennRadius} ${vennRadius} 0 0 1 ${x1} ${y1}`;
-        return path;
-      };
+      const x_intersect_18 = origin["x"] + vennRadius*3*1.5/2;
+      const y_intersect_18 = centerY_3 - vennRadius;
 
-      const intersectionOfThreeArea = ([x1, x2, x3, y1, y2, y3]) => {
-        let path = `M ${x1} ${y1}
-             A ${vennRadius} ${vennRadius} 0 0 1 ${x2} ${y2}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x3} ${y3}
-             A ${vennRadius} ${vennRadius} 0 0 1 ${x1} ${y1}`;
-        return path;
-      };
-      const intersectionOfFourArea = ([x1, x2, x3, x4, y1, y2, y3, y4]) => {
-        let path = `M ${x1} ${y1}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x2} ${y2}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x4} ${y4}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x3} ${y3}
-             A ${vennRadius} ${vennRadius} 0 0 0 ${x1} ${y1}`;
-        return path;
-      };
+      const x_intersect_19 = origin["x"] + vennRadius*1.5;
+      const y_intersect_19 = origin["y"] + vennRadius*1.3;
 
-      let twoSetAreas = [
-        [1, 6, 11, 5],
-        [2, 5, 9, 8],
-        [3, 8, 12, 7],
-        [4, 7, 10, 6],
+      const x_intersect_20 = origin["x"] + vennRadius*3;
+      const y_intersect_20 = centerY_3 - vennRadius;
+
+      const x_intersect_21 = origin["x"];
+      const y_intersect_21 = centerY_3 - vennRadius + vennRadius*1.3;
+
+      const x_intersect_22 = row_2_X;
+      const y_intersect_22 = centerY_3 - vennRadius + vennRadius*1.3;
+
+      const x_intersect_23 = origin["x"] + vennRadius*1.5;
+      const y_intersect_23 = centerY_3 - vennRadius + vennRadius*1.3;
+
+      const x_intersect_24 = origin["x"] + vennRadius*3*1.5/2;
+      const y_intersect_24 = centerY_3 - vennRadius + vennRadius*1.3;
+
+      const x_intersect_25 = row_2_X;
+      const y_intersect_25 = origin["y"] + vennRadius*2.6;
+
+      const x_intersect_26 = origin["x"] + vennRadius*3;
+      const y_intersect_26 = centerY_3 - vennRadius + vennRadius*1.3;
+
+      let xPoints = [x_intersect_1, x_intersect_2, x_intersect_3, x_intersect_4, x_intersect_5, x_intersect_6, x_intersect_7, x_intersect_8, x_intersect_9, x_intersect_10, x_intersect_11, x_intersect_12, x_intersect_13, x_intersect_14, x_intersect_15, x_intersect_16, x_intersect_17, x_intersect_18, x_intersect_19, x_intersect_20, x_intersect_21, x_intersect_22, x_intersect_23, x_intersect_24, x_intersect_25, x_intersect_26];
+      let yPoints = [y_intersect_1, y_intersect_2, y_intersect_3, y_intersect_4, y_intersect_5, y_intersect_6, y_intersect_7, y_intersect_8, y_intersect_9, y_intersect_10, y_intersect_11, y_intersect_12, y_intersect_13, y_intersect_14, y_intersect_15, y_intersect_16, y_intersect_17, y_intersect_18, y_intersect_19, y_intersect_20, y_intersect_21, y_intersect_22, y_intersect_23, y_intersect_24, y_intersect_25, y_intersect_26];
+
+      let squareAreas = [
+        [1, 14, 15, 16], //
+        [14, 5, 16, 17], //
+        [5, 10, 17, 18], //
+        [15, 16, 3, 13], //
+        [16, 17, 13, 19], //
+        [17, 18, 19, 11], //
+        [3, 13, 21, 22], //
+        [13, 19, 22, 23], //
+        [19, 11, 23, 24],
+        [22, 23, 25, 9],
+        [23, 24, 9, 12],
+        [18, 20, 11, 8],
+        [11, 8, 24, 26]
       ];
-      let twoSetAreasNames = [
-        [this.sets[0], this.sets[1]].sort(),
-        [this.sets[0], this.sets[2]].sort(),
+
+      let squareNames = [
+        [this.sets[0], this.sets[1]].sort(),//
+        [this.sets[0], this.sets[1], this.sets[3]].sort(), //
+        [this.sets[0], this.sets[3]].sort(), //
+        [this.sets[0], this.sets[1], this.sets[2]].sort(),//
+        [this.sets[0], this.sets[1], this.sets[2], this.sets[3]].sort(), //
+        [this.sets[0], this.sets[2], this.sets[3]].sort(),//
+        [this.sets[1], this.sets[2]].sort(), //
+        [this.sets[1], this.sets[2], this.sets[3]].sort(), //
         [this.sets[2], this.sets[3]].sort(),
         [this.sets[1], this.sets[3]].sort(),
-      ]
-      let singleSetAreas = [
-        [4, 6, 1],
-        [2, 8, 3],
-        [1, 5, 2],
-        [3, 7, 4],
+        [this.sets[3]].sort(),
+        [this.sets[0], this.sets[2]].sort(),
+        [this.sets[2]].sort(),
       ];
-      let singleSetAreaNames = [
-        [this.sets[1]],
-        [this.sets[2]],
+
+      let fills = [
+          "#9f9f9f",
+          "#6c6c6c",
+          "#9f9f9f",
+          "#6c6c6c",
+          "#565656",
+          "#6c6c6c",
+          "#9f9f9f",
+          "#6c6c6c",
+          "#9f9f9f",
+          "#9f9f9f",
+          "#cccccc",
+          "#9f9f9f",
+          "#cccccc",
+      ]
+
+      const l_areas = [
+        [10, 2, 4, 8, 20, 18],
+        [21, 6, 7, 9, 25, 22]
+      ]
+      const l_names = [
         [this.sets[0]],
-        [this.sets[3]],
+        [this.sets[1]]
       ]
-      let intersectionOfThreeAreas = [
-        [5, 11, 9],
-        [8, 9, 12],
-        [7, 12, 10],
-        [6, 10, 11],
-      ];
-      let intersectionOfThreeAreasNames = [
-        [this.sets[0], this.sets[1], this.sets[2]].sort(),
-        [this.sets[0], this.sets[2], this.sets[3]].sort(),
-        [this.sets[1], this.sets[2], this.sets[3]].sort(),
-        [this.sets[0], this.sets[1], this.sets[3]].sort(),
-      ]
-      let intersectionOfFourAreas = [
-        [10, 11, 12, 9],
-      ];
-      let intersectionOfFourAreasNames = [
-        [this.sets[0], this.sets[1], this.sets[2], this.sets[3]].sort(),
-      ]
+
+      console.log(squareNames.length, squareAreas.length)
 
       const compareArrays = (arr1, arr2) => {
         return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
       }
 
       console.log("our universal friends are ", this.universal)
-      console.log("the things are", twoSetAreasNames)
+      console.log("the things are", squareNames)
       // find common
-      let hash_these = twoSetAreasNames.filter((arr) => {
+      let hash_these = squareNames.filter((arr) => {
         return this.universal.some((arr2) => {
           return compareArrays(arr, arr2);
         });
@@ -222,10 +218,18 @@ export default {
 
       console.log(hash_these, "hash these");
 
+       const intersectionOfTwoArea = ([x2, x1, x3, x4, y1, y2, y3, y4]) => {
+        return `M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4} Z`;
+      };
+
+       const createLShapePath = ([x1, x2, x3, x4, x5, x6, y1, y2, y3, y4, y5, y6]) => {
+           console.log("creating L shape path", x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6)
+          return `M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4} L ${x5} ${y5} L ${x6} ${y6} Z`;
+       };
+
       // three functions to iterate over points and append paths
       let i = 0;
-      let ironFill = "#9f9f9f";
-      for (const points of twoSetAreas) {
+      for (const points of squareAreas) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
             .concat(points.map((i) => yPoints[i - 1]));
@@ -234,7 +238,7 @@ export default {
 
         // if points is contained in hash_these
         if (hash_these.some((arr) => {
-          return compareArrays(arr, twoSetAreasNames[i]);
+          return compareArrays(arr, squareNames[i]);
         })) {
           // they are the same, so we need to hatch it
           g.append("path")
@@ -243,135 +247,58 @@ export default {
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, twoSetAreasNames[i]));
+          this.areas_of_diagram.push(new Area(theId, "hashed", fills[i], squareNames[i]));
         } else {
           g.append("path")
               .attr("id", theId)
               .attr("d", shape)
               .attr("class", "segment")
-              .attr("fill", ironFill)
-              .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "clear", ironFill, twoSetAreasNames[i]));
+              .attr("fill", fills[i])
+              .attr("opacity", 0.5);
+          this.areas_of_diagram.push(new Area(theId, "clear", fills[i], squareNames[i]));
         }
         i++;
       }
 
-      // find common
-      hash_these = singleSetAreaNames.filter((arr) => {
+      // find more hatchable areas
+      hash_these = l_names.filter((arr) => {
         return this.universal.some((arr2) => {
           return compareArrays(arr, arr2);
         });
       });
-      console.log(hash_these, "hash these");
 
+      // three functions to iterate over points and append paths
       i = 0;
-      let sunFill = "#e2e2e2";
-      for (const points of singleSetAreas) {
+      for (const points of l_areas) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
             .concat(points.map((i) => yPoints[i - 1]));
-        const shape = singleSetArea(ptCycle);
-        const theId = String(points[0]) + String(points[1]) + String(points[2]);
+        const shape = createLShapePath(ptCycle);
+        const theId = String(points[0]) + String(points[1]) + String(points[2] + String(points[3]) + String(points[4]) + String(points[5]));
 
         // if points is contained in hash_these
         if (hash_these.some((arr) => {
-          return compareArrays(arr, singleSetAreaNames[i]);
+          return compareArrays(arr, l_names[i]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
           g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("id", theId)
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 1);
-          this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, singleSetAreaNames[i]));
+              .attr("opacity", 0.8);
+          this.areas_of_diagram.push(new Area(theId, "hashed", "#cccccc", l_names[i]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("id", theId)
               .attr("d", shape)
               .attr("class", "segment")
-              .attr("fill", sunFill)
-              .attr("opacity", 1);
-          this.areas_of_diagram.push(new Area(theId, "clear", sunFill, singleSetAreaNames[i]));
+              .attr("fill", "#cccccc")
+              .attr("opacity", 0.5);
+          this.areas_of_diagram.push(new Area(theId, "clear", "#cccccc", l_names[i]));
         }
         i++;
       }
-
-      i = 0;
-      // find common
-      hash_these = intersectionOfThreeAreasNames.filter((arr) => {
-        return this.universal.some((arr2) => {
-          return compareArrays(arr, arr2);
-        });
-      });
-      console.log(hash_these, "hash these !");
-
-      for (const points of intersectionOfThreeAreas) {
-        const ptCycle = points
-            .map((i) => xPoints[i - 1])
-            .concat(points.map((i) => yPoints[i - 1]));
-        const shape = intersectionOfThreeArea(ptCycle);
-        const theId = String(points[0]) + String(points[1]) + String(points[2]);
-
-        // if points is contained in hash_these
-        if (hash_these.some((arr) => {
-          return compareArrays(arr, intersectionOfThreeAreasNames[i]);
-        })) {
-          // they are the same, so we need to hatch it
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "hashed", "#868585", intersectionOfThreeAreasNames[i]));
-        } else {
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "#868585")
-              .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "clear", "#868585", intersectionOfThreeAreasNames[i]));
-        }
-        i++;
-      }
-
-      for (const points of intersectionOfFourAreas) {
-        const ptCycle = points
-            .map((i) => xPoints[i - 1])
-            .concat(points.map((i) => yPoints[i - 1]));
-        const shape = intersectionOfFourArea(ptCycle);
-        const theId = String(points[0]) + String(points[1]) + String(points[2]) + String(points[3]);
-
-        // if points is contained in hash_these
-        if (hash_these.some((arr) => {
-          return compareArrays(arr, intersectionOfFourAreasNames[0]);
-        })) {
-          // they are the same, so we need to hatch it
-          console.log("hatch it");
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]) + String(points[3]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "hashed", "#626262", intersectionOfFourAreasNames[0]));
-        } else {
-          console.log("dont hatch it");
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]) + String(points[3]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "#626262")
-              .attr("opacity", 0.8);
-          this.areas_of_diagram.push(new Area(theId, "clear", "#626262", intersectionOfFourAreasNames[0]));
-        }
-      }
-
-      console.log(this.areas_of_diagram);
 
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("click", (e) => {
@@ -403,18 +330,9 @@ export default {
           .style("background-color", "rgb(54, 54, 54)")
           .style("padding", ".8rem");
 
-      var vis = d3.select("body").append("svg:svg")
+      const vis = d3.select("body").append("svg:svg")
           .attr("width", 0)
           .attr("height", 0);
-
-      // hover over a segment and get its description
-      /*g.selectAll("path.segment").on("mousemove", function (event) {
-        const svg = d3.select(this);
-        tooltip.text("ID plochy: " + svg.attr('id'));
-        tooltip.style("visibility", "visible");
-        tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
-        svg.style("", "url(#drop-shadow)");
-      });*/
 
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");
@@ -431,6 +349,8 @@ export default {
         [this.sets[0], this.sets[2]],
         [this.sets[2], this.sets[3]],
         [this.sets[1], this.sets[3]],
+        [this.sets[1], this.sets[2]],
+        [this.sets[0], this.sets[3]],
 
         [this.sets[0], this.sets[1], this.sets[2]],
         [this.sets[0], this.sets[1], this.sets[3]],
@@ -442,25 +362,27 @@ export default {
 
       // positions as [x, y]; corresponds to __sets_identifiers
       let __sets_positions = [
-        [centerX_1, centerY_1 - 40],
-        [centerX_2 + 40, centerY_1 - 40],
-        [centerX_3, centerY_3 + 60],
-        [centerX_4 + 40, centerY_4 + 60],
+        [x_intersect_10 + vennRadius*1.2, y_intersect_2 + 40],
+        [x_intersect_6 + vennRadius/2, y_intersect_25 + 10],
+        [x_intersect_11 + vennRadius/2 + 8, y_intersect_8 + 45],
+        [x_intersect_23 + vennRadius/2 + 8, y_intersect_24 + 40],
 
-        [x_intersect_1 + 20, centerY_2 - 20],
-        [x_intersect_2 + 60, y_intersect_2 + 8],
-        [x_intersect_1 + 20, y_intersect_3 - 40],
-        [x_intersect_4 - 40, y_intersect_2 + 8],
+        [origin["x"] + 60, origin["y"] + 45],
+        [x_intersect_18 + vennRadius/2 + 8, y_intersect_20 + 45],
+        [x_intersect_19 + vennRadius/2 + 8, y_intersect_11 + 45],
+        [x_intersect_22 + vennRadius/2 + 8, y_intersect_23 + 45],
+        [x_intersect_3 + vennRadius/2 + 8, y_intersect_13 + 45],
+        [x_intersect_5 + vennRadius/2 + 8, y_intersect_10 + 45],
 
-        [x_intersect_9 + 25, y_intersect_9 - 22],
-        [x_intersect_6 + 3, y_intersect_11 + 13],
-        [x_intersect_8 + 37, y_intersect_8 - 10],
-        [x_intersect_6 + 3, y_intersect_8 - 10],
+        [x_intersect_15 + vennRadius/2 + 8, y_intersect_16 + 45],
+        [x_intersect_14 + vennRadius/2 + 8, y_intersect_5 + 45],
+        [x_intersect_17 + vennRadius/2 + 8, y_intersect_18 + 45],
+        [x_intersect_13 + vennRadius/2 + 8, y_intersect_19 + 45],
 
-        [x_intersect_1 + 20, y_intersect_9 + 8],
+        [x_intersect_16 + vennRadius/2 + 8, y_intersect_17 + 45],
       ]
 
-      console.log(__sets_identifiers);
+        console.log(__sets_identifiers);
 
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
@@ -608,36 +530,162 @@ export default {
 
         console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
       });
-
+/*
+      g.append("text")
+          .text("1")
+          .attr("x", x_intersect_1)
+          .attr("y", y_intersect_1)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("2")
+          .attr("x", x_intersect_2)
+          .attr("y", y_intersect_2)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("3")
+          .attr("x", x_intersect_3)
+          .attr("y", y_intersect_3)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("4")
+          .attr("x", x_intersect_4)
+          .attr("y", y_intersect_4)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("5")
+          .attr("x", x_intersect_5)
+          .attr("y", y_intersect_5)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("6")
+          .attr("x", x_intersect_6)
+          .attr("y", y_intersect_6)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("7")
+          .attr("x", x_intersect_7)
+          .attr("y", y_intersect_7)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("8")
+          .attr("x", x_intersect_8)
+          .attr("y", y_intersect_8)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("9")
+          .attr("x", x_intersect_9)
+          .attr("y", y_intersect_9)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("10")
+          .attr("x", x_intersect_10)
+          .attr("y", y_intersect_10)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("11")
+          .attr("x", x_intersect_11)
+          .attr("y", y_intersect_11)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("12")
+          .attr("x", x_intersect_12)
+          .attr("y", y_intersect_12)
+          .style('fill', '#323232');
 
       g.append("text")
-          .text("Ω")
-          .attr("x", (this.width - 30))
-          .attr("y", 50)
-          .style('fill', '#323232')
-          .style('font-size', '1.5rem');
+          .text("13")
+          .attr("x", x_intersect_13)
+          .attr("y", y_intersect_13)
+          .style('fill', '#323232');
 
+      g.append("text")
+          .text("14")
+          .attr("x", x_intersect_14)
+          .attr("y", y_intersect_14)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("15")
+          .attr("x", x_intersect_15)
+          .attr("y", y_intersect_15)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("16")
+          .attr("x", x_intersect_16)
+          .attr("y", y_intersect_16)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("17")
+          .attr("x", x_intersect_17)
+          .attr("y", y_intersect_17)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("18")
+          .attr("x", x_intersect_18)
+          .attr("y", y_intersect_18)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("19")
+          .attr("x", x_intersect_19)
+          .attr("y", y_intersect_19)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("20")
+          .attr("x", x_intersect_20)
+          .attr("y", y_intersect_20)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("21")
+          .attr("x", x_intersect_21)
+          .attr("y", y_intersect_21)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("24")
+          .attr("x", x_intersect_24)
+          .attr("y", y_intersect_24)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("22")
+          .attr("x", x_intersect_22)
+          .attr("y", y_intersect_22)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("23")
+          .attr("x", x_intersect_23)
+          .attr("y", y_intersect_23)
+          .style('fill', '#323232');
+
+      g.append("text")
+          .text("25")
+          .attr("x", x_intersect_25)
+          .attr("y", y_intersect_25)
+          .style('fill', '#323232');
+      g.append("text")
+          .text("26")
+          .attr("x", x_intersect_26)
+          .attr("y", y_intersect_26)
+          .style('fill', '#323232');
+*/
       g.append("text")
           .text(this.sets[0] + "'")
-          .attr("x", centerX_1 - vennRadius)
-          .attr("y", centerY_1 - vennRadius*0.8)
+          .attr("x", origin["x"] + vennRadius*3.7)
+          .attr("y", centerY_1 - vennRadius*0.76)
           .style('fill', '#323232');
 
       g.append("text")
           .text(this.sets[1] + "'")
-          .attr("x", centerX_2 + vennRadius)
-          .attr("y", centerY_2 - vennRadius*0.8)
+          .attr("x", origin["x"] + vennRadius*1.6)
+          .attr("y", centerY_1 + vennRadius*1.85)
           .style('fill', '#323232');
 
       g.append("text")
           .text(this.sets[2] + "'")
-          .attr("x", centerX_1 - vennRadius)
-          .attr("y", centerY_3 + vennRadius)
+          .attr("x", centerX_2 + vennRadius-2)
+          .attr("y", centerY_4 + vennRadius * 0.5)
           .style('fill', '#323232');
       g.append("text")
           .text(this.sets[3] + "'")
-          .attr("x", centerX_2 + vennRadius)
-          .attr("y", centerY_4 + vennRadius)
+          .attr("x", centerX_2 + vennRadius * 0.2)
+          .attr("y", centerY_4 + vennRadius * 1.15)
           .style('fill', '#323232');
 
     }

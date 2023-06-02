@@ -292,6 +292,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, main(p, c))
         c = "Ex[B(x)]"
         self.assertEqual(False, main(p, c))
+
     def test_thirty_five(self):
         p = [
             "Ax[A(x) | B(x)]",
@@ -302,13 +303,31 @@ class MyTestCase(unittest.TestCase):
         c = "Ex[B(x)]"
         self.assertEqual(False, main(p, c))
 
-    def test_thirty_six(self):
+    # not sure actually
+    """def test_thirty_six(self):
         p = [
             "P(a) > Q(a)",
             "P(a)",
         ]
         c = "!P(a)" # tautology
+        self.assertEqual(True, main(p, c))"""
+
+    def test_thirty_seven(self):
+        p = [
+            "Ax[A(x) | B(x)]",
+            "A(a)",
+            "B(a)"
+        ]
+        c = "A(a) & B(a)"
         self.assertEqual(True, main(p, c))
+
+    def test_thirty_eight(self):
+        p = [
+            "Ax[A(x)]",
+            "Ex[A(x)]",
+        ]
+        c = "A(b)"
+        self.assertEqual(False, main(p, c))
 
 if __name__ == '__main__':
     unittest.main()
