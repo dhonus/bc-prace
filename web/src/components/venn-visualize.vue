@@ -8,7 +8,7 @@
     </div>
     <p v-if="limit" class="information">Pro tuto velikost není náhled Vennova diagramu k dispozici.</p>
     <div class="entry_variable" v-if="thisInstanceWillActAsUserInput">
-      <p>Proměnná</p>
+      <p>Proměnná / konstanta</p>
       <input type="text"
              maxlength="1"
              v-model="entryVariable"

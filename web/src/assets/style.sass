@@ -284,14 +284,26 @@ text
   div.entry_variable
     display: flex
     flex-direction: row
-    margin: auto
     gap: .6rem
-    align-items: center
+    background: #f7f7f9
+    border-radius: 7px
+    border: 1px solid #dddde0
+    padding: 0 0 0 .5rem
+    width: fit-content
+    overflow: hidden
+    margin: auto
     input
       padding: 0!important
       margin: 0!important
       text-align: center
+      border: none!important
+      border-left: 2px solid #dddde0!important
+      border-radius: 0!important
       width: 2rem!important
+      background: #e9dfe9 !important
+      &:focus
+        outline: none
+        border-color: #bd76bd !important
     input.bad
       border: 1px solid red
   svg

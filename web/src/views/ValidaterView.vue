@@ -152,22 +152,25 @@
             </tr>
           </table>
           <blockquote><p>Na vstupu mohou být premisy, nebo konstanty.</p></blockquote>
-          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Následující jsou platné premisy:</p>
+          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Musí být také <b>uzavřena hranatými závorkami</b>. Následující jsou platné premisy:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[B(x)]</li>
-            <li>∃x [A(x) ⊃ B(x)]</li>
-            <li>∀x [B(x) & C(x)]</li>
-            <li>Ax [B(x)]</li>
+            <li>∃x [A(x) & B(x)]</li>
+            <li>∀x [B(x) ⊃ C(x)]</li>
           </ul>
-          <p><b>Literál</b> má vždy tvar Cokoliv(proměnná), kde proměnná je malé písmeno. Platné literály:</p>
+            <p><b>Literál</b> je vždy ve tvaru atomické formule, nebo její negace → <span style="background: #ececec; padding: 0 .3rem; border-radius: 7px;">Predikát(proměnná)</span>, kde proměnná je malé písmeno. Platné literály:</p>
           <ul>
             <li>P(x)</li>
-            <li>Venn(y)</li>
+            <li>¬Venn(x)</li>
+            <li>Q(y)</li>
           </ul>
-          <p><b>Konstanty</b> se zapisují bez kvantifikátoru. Jsou pro ně vyhrazeny proměnné [a..g]:</p>
+            <p>
+                Pro <b>konstanty</b> jsou vyhrazeny znaky [a..g]. Platné konstanty:
+            </p>
           <ul>
-            <li>Q(a)</li>
+            <li>P(a) & S(a)</li>
+            <li>¬Venn(b)</li>
             <li>P(g) ⊃ ¬Q(g)</li>
           </ul>
           <h3>Příklad validního vstupu:</h3>

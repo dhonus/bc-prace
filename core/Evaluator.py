@@ -301,7 +301,7 @@ class Evaluator:
             # Ex[B(x) & A(x)]
             for v in self.__all_solved:
                 print(v, "v")
-                if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and v == variable:
                     print(self.__conclusion_solved)
                     print(self.__all_solved[v], "all solved")
                     if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):

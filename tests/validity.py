@@ -329,5 +329,15 @@ class MyTestCase(unittest.TestCase):
         c = "A(b)"
         self.assertEqual(False, main(p, c))
 
+    def test_thirty_nine(self):
+        p = [
+            "P(a)  & Q(a)",
+            "Ax[P(x) & Q(x)  > R(x)]",
+        ]
+        c = "R(a)"
+        self.assertEqual(True, main(p, c))
+        c = "R(b)"
+        self.assertEqual(False, main(p, c))
+
 if __name__ == '__main__':
     unittest.main()
