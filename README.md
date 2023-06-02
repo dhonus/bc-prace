@@ -49,6 +49,8 @@ Cílem práce je naimplementovat nástroj pro podporu dokazování platnosti ús
         exist ::= "∃" | "E"
         slovo ::= velke, {libovolne}
 
+![Main](screen.png)
+
 ### How to install
 To install dependencies on Ubuntu 22.04 run:
 
