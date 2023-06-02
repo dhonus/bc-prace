@@ -12,7 +12,6 @@ from core.Parser import Parser, EmptyInputException, InvalidExpressionException
 from core.Evaluator import Evaluator
 import logging
 from typing import List
-import git
 
 # this is used to pass data to the frontend
 class Item(BaseModel):
@@ -154,12 +153,4 @@ async def send_expression(item: PostModel):
 
 @app.get("/")
 def home():
-    repo = git.Repo(search_parent_directories=True)
-    sha = repo.head.object.hexsha
-    import time
-
-    time.asctime(time.gmtime(repo.head.object.committed_date))
-    tim = time.strftime(
-        "%d. %m. %Y %H:%M", (time.gmtime(repo.head.object.committed_date))
-    )
-    return f"Připojeno. Hash aktivní verze z {tim} UTC je {sha}."
+    return f"Připojeno."
