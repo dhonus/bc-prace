@@ -327,7 +327,7 @@ class Evaluator:
                     return False
                 if c[1].issubset(self.__conclusion_solved[variable]) and len(self.__conclusion_solved[variable]) > 0:
                     self.__explanations[0] = [
-                        f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný ({c[0]}. premisa)"]
+                        f"Pro '{variable}' bylo nalezeno řešení. Oblast {self.__pretty_print(c[1])} je neprázdná ({c[0]}. premisa)"]
                     return True
             """if len(all_have_in_common) > 0:
                 if self.__conclusion_solved[variable].issubset(all_have_in_common):
