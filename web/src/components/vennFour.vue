@@ -344,6 +344,7 @@ export default {
         [this.sets[1]],
         [this.sets[2]],
         [this.sets[3]],
+        ["Ω"],
 
         [this.sets[0], this.sets[1]],
         [this.sets[0], this.sets[2]],
@@ -366,6 +367,7 @@ export default {
         [x_intersect_6 + vennRadius/2, y_intersect_25 + 10],
         [x_intersect_11 + vennRadius/2 + 8, y_intersect_8 + 45],
         [x_intersect_23 + vennRadius/2 + 8, y_intersect_24 + 40],
+        [centerX_1 + 300, centerY_1 + 150],
 
         [origin["x"] + 60, origin["y"] + 45],
         [x_intersect_18 + vennRadius/2 + 8, y_intersect_20 + 45],

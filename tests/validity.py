@@ -320,6 +320,13 @@ class MyTestCase(unittest.TestCase):
         ]
         c = "A(a) & B(a)"
         self.assertEqual(True, main(p, c))
+        p = [
+            "Ax[A(x) | B(x)]",
+            "A(a)",
+            "B(b)"
+        ]
+        c = "A(a) & B(a)"
+        self.assertEqual(False, main(p, c))
 
     def test_thirty_eight(self):
         p = [
@@ -338,6 +345,14 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, main(p, c))
         c = "R(b)"
         self.assertEqual(False, main(p, c))
+
+    def test_fourty(self):
+        p = [
+            "Ax[A(x)]",
+            "Ex[!A(x)]",
+        ]
+        c = "Ex[C(x)]"
+        self.assertEqual(True, main(p, c))
 
 if __name__ == '__main__':
     unittest.main()

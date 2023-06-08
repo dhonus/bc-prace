@@ -156,7 +156,14 @@ class Evaluator:
                     # self.__valid_on_all = False
                     self.__explanations[expr_tree.p_index] = [
                         f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
-
+                    # check for contradiction
+                    # if adding is empty, that means that we have a contradiction
+                    # if orig_adding is not empty, that means that we have a contradiction
+                    print(adding, "adding")
+                    print(orig_adding, "orig adding")
+                    if len(adding) == 0 and len(orig_adding) == 0:
+                        self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny. Předpoklady jsou ve sporu. Oblast {self.__pretty_print(orig_adding)} je vyřazena."]
+                        self.__contradiction = [True, expr_tree.p_index, "Všechny potenciální plochy jsou vyřazeny. Předpoklady jsou ve sporu."]
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0 and len(orig_adding) != 0:
@@ -301,7 +308,7 @@ class Evaluator:
             # Ex[B(x) & A(x)]
             for v in self.__all_solved:
                 print(v, "v")
-                if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and v == variable:
+                if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable != v:
                     print(self.__conclusion_solved)
                     print(self.__all_solved[v], "all solved")
                     if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):
@@ -310,6 +317,14 @@ class Evaluator:
                         if len(self.__conclusion_solved[variable]) == 1:
                             solution['Exists within'][v].update(self.__conclusion_solved[variable])
                         return True
+                if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                    if v == variable:
+                        if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):
+                            self.__explanations[0] = [
+                                f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}."]
+                            if len(self.__conclusion_solved[variable]) == 1:
+                                solution['Exists within'][v].update(self.__conclusion_solved[variable])
+                            return True
             if variable not in self.__all_solved and variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                 self.__explanations[0] = [
                     f"Pro '{variable}' nebylo nalezeno řešení. Konstanta '{variable}' nebyla nalezena v žádné premise."
@@ -322,13 +337,14 @@ class Evaluator:
                 print(self.__existential_solved, "existential solved!")
 
                 print(c[1], "c1")
-                print(self.__conclusion_solved[variable], "conclusion solved")
+                print(self.__conclusion_solved[variable], "conclusion solved...")
                 if len(set(c[1])) == 0:
                     return False
                 if c[1].issubset(self.__conclusion_solved[variable]) and len(self.__conclusion_solved[variable]) > 0:
                     self.__explanations[0] = [
                         f"Pro '{variable}' bylo nalezeno řešení. Oblast {self.__pretty_print(c[1])} je neprázdná ({c[0]}. premisa)"]
                     return True
+
             """if len(all_have_in_common) > 0:
                 if self.__conclusion_solved[variable].issubset(all_have_in_common):
                     self.__explanations[0] = [
@@ -358,6 +374,7 @@ class Evaluator:
                 return True
 """
             # if any from var_set is in the conclusion, the problem is valid
+            print("here", self.__conclusion_solved, variable, var_set)
             if not var_set.isdisjoint(self.__conclusion_solved[variable]):
                 if variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     self.__explanations[0] = [
@@ -368,8 +385,9 @@ class Evaluator:
 
                 return True
 
+            print(self.__all_solved)
             self.__explanations[0] = [
-                f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr. Existují pouze na {self.__pretty_print(self.__all_solved[variable])}."]
+                f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr."]
 
             return False
 

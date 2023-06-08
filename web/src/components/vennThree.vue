@@ -309,6 +309,7 @@ export default {
         [this.sets[0]],
         [this.sets[1]],
         [this.sets[2]],
+        ["Ω"],
 
         [this.sets[0], this.sets[1]],
         [this.sets[1], this.sets[2]],
@@ -322,6 +323,7 @@ export default {
         [centerX_1 - 20, centerY_1 - 20],
         [centerX_2 + 60, centerY_2 - 20],
         [centerX_3 + 20, centerY_3 + 60],
+        [centerX_1 - 110, centerY_1 + 110],
 
         [centerX_3 + 20, centerY_2 - 20],
         [xMidpointC2C3 + 40, yMidpointBoth + 20],

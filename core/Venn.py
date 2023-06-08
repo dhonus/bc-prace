@@ -45,6 +45,9 @@ class Venn:
                 continue
             try:
                 idx = item.index('Ω')
+                if idx == 0 and len(item) == 1:
+                    sol_universum_accounted.append(item)
+                    continue
                 item = item[:idx] + item[idx + 1:]
             except ValueError:
                 pass # not in tuple
@@ -65,15 +68,21 @@ class Venn:
 
         # remove universe symbol from all but just itself
         # {'AΩ', 'Ω', 'BΩ'} -> {'A', 'Ω', 'B'}
+        print ("solution", solution)
         for item in solution:
             try:
                 idx = item.index('Ω')
+                if idx == 0 and len(item) == 1:
+                    sol_universum_accounted.append(item)
+                    continue
                 item = item[:idx] + item[idx + 1:]
             except ValueError:
                 pass # not in tuple
             adding = item
             if adding:
                 sol_universum_accounted.append(adding)
+
+        print ("sol_universum_accounted", sol_universum_accounted)
         return sol_universum_accounted
 
     def __negate(self, to_negate: List[str]):

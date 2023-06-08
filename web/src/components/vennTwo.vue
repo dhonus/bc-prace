@@ -243,6 +243,7 @@ export default {
         [this.sets[0]],
         [this.sets[1]],
         [this.sets[0], this.sets[1]],
+        ["Ω"]
       ];
 
       // positions as [x, y]; corresponds to __sets_identifiers
@@ -250,6 +251,7 @@ export default {
         [centerX_1 - 20, centerY_1 + 10],
         [centerX_2 + 60, centerY_2 + 10],
         [centerX_3 + 20, centerY_2 + 10],
+        [centerX_1 - 110, centerY_1 + 110]
       ];
 
       let position_me = (index, key, character) => {
