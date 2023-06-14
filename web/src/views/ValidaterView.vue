@@ -975,6 +975,7 @@ export default {
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
               bad: response.data["bad"],
+              counts: response.data["counts"],
               // solutions
               existential: existential_sorted,
               universal: universal_sorted,
@@ -987,6 +988,7 @@ export default {
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
               bad: response.data["bad"],
+              counts: response.data["counts"],
               // solutions
               existential: {},
               universal: [],
@@ -1034,6 +1036,7 @@ export default {
                 sets: step.sets.sort(),
                 predicates: step.predicates,
                 explanations: step.explanations,
+                counts: response.data["counts"],
                 bad: l_bad_sorted,
                 // solutions
                 existential: l_existential_sorted,

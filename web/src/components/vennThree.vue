@@ -133,6 +133,8 @@ export default {
 
       console.log(hash_these, "hash these");
 
+      console.log(this.keys, "keeys")
+
       // three functions to iterate over points and append paths
       let i = 0;
       let ironFill = "#9f9f9f";
@@ -149,10 +151,12 @@ export default {
         })) {
           // they are the same, so we need to hatch it
           console.log("hatch it");
+          console.log(this.keys, "counts!!!")
           g.append("path")
               .attr("id", theId)
               .attr("d", shape)
               .attr("class", "segment")
+              //.attr("fill", "url(#diagonalHatch-" + this.keys[ironPointsNames[i]] + ")")
               .attr("fill", "url(#diagonalHatch)")
               .attr("opacity", 0.5);
           this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));

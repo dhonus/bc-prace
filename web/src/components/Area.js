@@ -13,4 +13,15 @@ export default class Area {
         this.questionElement = new d3Element(); // this is the actual d3 element that we use to draw the question mark
         this.existential = [];
     }
+    generateHatching(area_dict, tuple){
+      // given a dictionary, where the key is a number and the value is an array of tuples, generate list of keys in which the given tuple is present
+      let keys = [];
+      for (let key in area_dict){
+        if (area_dict[key].includes(tuple)){
+          keys.push(key);
+        }
+      }
+      console.log(keys, "KEY KEYS");
+      return keys;
+    }
 }

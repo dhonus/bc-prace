@@ -13,6 +13,7 @@ class Evaluator:
         self.__sets_count_limit = 5  # how many sets are allowed. Corresponds to final Venn diagram
         self.__sets_dict = {}
         self.__universal_solved = []  # the universal statement result
+        self.__universal_solved_counts = {}  # the universal statement result
         self.__existential_solved = {}
         self.__all_solved = {}
         self.__conclusion_solved = {}
@@ -109,7 +110,14 @@ class Evaluator:
                 self.__explanations[expr_tree.p_index] = [
                     f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
                 self.__universal_solved += self.__universal_solve(expr_tree)
-                print (set(self.__universal_solved), "universal solved")
+                print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
+                self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solved)
+                """for area in list(self.__universal_solved):
+                    if set(area) not in self.__universal_solved_counts:
+                        self.__universal_solved_counts[area] = set(expr_tree.p_index)
+                    else:
+                        self.__universal_solved_counts[area].add(expr_tree.p_index)
+                print(self.__universal_solved_counts, "universal solved counts")"""
 
             elif expr_tree.value == '∃':
                 self.__existential_count += 1
@@ -187,6 +195,7 @@ class Evaluator:
                                 step["Exists within"] = existential_solved_final.copy()
                                 step["Crossed out"] = list(set(self.__universal_solved.copy()))  # deduplicate
                                 step["Explanations"] = self.__explanations.copy()
+                                step["Counts"] = self.__universal_solved_counts.copy()
                                 found = True
                         if not found and var == expr_tree.variable:
                             self.__steps.append(
@@ -195,7 +204,8 @@ class Evaluator:
                                     "Predicate": expr_tree.p_index,
                                     "Exists within": existential_solved_final.copy(),
                                     "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
-                                    "Explanations": self.__explanations.copy()  # we need the current state
+                                    "Explanations": self.__explanations.copy(),  # we need the current state
+                                    "Counts": self.__universal_solved_counts.copy()
                                 }
                             )
                         for constant in constants:
@@ -230,7 +240,8 @@ class Evaluator:
                         "Predicate": expr_tree.p_index,
                         "Exists within": existential_solved_final.copy(),
                         "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
-                        "Explanations": self.__explanations.copy()  # we need the current state
+                        "Explanations": self.__explanations.copy(),  # we need the current state
+                        "Counts": self.__universal_solved_counts.copy()
                     }
                 )
 
@@ -253,7 +264,8 @@ class Evaluator:
         return {
             "Exists within": existential_solved_final,
             "Crossed out": list(set(self.__universal_solved)),  # deduplicate
-            "Explanations": self.__explanations
+            "Explanations": self.__explanations,
+            "Counts": self.__universal_solved_counts
         }
 
     def validity(self, solution: dict[str, dict[str, list[str]]]) -> bool:

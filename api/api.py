@@ -20,6 +20,7 @@ class Item(BaseModel):
     universal: set[tuple] = set()
     explanations: dict[int, list[str]] = {}
     predicates: dict[int, str] = {}
+    counts: dict[str, list[tuple]] = {}
     sets: List[str] = []
     valid: bool | None = None
     notes: str = "OK"
@@ -120,6 +121,7 @@ async def send_expression(item: PostModel):
             item.explanations = step["Explanations"]
             item.p_index = step["Predicate"]
             item.bad = step["Bad"]
+            item.counts = step["Counts"]
             responseItem.steps.append(item)
 
         print(evaluator.get_sets(), "aaa")
@@ -147,6 +149,7 @@ async def send_expression(item: PostModel):
     responseItem.existential = solution.get("Exists within")
     responseItem.universal = list(solution.get("Crossed out"))
     responseItem.valid = validity
+    responseItem.counts = solution["Counts"]
 
     return responseItem
 

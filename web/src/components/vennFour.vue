@@ -48,13 +48,14 @@ export default {
 
 
       let rect1 = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("width", vennRadius*3.6).attr("height", vennRadius*1.3)
-          .attr("class", "circle");
+          .attr("class", "circle rect1");
       let rect2 = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("height", vennRadius*3).attr("width", vennRadius * 1.5)
-          .attr("class", "circle");
+          .attr("class", "circle rect2");
       let rect3 = g.append("rect").attr("x", centerX_3 - vennRadius).attr("y", centerY_3 - vennRadius).attr("width", vennRadius*3).attr("height", vennRadius*1.3)
-          .attr("class", "circle");
+          .attr("class", "circle rect3");
       let rect4 = g.append("rect").attr("x", centerX_4 - vennRadius).attr("y", centerY_4 - vennRadius).attr("height", vennRadius*2.6).attr("width", vennRadius*1.5)
-          .attr("class", "circle");
+          .attr("class", "circle rect4");
+
 
       let center = {"x": centerX_1 - vennRadius * 1.2, "y": centerY_1-vennRadius};
 
@@ -246,7 +247,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.8);
+              .attr("opacity", 0.6);
           this.areas_of_diagram.push(new Area(theId, "hashed", fills[i], squareNames[i]));
         } else {
           g.append("path")
@@ -286,7 +287,7 @@ export default {
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.8);
+              .attr("opacity", 0.6);
           this.areas_of_diagram.push(new Area(theId, "hashed", "#cccccc", l_names[i]));
         } else {
           g.append("path")
@@ -676,18 +677,18 @@ export default {
       g.append("text")
           .text(this.sets[1] + "'")
           .attr("x", origin["x"] + vennRadius*1.6)
-          .attr("y", centerY_1 + vennRadius*1.85)
+          .attr("y", centerY_1 + vennRadius*2)
           .style('fill', '#323232');
 
       g.append("text")
           .text(this.sets[2] + "'")
           .attr("x", centerX_2 + vennRadius-2)
-          .attr("y", centerY_4 + vennRadius * 0.5)
+          .attr("y", centerY_4 + vennRadius*0.8)
           .style('fill', '#323232');
       g.append("text")
           .text(this.sets[3] + "'")
           .attr("x", centerX_2 + vennRadius * 0.2)
-          .attr("y", centerY_4 + vennRadius * 1.15)
+          .attr("y", centerY_4 + vennRadius * 1.48)
           .style('fill', '#323232');
 
     }

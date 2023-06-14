@@ -384,6 +384,7 @@ export default {
               sets: response.data["sets"].sort(),
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
+              counts: response.data["counts"],
               bad: response.data["bad"],
               // solutions
               existential: existential_sorted,
@@ -430,6 +431,7 @@ export default {
                 sets: step.sets.sort(),
                 predicates: step.predicates,
                 explanations: step.explanations,
+                counts: step.counts,
                 bad: l_bad_sorted,
                 // solutions
                 existential: l_existential_sorted,
