@@ -111,7 +111,7 @@ class Evaluator:
                     f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
                 self.__universal_solved += self.__universal_solve(expr_tree)
                 print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
-                self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solved)
+                self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solve(expr_tree))
                 """for area in list(self.__universal_solved):
                     if set(area) not in self.__universal_solved_counts:
                         self.__universal_solved_counts[area] = set(expr_tree.p_index)

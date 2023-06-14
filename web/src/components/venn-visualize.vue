@@ -127,7 +127,7 @@ export default {
       patternUniversum.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #c6c2c2; stroke-width: 2px");
       patternUniversum.attr("patternTransform", "rotate(90)");
 
-      //this.generateHatching(svg);
+      this.generateHatching(svg);
 
       const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       console.log(g);
@@ -153,21 +153,30 @@ export default {
               }
               keys[this.counts[key][value]].push(key);
           }
+          // sort
+
       }
 
       // generate hatching pattern for each key. The dictionary is for example "A,B": [1,2,3]
-      for (let key in keys){
-          const concat = keys[key].join("");
+      /*for (let key in keys){
+          const concat = keys[key].join(",");
           // if such a pattern already exists, don't generate it again
           if (document.getElementById("diagonalHatch-" + concat) !== null){
               continue;
           }
           let pattern = svg.append("pattern").attr("id", "diagonalHatch-" + concat).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
           for (let i = 0; i < keys[key].length; i++){
+              console.log(i)
+              let angle = 35 * (i+1); // Replace 'i' with your desired angle value
+
               // rotate the pattern by 45 degrees for each increment
-              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 2px;")
-              pattern.attr("patternTransform", "rotate(" + (35 * i) + ")");
-          }
+              let p = pattern.append("pattern").attr("id", "diagonalHatch-" + concat + "-" + i).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              p.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 2px;")
+
+              pattern.append("rect").attr("width", 8).attr("height", 8).attr("fill", "url(#diagonalHatch-" + concat + "-" + i + ")")
+              pattern.attr("patternTransform", "rotate(" + angle + ")");
+
+          }*/
 /*
           let pattern = svg.append("pattern").attr("id", "diagonalHatch-" + concat).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
 
@@ -184,8 +193,8 @@ export default {
                 .attr("d", pathString)
                 .attr("style", "stroke: #3f3f3f; stroke-width: 2px;")
                 .attr("transform", "rotate(" + angle + ")");
-          }*/
-      }
+          }
+      }*/
       console.log(keys, "KEY KEYS");
       this.keys = keys;
     },
@@ -207,6 +216,57 @@ export default {
       return false;
     },
     universum_hatch_check: function (g){
+
+     let keys = {};
+      for (let key in this.counts) {
+          for (let value in this.counts[key]) {
+              if (keys[this.counts[key][value]] === undefined) {
+                  keys[this.counts[key][value]] = [];
+              }
+              keys[this.counts[key][value]].push(key);
+          }
+      }
+      const arr = keys["Ω"];
+      for (let value in arr) {
+          if (document.getElementById("uniHatch-" + arr[value]) !== null){
+              g.append("rect")
+                .attr("x", 0)
+                .attr("y", 20)
+                .attr("width", this.width)
+                .attr("height", this.height)
+                .attr("stroke", "#9782ae")
+                .attr("fill", "url(#uniHatch-" + arr[value] +")")
+              g.append("path")
+                .attr("id", "Universum")
+                .attr("d", "M0,20 L" + this.width + ",20 L"
+                    + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
+                .attr("class", "segment")
+                .attr("fill", "url(#uniHatch-" + arr[value] +")")
+                .attr("opacity", 0.2);
+              continue;
+          }
+          let pattern = g.append("pattern").attr("id", "uniHatch-" + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+          pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.4px;")
+          // add some spacing to the stroke
+          pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+          g.append("rect")
+            .attr("x", 0)
+            .attr("y", 20)
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .attr("stroke", "#9782ae")
+            .attr("fill", "url(#uniHatch-" + arr[value] +")")
+
+          g.append("path")
+            .attr("id", "Universum")
+            .attr("d", "M0,20 L" + this.width + ",20 L"
+                + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
+            .attr("class", "segment")
+            .attr("fill", "url(#uniHatch-" + arr[value] +")")
+            .attr("opacity", 0.2);
+      }
+
       // empty inline function
       let universum = (g, hatched) => {
         // add square to svg
@@ -228,11 +288,10 @@ export default {
       // if universum is hashed
       if (this.universal.flat().includes('Ω')) {
         console.log("so flat", this.universal.flat());
-        universum(g, true);
         return new Area("Universum", "hashed", "#fbfbfb", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
       else {
-        universum(g, false);
+        universum(g, false)
         return new Area("Universum", "clear", "#fbfbfb", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
     },

@@ -28,6 +28,17 @@ export default {
 
       this.areas_of_diagram.push(this.universum_hatch_check(g));
 
+      let keys = {};
+      console.log(this.counts, "COUNTS");
+      for (let key in this.counts) {
+          for (let value in this.counts[key]) {
+              if (keys[this.counts[key][value]] === undefined) {
+                  keys[this.counts[key][value]] = [];
+              }
+              keys[this.counts[key][value]].push(key);
+          }
+      }
+
       let rect1__ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("width", vennRadius*3.6).attr("height", vennRadius*1.3)
           .attr("class", "circle-background-white");
       let rect2__ = g.append("rect").attr("x", centerX_1 - vennRadius).attr("y", centerY_1 - vennRadius).attr("height", vennRadius*3).attr("width", vennRadius * 1.5)
@@ -242,12 +253,28 @@ export default {
           return compareArrays(arr, squareNames[i]);
         })) {
           // they are the same, so we need to hatch it
-          g.append("path")
-              .attr("id", theId)
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.6);
+          const arr = keys[squareNames[i].join(",")];
+          for (let value in arr) {
+              if (document.getElementById("diagonalHatch-" + squareNames[i] + arr[value]) !== null){
+                  g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + squareNames[i]  + arr[value] +")")
+                    .attr("opacity", 0.4);
+                  continue;
+              }
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + squareNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+              g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + squareNames[i] + arr[value] +")")
+                    .attr("opacity", 0.4);
+          }
           this.areas_of_diagram.push(new Area(theId, "hashed", fills[i], squareNames[i]));
         } else {
           g.append("path")
@@ -282,12 +309,28 @@ export default {
           return compareArrays(arr, l_names[i]);
         })) {
           // they are the same, so we need to hatch it
-          g.append("path")
-              .attr("id", theId)
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.6);
+         const arr = keys[l_names[i].join(",")];
+          for (let value in arr) {
+              if (document.getElementById("diagonalHatch-" + l_names[i] + arr[value]) !== null){
+                  g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + l_names[i]  + arr[value] +")")
+                    .attr("opacity", 0.4);
+                  continue;
+              }
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + l_names[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+              g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + l_names[i] + arr[value] +")")
+                    .attr("opacity", 0.4);
+          }
           this.areas_of_diagram.push(new Area(theId, "hashed", "#cccccc", l_names[i]));
         } else {
           g.append("path")

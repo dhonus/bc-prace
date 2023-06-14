@@ -11,7 +11,7 @@ export default {
       let g = this.prepare();
       // center of first circle
       const centerX_1 = 220;
-      const centerY_1 = 150;
+      const centerY_1 = 145;
       const vennRadius = 100;
 
       const factor = 1.26;
@@ -24,6 +24,16 @@ export default {
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
       this.areas_of_diagram.push(this.universum_hatch_check(g));
+
+      let keys = {};
+      for (let key in this.counts) {
+          for (let value in this.counts[key]) {
+              if (keys[this.counts[key][value]] === undefined) {
+                  keys[this.counts[key][value]] = [];
+              }
+              keys[this.counts[key][value]].push(key);
+          }
+      }
 
       // add circles to svg (The ones with _ are background circles)
       let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")
@@ -152,13 +162,31 @@ export default {
           // they are the same, so we need to hatch it
           console.log("hatch it");
           console.log(this.keys, "counts!!!")
-          g.append("path")
-              .attr("id", theId)
-              .attr("d", shape)
-              .attr("class", "segment")
-              //.attr("fill", "url(#diagonalHatch-" + this.keys[ironPointsNames[i]] + ")")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 0.5);
+          console.log(this.keys[ironPointsNames[i]], "counts!!!")
+
+          const arr = keys[ironPointsNames[i].join(",")];
+          for (let value in arr) {
+              if (document.getElementById("diagonalHatch-" + ironPointsNames[i] + arr[value]) !== null){
+                  g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
+                    .attr("opacity", 0.4);
+                  continue;
+              }
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + ironPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              // add some spacing to the stroke
+              pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+              g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
+                    .attr("opacity", 0.4);
+          }
           this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
         } else {
           console.log("dont hatch it");
@@ -199,12 +227,28 @@ export default {
         })) {
           // they are the same, so we need to hatch it
           console.log("hatch it");
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 1);
+          const arr = keys[sunPointsNames[i].join(",")];
+          for (let value in arr) {
+              if (document.getElementById("diagonalHatch-" + sunPointsNames[i] + arr[value]) !== null){
+                  g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i]  + arr[value] +")")
+                    .attr("opacity", 0.4);
+                  continue;
+              }
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + sunPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+              g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
+                    .attr("opacity", 0.4);
+          }
           this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
           console.log("dont hatch it");
@@ -240,12 +284,28 @@ export default {
         })) {
           // they are the same, so we need to hatch it
           console.log("hatch it");
-          g.append("path")
-              .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
-              .attr("d", shape)
-              .attr("class", "segment")
-              .attr("fill", "url(#diagonalHatch)")
-              .attr("opacity", 1);
+          const arr = keys[roundedTriNames[0].join(",")];
+          for (let value in arr) {
+              if (document.getElementById("diagonalHatch-" + roundedTriNames[0] + arr[value]) !== null){
+                  g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + roundedTriNames[0]  + arr[value] +")")
+                    .attr("opacity", 0.4);
+                  continue;
+              }
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + roundedTriNames[0] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+              g.append("path")
+                    .attr("id", theId)
+                    .attr("d", shape)
+                    .attr("class", "segment")
+                    .attr("fill", "url(#diagonalHatch-" + roundedTriNames[0] + arr[value] +")")
+                    .attr("opacity", 0.4);
+          }
           this.areas_of_diagram.push(new Area(theId, "hashed", "#929292", roundedTriNames[0]));
         } else {
           console.log("dont hatch it");
@@ -337,8 +397,6 @@ export default {
       ]
 
       console.log(__sets_identifiers);
-
-
 
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
@@ -511,7 +569,7 @@ export default {
       g.append("text")
           .text(this.sets[2] + "'")
           .attr("x", centerX_3)
-          .attr("y", centerY_3 + vennRadius*1.3)
+          .attr("y", centerY_3 + vennRadius*1.2)
           .style('fill', '#323232');
     },
   }

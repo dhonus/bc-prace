@@ -374,6 +374,13 @@ export default {
             existential_sorted[key] = value.sort();
           }
 
+          // sort counts keys
+          let counts_sorted = {};
+          console.log(response.data["counts"]);
+          for (let [key, value] of Object.entries(response.data["counts"])) {
+            for (let i = 0; i < value.length; i++) value[i].sort();
+            counts_sorted[key] = value.sort();
+          }
           if (!steps) {
             for (let i = 0; i < this.containers.length; i++) {
               if (this.containers[i] != null) this.containers[i].unmount();
@@ -384,7 +391,7 @@ export default {
               sets: response.data["sets"].sort(),
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
-              counts: response.data["counts"],
+              counts: counts_sorted,
               bad: response.data["bad"],
               // solutions
               existential: existential_sorted,
@@ -426,12 +433,19 @@ export default {
                 l_bad_sorted[key] = value.sort();
               }
 
+              // sort counts keys
+              let l_counts_sorted = {};
+              for (let [key, value] of Object.entries(step.counts)) {
+                for (let i = 0; i < value.length; i++) value[i].sort();
+                l_counts_sorted[key] = value.sort();
+              }
+
               this.containers[i] = createApp(VennVisualizer, {
                 vennSize: step.sets.length,
                 sets: step.sets.sort(),
                 predicates: step.predicates,
                 explanations: step.explanations,
-                counts: step.counts,
+                counts: l_counts_sorted,
                 bad: l_bad_sorted,
                 // solutions
                 existential: l_existential_sorted,

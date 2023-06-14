@@ -23,6 +23,16 @@ export default {
             const centerX_3 = centerX_1 + offset / 2;
             const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
+            let keys = {};
+            for (let key in this.counts) {
+                for (let value in this.counts[key]) {
+                    if (keys[this.counts[key][value]] === undefined) {
+                        keys[this.counts[key][value]] = [];
+                    }
+                    keys[this.counts[key][value]].push(key);
+                }
+            }
+
             this.areas_of_diagram.push(this.universum_hatch_check(g));
 
             // add circles to svg (The ones with _ are background circles)
@@ -105,12 +115,29 @@ export default {
                 })) {
                     // they are the same, so we need to hatch it
                     console.log("hatch it");
-                    g.append("path")
-                        .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
-                        .attr("d", shape)
-                        .attr("class", "segment")
-                        .attr("fill", "url(#diagonalHatch)")
-                        .attr("opacity", 1);
+                    const arr = keys[sunPointsNames[i].join(",")];
+                    for (let value in arr) {
+                        if (document.getElementById("diagonalHatch-" + sunPointsNames[i] + arr[value]) !== null){
+                            g.append("path")
+                              .attr("id", theId)
+                              .attr("d", shape)
+                              .attr("class", "segment")
+                              .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
+                              .attr("opacity", 0.4);
+                            continue;
+                        }
+                        let pattern = g.append("pattern").attr("id", "diagonalHatch-" + sunPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
+                        pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+                        // add some spacing to the stroke
+                        pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
+
+                        g.append("path")
+                              .attr("id", theId)
+                              .attr("d", shape)
+                              .attr("class", "segment")
+                              .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
+                              .attr("opacity", 0.4);
+                    }
                     this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
                 } else {
                     console.log("dont hatch it");
