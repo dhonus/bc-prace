@@ -149,6 +149,7 @@ async def send_expression(item: PostModel):
     responseItem.existential = solution.get("Exists within")
     responseItem.universal = list(solution.get("Crossed out"))
     responseItem.valid = validity
+    responseItem.bad = solution.get("Bad")
     responseItem.counts = solution["Counts"]
 
     return responseItem

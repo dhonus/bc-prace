@@ -107,9 +107,12 @@ class Evaluator:
         # universal predicates have priority
         for expr_tree in trees:
             if expr_tree.value == '∀':
+                """self.__explanations[expr_tree.p_index] = [
+                    f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]"""
+                new_solved = self.__universal_solve(expr_tree)
+                self.__universal_solved += new_solved
                 self.__explanations[expr_tree.p_index] = [
-                    f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]
-                self.__universal_solved += self.__universal_solve(expr_tree)
+                    f"Všeobecná premisa: Vyškrtáme oblasti, které vyhovují. Jedná se o {self.__pretty_print(set(new_solved))}."]
                 print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
                 self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solve(expr_tree))
                 """for area in list(self.__universal_solved):
@@ -273,6 +276,7 @@ class Evaluator:
         variables = list(solution['Exists within'].keys())  # the variable of the conclusion
         print(variables, "solution")
         print(self.__conclusion_variable, "conclusion")
+        solution['Bad'] = {}
 
         if self.__contradiction[0]:
             self.__explanations[0] = [self.__contradiction[2]]
@@ -355,6 +359,9 @@ class Evaluator:
                 if c[1].issubset(self.__conclusion_solved[variable]) and len(self.__conclusion_solved[variable]) > 0:
                     self.__explanations[0] = [
                         f"Pro '{variable}' bylo nalezeno řešení. Oblast {self.__pretty_print(c[1])} je neprázdná ({c[0]}. premisa)"]
+                    if len(c[1]) != 1:
+                        solution['Exists within'][variable].update(c[1])
+                        solution['Bad'][variable] = c[1]
                     return True
 
             """if len(all_have_in_common) > 0:
@@ -406,11 +413,12 @@ class Evaluator:
         else:
             # here we solve the case in which only universal statements are provided
             # we determine the validity by checking if the areas that should be crossed out are actually crossed out
-            if len_sum == 0:
-                checking = set(crossed_out) - set(self.__conclusion_solved[variable])
-                print (set(self.__conclusion_solved[variable]), "conclusion solved")
-                print (crossed_out, "crossed out")
-                print(checking, "checking")
+            checking = set(crossed_out) - set(self.__conclusion_solved[variable])
+            print(set(self.__conclusion_solved[variable]), "conclusion solved")
+            print(crossed_out, "crossed out")
+            print(checking, "checking")
+
+            if len_sum == 0 or len(checking) == 0:
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
                     self.__explanations[0] = [
                         f"Závěr říká, že mají být vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}, což odpovídá výsledku."]

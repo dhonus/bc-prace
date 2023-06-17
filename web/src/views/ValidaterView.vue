@@ -151,7 +151,7 @@
               <td>Ω</td>
             </tr>
           </table>
-          <blockquote><p>Na vstupu mohou být premisy, nebo konstanty.</p></blockquote>
+          <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou nebo konstantou.</p></blockquote>
           <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Musí být také <b>uzavřena hranatými závorkami</b>. Následující jsou platné premisy:</p>
           <ul>
             <li>∃x[A(x)]</li>
@@ -166,7 +166,7 @@
             <li>Q(y)</li>
           </ul>
             <p>
-                Pro <b>konstanty</b> jsou vyhrazeny znaky [a..g]. Platné konstanty:
+                Premisa může alternativně obsahovat <b>konstanty</b>. Pro ty jsou vyhrazeny znaky [a..g]. V takové premise se musí vyskytovat právě jedna konstanta. Platné premisy obsahující konstanty:
             </p>
           <ul>
             <li>P(a) & S(a)</li>
