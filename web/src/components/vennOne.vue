@@ -7,7 +7,7 @@ export default {
         // inspiration taken from
         // https://medium.com/@cmmyers/how-i-made-an-interactive-venn-diagram-with-d3-fa723c55a148
         // also mentioned in thesis
-        venn1: function (){
+        venn1: function (thisInstanceWillActAsUserInput){
             let g = this.prepare();
 
             // center of first circle
@@ -33,7 +33,7 @@ export default {
                 }
             }
 
-            this.areas_of_diagram.push(this.universum_hatch_check(g));
+            this.areas_of_diagram.push(this.universum_hatch_check(g, !thisInstanceWillActAsUserInput));
 
             // add circles to svg (The ones with _ are background circles)
             let circle1_ = g.append("circle").attr("r", vennRadius).attr("transform", "translate(" + centerX_1 + "," + centerY_1 + ")")

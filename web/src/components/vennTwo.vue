@@ -6,7 +6,7 @@ import d3Element from "@/components/d3Element";
 
 export default {
   methods: {
-    venn2: function (){
+    venn2: function (thisInstanceWillActAsUserInput){
       let g = this.prepare();
 
       // center of first circle
@@ -23,7 +23,7 @@ export default {
       const centerX_3 = centerX_1 + offset / 2;
       const centerY_3 = centerY_1 + (Math.sqrt(3) * offset) / 2;
 
-      this.areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g, !thisInstanceWillActAsUserInput));
 
       let keys = {};
       for (let key in this.counts) {

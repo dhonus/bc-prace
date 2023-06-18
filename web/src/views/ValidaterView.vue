@@ -182,6 +182,16 @@
           <ul>
             <li>∃x[C(x)]</li>
           </ul>
+          <h3>Příklad neplatného vstupu:</h3>
+          <ul>
+            <li>A(x) & B(x)</li>
+            <li>∃x [A(x)] & ∃x [B(x)]</li>
+            <li>∀x [A(x) > A(a)]</li>
+          </ul>
+          <hr>
+          <ul>
+            <li>C(x)</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -522,13 +532,13 @@ export default {
               console.log("extras", extras);
 
               if (lacking.length === 0 && extras.length === 0){
-                explanationCell.textContent = "Všechny proměnné jsou vyplněny správně.";
+                explanationCell.textContent = "Všechny proměnné / konstanty jsou vyplněny správně.";
               } else {
                 if (lacking.length > 0){
-                  explanationCell.textContent += "Následující proměnné/konstanty chybí: " + lacking.toString() + ". ";
+                  explanationCell.textContent += "Následující proměnné / konstanty chybí: " + lacking.toString() + ". ";
                 }
                 if (extras.length > 0){
-                  explanationCell.textContent += "Následující proměnné/konstanty jsou navíc: " + extras.toString() + ". ";
+                  explanationCell.textContent += "Následující proměnné / konstanty jsou navíc: " + extras.toString() + ". ";
                 }
               }
 
@@ -968,6 +978,13 @@ export default {
             counts_sorted[key] = value.sort();
           }
 
+          // sort bad dict
+          let bad_sorted = {};
+          for (let [key, value] of Object.entries(response.data["bad"])) {
+            for (let i = 0; i < value.length; i++) value[i].sort();
+            bad_sorted[key] = value.sort();
+          }
+
           if (!steps) {
             for (let i = 0; i < this.containers.length; i++) {
               if (this.containers[i] != null) this.containers[i].unmount();
@@ -982,7 +999,7 @@ export default {
               sets: response.data["sets"].sort(),
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
-              bad: response.data["bad"],
+              bad: bad_sorted,
               counts: counts_sorted,
               // solutions
               existential: existential_sorted,

@@ -9,9 +9,19 @@
         <li>Pro přidání další premisy klikněte na tlačítko &bdquo;<b>+</b>".</li>
         <li>Pro vyhodnocení úsudku klikněte na tlačítko &bdquo;<b>Vyhodnotit</b>", nebo použijte klávesovou zkratku CTRL + ENTER</li>
       </ol>
-
+      <h3>Vymezení jazyka</h3>
+      <ul>
+        <li> Formule musí být uzavřené. </li>
+        <li> Ve formuli se musí vyskytovat právě jedna proměnná, nebo konstanta.</li>
+        <li> Podporovány jsou unární predikátové symboly.</li>
+        <li> Predikátové symboly mohou být nahrazeny celými slovy. Musí začínat velkým písmenem. Validní jsou např. „C“, „Člověk“.</li>
+        <li> Logické spojky lze ve vstupním řetězci nahradit alternativními symboly</li>
+        <li> Funkční symboly nejsou podporovány (pouze symboly konstant).</li>
+        <li> Lze používat hranaté a jednoduché závorky.</li>
+      </ul>
       <p>K dispozici je virtuální klávesnice logických spojek. Lze také využít alternativních znaků popsaných v tabulce.</p>
 
+      <h3>Příklad zadání</h3>
       <img src="../assets/help_home.gif" alt="Nápověda" />
       <h3>Výstup</h3>
       <p>Program vypíše informaci o pravdivosti, výsledný diagram a odůvodnění.</p>
@@ -40,7 +50,7 @@ export default {
   }
   .help-body {
     margin: 1rem auto;
-    padding: 1rem 3rem;
+    padding: 1rem;
     background-color: white;
     border-radius: 0.5rem;
     width: 50%;
@@ -63,8 +73,22 @@ export default {
     margin: .3rem 0 1rem 0;
     text-align: center;
   }
-  ol {
+  h3 {
+    margin: 1.5rem 0 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  ol{
     list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-top: 0;
+    line-height: 2;
+  }
+  ul {
+    list-style-type: disc;
     padding-left: 1.5rem;
     margin-top: 0;
     line-height: 2;
@@ -74,7 +98,7 @@ export default {
     text-align: left;
   }
   img {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
     display: block;
     border-radius: 7px;

@@ -215,7 +215,7 @@ export default {
       }
       return false;
     },
-    universum_hatch_check: function (g){
+    universum_hatch_check: function (g, hatched){
 
      let keys = {};
       for (let key in this.counts) {
@@ -241,7 +241,7 @@ export default {
                 .attr("d", "M0,20 L" + this.width + ",20 L"
                     + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
                 .attr("class", "segment")
-                .attr("fill", "url(#uniHatch-" + arr[value] +")")
+                .attr("fill", hatched ? "url(#uniHatch-" + arr[value] +")" : "#fbfbfb")
                 .attr("opacity", 0.2);
               continue;
           }
@@ -263,7 +263,7 @@ export default {
             .attr("d", "M0,20 L" + this.width + ",20 L"
                 + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
             .attr("class", "segment")
-            .attr("fill", "url(#uniHatch-" + arr[value] +")")
+            .attr("fill", hatched ? "url(#uniHatch-" + arr[value] +")" : "#fbfbfb")
             .attr("opacity", 0.2);
       }
 
@@ -307,16 +307,16 @@ export default {
     };
     switch (this.vennSize) {
       case 1:
-        this.venn1();
+        this.venn1(this.thisInstanceWillActAsUserInput);
         break;
       case 2:
-        this.venn2();
+        this.venn2(this.thisInstanceWillActAsUserInput);
         break;
       case 3:
-        this.venn3();
+        this.venn3(this.thisInstanceWillActAsUserInput);
         break;
       case 4:
-        this.venn4();
+        this.venn4(this.thisInstanceWillActAsUserInput);
         break;
       default:
         this.limit = true;

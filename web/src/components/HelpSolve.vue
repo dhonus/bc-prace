@@ -11,12 +11,23 @@
         <li>Pro pokračování klikněte na tlačítko &bdquo;<b>Začít</b>", nebo použijte klávesovou zkratku CTRL + ENTER</li>
       </ol>
 
+      <h3>Vymezení jazyka</h3>
+      <ul>
+        <li> Formule musí být uzavřené. </li>
+        <li> Ve formuli se musí vyskytovat právě jedna proměnná, nebo konstanta.</li>
+        <li> Podporovány jsou unární predikátové symboly.</li>
+        <li> Predikátové symboly mohou být nahrazeny celými slovy. Musí začínat velkým písmenem. Validní jsou např. „C“, „Člověk“.</li>
+        <li> Logické spojky lze ve vstupním řetězci nahradit alternativními symboly</li>
+        <li> Funkční symboly nejsou podporovány (pouze symboly konstant).</li>
+        <li> Lze používat hranaté a jednoduché závorky.</li>
+      </ul>
+
       <img src="../assets/help_solve.gif" alt="Nápověda" />
       <h3>Úprava diagramu</h3>
       <p>Zobrazí se prázný diagram korespondující vstupu. </p>
       <ol>
         <li>Levým kliknutím myši <b>vyšrafujte prázdné oblasti</b></li>
-        <li>Poté po zvolení proměnné v poli &bdquo;Proměnná", levým tlačítkem myši do diagramu <b>umístěte křížky</b></li>
+        <li>Poté po zvolení proměnné nebo konstanty v poli &bdquo;Proměnná / Konstanta", levým tlačítkem myši do diagramu <b>umístěte křížky</b></li>
         <li>Ukončete vstup kliknutím na tlačítko &bdquo;<b>Provést kontrolu</b>"</li>
       </ol>
       <h3>Tabulka</h3>
@@ -45,7 +56,7 @@ export default {
   }
   .help-body {
     margin: 1rem auto;
-    padding: 1rem 3rem;
+    padding: 1rem;
     background-color: white;
     border-radius: 0.5rem;
     width: 50%;
@@ -68,6 +79,14 @@ export default {
     margin: .3rem 0 1rem 0;
     text-align: center;
   }
+  h3 {
+    margin: 1.5rem 0 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
   ol {
     list-style-type: decimal;
     padding-left: 1.5rem;
@@ -79,7 +98,7 @@ export default {
     text-align: left;
   }
   img {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
     display: block;
     border-radius: 7px;

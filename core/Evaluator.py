@@ -16,6 +16,7 @@ class Evaluator:
         self.__universal_solved_counts = {}  # the universal statement result
         self.__existential_solved = {}
         self.__all_solved = {}
+        self.__bad = {}
         self.__conclusion_solved = {}
         self.__conclusion_variable = None
         self.__conclusion_existential = False
@@ -166,7 +167,7 @@ class Evaluator:
                     # so if we DO NOT know where to put the "x", we will tell the user
                     # self.__valid_on_all = False
                     self.__explanations[expr_tree.p_index] = [
-                        f"Predikát {expr_tree.p_index}: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
+                        f"{expr_tree.p_index}. premisa: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
                     # check for contradiction
                     # if adding is empty, that means that we have a contradiction
                     # if orig_adding is not empty, that means that we have a contradiction
@@ -190,7 +191,12 @@ class Evaluator:
                             self.__existential_solved[constant.variable] += self.__existential_solved[constant.variable]
 
                         # this should be OK, removing the inaccessible areas
-                        existential_solved_final[var] = adding.copy()
+                        # if this is the one we care about
+                        if var == expr_tree.variable:
+                            existential_solved_final[var] = adding.copy()
+                        else:
+                            # empty
+                            existential_solved_final[var] = set()
                         print(existential_solved_final, "existential solved final")
                         found = False
                         for step in self.__steps:
@@ -198,6 +204,7 @@ class Evaluator:
                                 step["Exists within"] = existential_solved_final.copy()
                                 step["Crossed out"] = list(set(self.__universal_solved.copy()))  # deduplicate
                                 step["Explanations"] = self.__explanations.copy()
+                                step["Bad"] = {expr_tree.variable: adding}
                                 step["Counts"] = self.__universal_solved_counts.copy()
                                 found = True
                         if not found and var == expr_tree.variable:
@@ -221,6 +228,7 @@ class Evaluator:
                         self.__conclusion_variable = conclusion_tree.variable
                         self.__conclusion_solved[conclusion_tree.variable] = set(
                             self.__existential_solve(conclusion_tree))
+                        self.__bad[expr_tree.variable] = adding
 
             else:
                 raise ValueError('Interní chyba. Obnovte stránku.')
@@ -239,7 +247,7 @@ class Evaluator:
             if not found:
                 self.__steps.append(
                     {
-                        "Bad": {},
+                        "Bad": self.__bad.copy(),
                         "Predicate": expr_tree.p_index,
                         "Exists within": existential_solved_final.copy(),
                         "Crossed out": list(set(self.__universal_solved.copy())),  # deduplicate
@@ -276,7 +284,8 @@ class Evaluator:
         variables = list(solution['Exists within'].keys())  # the variable of the conclusion
         print(variables, "solution")
         print(self.__conclusion_variable, "conclusion")
-        solution['Bad'] = {}
+        if not solution.get('Bad'):
+            solution['Bad'] = {}
 
         if self.__contradiction[0]:
             self.__explanations[0] = [self.__contradiction[2]]

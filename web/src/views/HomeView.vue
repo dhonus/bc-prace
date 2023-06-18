@@ -166,7 +166,7 @@
           <ul>
             <li>∃x[C(x)]</li>
           </ul>
-          <h3>Příklad nevalidního vstupu:</h3>
+          <h3>Příklad neplatného vstupu:</h3>
           <ul>
             <li>A(x) & B(x)</li>
             <li>∃x [A(x)] & ∃x [B(x)]</li>
@@ -384,6 +384,13 @@ export default {
             existential_sorted[key] = value.sort();
           }
 
+          // sort bad dict
+          let bad_sorted = {};
+          for (let [key, value] of Object.entries(response.data["bad"])) {
+            for (let i = 0; i < value.length; i++) value[i].sort();
+            bad_sorted[key] = value.sort();
+          }
+
           // sort counts keys
           let counts_sorted = {};
           console.log(response.data["counts"]);
@@ -402,7 +409,7 @@ export default {
               predicates: response.data["predicates"],
               explanations: response.data["explanations"],
               counts: counts_sorted,
-              bad: response.data["bad"],
+              bad: bad_sorted,
               // solutions
               existential: existential_sorted,
               universal: universal_sorted,

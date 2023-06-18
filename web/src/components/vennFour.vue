@@ -6,7 +6,7 @@ import d3Element from "@/components/d3Element";
 export default {
   name: "vennFour",
   methods: {
-    venn4: function(){
+    venn4: function(thisInstanceWillActAsUserInput){
       let g = this.prepare();
 
       // center of first circle
@@ -26,7 +26,7 @@ export default {
       const centerX_4 = centerX_1 + vennRadius*1.5/2;
       const centerY_4 = centerY_1;
 
-      this.areas_of_diagram.push(this.universum_hatch_check(g));
+      this.areas_of_diagram.push(this.universum_hatch_check(g, !thisInstanceWillActAsUserInput));
 
       let keys = {};
       console.log(this.counts, "COUNTS");
@@ -452,6 +452,7 @@ export default {
         console.log(index, "pos, key, index");
         // background for the text
         el.circle = g.append("circle");
+        console.log(this.positioned[index].length)
         el.circle
             .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
