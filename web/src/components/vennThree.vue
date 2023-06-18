@@ -175,8 +175,8 @@ export default {
                     .attr("opacity", 0.4);
                   continue;
               }
-              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + ironPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + ironPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 12).attr("height", 12);
+              pattern.append("path").attr("d", "M-3,3 l6,-6 M0,12 l12,-12 M9,15 l6,-6").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
               // add some spacing to the stroke
               pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
 
@@ -238,8 +238,8 @@ export default {
                     .attr("opacity", 0.4);
                   continue;
               }
-              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + sunPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + sunPointsNames[i] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 12).attr("height", 12);
+              pattern.append("path").attr("d", "M-3,3 l6,-6 M0,12 l12,-12 M9,15 l6,-6").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
               pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
 
               g.append("path")
@@ -295,8 +295,8 @@ export default {
                     .attr("opacity", 0.4);
                   continue;
               }
-              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + roundedTriNames[0] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-              pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
+              let pattern = g.append("pattern").attr("id", "diagonalHatch-" + roundedTriNames[0] + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 12).attr("height", 12);
+              pattern.append("path").attr("d", "M-3,3 l6,-6 M0,12 l12,-12 M9,15 l6,-6").attr("style", "stroke: #3f3f3f; stroke-width: 1.2px;")
               pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
 
               g.append("path")
