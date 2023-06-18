@@ -245,8 +245,8 @@ export default {
                 .attr("opacity", 0.2);
               continue;
           }
-          let pattern = g.append("pattern").attr("id", "uniHatch-" + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-          pattern.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 1.4px;")
+          let pattern = g.append("pattern").attr("id", "uniHatch-" + arr[value]).attr("patternUnits", "userSpaceOnUse").attr("width", 12).attr("height", 12);
+          pattern.append("path").attr("d", "M-3,3 l6,-6 M0,12 l12,-12 M9,15 l6,-6").attr("style", "stroke: #3f3f3f; stroke-width: 1.4px;")
           // add some spacing to the stroke
           pattern.attr("patternTransform", "rotate("+ arr[value] * 45 +" 0 0)")
 
@@ -264,7 +264,7 @@ export default {
                 + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
             .attr("class", "segment")
             .attr("fill", hatched ? "url(#uniHatch-" + arr[value] +")" : "#fbfbfb")
-            .attr("opacity", 0.2);
+            .attr("opacity", 0.15);
       }
 
       // empty inline function
