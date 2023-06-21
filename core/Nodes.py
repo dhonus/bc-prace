@@ -49,7 +49,7 @@ class Set(Node):
 
     def validate(self, variable: str):
         if self.variable != variable:
-            raise Exception(f'Neshodují se proměnné {self.variable} a {variable}')
+            raise Exception(f'Neshodují se proměnné/konstanty {self.variable} a {variable}')
 
 
 class Neg(Node):

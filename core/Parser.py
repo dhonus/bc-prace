@@ -30,7 +30,7 @@ class Parser:
         if not string:
             raise EmptyInputException
         if string.find('Ω') != -1:
-            raise Exception("Nelze použít znak Ω, je rezervován pro výpis.")
+            raise Exception("Nelze použít znak Ω, je rezervován pro výpis a označuje universum.")
         self.__expression = string
         self.__variable = ""
         self.__expression_generator = self.__make_expression_generator()  # create generator for the parser to iterate over
@@ -106,13 +106,13 @@ class Parser:
             expr.tree = self.__e_rule(expr.constant)
             expr.variable = self.__variable
             if expr.variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-                raise Exception(f"Pro konstanty jsou vyhrazenny proměnné [a..g], '{expr.variable}' nespadá do tohoto intervalu.")
+                raise Exception(f"Pro konstanty jsou vyhrazenny znaky [a..g], '{expr.variable}' nespadá do tohoto intervalu.")
 
             if self.__current:
                 raise Exception(f"Chybějící kvantifikátor, nejedná se o konstantu.")
             return expr
         elif expr.variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-            raise Exception(f"Proměnná '{expr.variable}' je rezervována pro konstanty.")
+            raise Exception(f"Znak '{expr.variable}' je rezervován pro konstanty.")
         if self.__match('['):
             tree = self.__e_rule(False)
             if not tree:
@@ -136,6 +136,21 @@ class Parser:
         if not self.__variable:
             self.__variable = var
             return
+
+        a = False
+        b = False
+        if self.__variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            a = True
+        if var in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            b = True
+        if a and b:
+            raise Exception(f"Nalezeny 2 různé konstanty ve výrazu -> '{self.__variable}' a '{var}'")
+
+        if a or b:
+            if a:
+                raise Exception(f"Ve výrazu nalezena konstanta '{self.__variable}', ale také proměnná '{var}'")
+            raise Exception(f"Ve výrazu nalezena konstanta '{var}', ale také proměnná '{self.__variable}'")
+
         raise Exception(f"Nalezeny 2 různé proměnné ve výrazu -> '{self.__variable}' a '{var}'")
 
     # refer to grammar in the thesis text
@@ -152,7 +167,7 @@ class Parser:
                     raise ValueError('Chybí proměnná.')
 
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
+                    raise ValueError('Proměnná by měla být malé písmeno. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∃', variable=variable, tree=None)
@@ -165,7 +180,7 @@ class Parser:
                     raise ValueError('Chybí proměnná.')
 
                 if not variable.islower() and self.__pedantic:
-                    raise ValueError('Proměnná by měla být malým písmem. Možná jste zapomněli na závorku?')
+                    raise ValueError('Proměnná by měla být malé písmemo. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
                 self.__advance(2)
                 return ExpressionTree(value='∀', variable=variable, tree=None)
@@ -284,7 +299,7 @@ class Parser:
         try:
             self.__require(')')
         except ValueError:
-            raise ValueError(f"Nalezen znak '{self.__current}'. Zde by měla být ukončovací závorka, jelikož proměnné "
+            raise ValueError(f"Nalezen znak '{self.__current}'. Zde by měla být ukončovací závorka, jelikož proměnné/konstanty "
                              f"musí být ve tvaru jednoho písmene.")
         logging.debug(f"returning set {elem}({variable})")
 

@@ -16,6 +16,7 @@ class Evaluator:
         self.__universal_solved_counts = {}  # the universal statement result
         self.__existential_solved = {}
         self.__all_solved = {}
+        self.__all_solved_by_whom = {}
         self.__bad = {}
         self.__conclusion_solved = {}
         self.__conclusion_variable = None
@@ -141,8 +142,18 @@ class Evaluator:
 
                 if expr_tree.variable not in self.__all_solved:
                     self.__all_solved[expr_tree.variable] = adding
+                    for area in adding:
+                        if area not in self.__all_solved_by_whom:
+                            self.__all_solved_by_whom[area] = [expr_tree.p_index]
+                        else:
+                            self.__all_solved_by_whom[area].append(expr_tree.p_index)
                 else:
                     self.__all_solved[expr_tree.variable] = self.__all_solved[expr_tree.variable].intersection(adding)
+                    for area in adding:
+                        if area not in self.__all_solved_by_whom:
+                            self.__all_solved_by_whom[area] = [expr_tree.p_index]
+                        else:
+                            self.__all_solved_by_whom[area].append(expr_tree.p_index)
 
                 self.__contain.append([expr_tree.p_index, adding, expr_tree.variable])
 
@@ -315,6 +326,16 @@ class Evaluator:
         var_set.difference_update(crossed_out)
         print(var_set, "var set")
         print(self.__conclusion_solved[variable], "conclusion solved")
+        print(len(self.__objects)**2)
+        print(len(self.__conclusion_solved[variable]))
+
+        all_ = True
+        for key in self.__conclusion_solved:
+            if self.__conclusion_solved[key] != set():
+                all_ = False
+        if all_ or (2**len(self.__objects) == len(self.__conclusion_solved[variable])): # tautology
+            self.__explanations[0] = [f"Pro {variable} bylo nalezeno řešení. Jedná se o tautologii."]
+            return True
 
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
@@ -333,15 +354,35 @@ class Evaluator:
             # Ex[B(x) & A(x)]
             for v in self.__all_solved:
                 print(v, "v")
+                print(self.__all_solved)
+                print(self.__all_solved_by_whom, "whom")
+                common = set(self.__all_solved[v])
+                common_numbers = set()
+                print(common)
+
+                for c in common:
+                    if len(common_numbers) == 0:
+                        common_numbers.update(set(self.__all_solved_by_whom[c]))
+                    else:
+                        common_numbers.intersection_update(set(self.__all_solved_by_whom[c]))
+
                 if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable not in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable != v:
                     print(self.__conclusion_solved)
                     print(self.__all_solved[v], "all solved")
                     if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):
-                        self.__explanations[0] = [
-                            f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}."]
+                        if len(common_numbers) > 1:
+                            self.__explanations[0] = [
+                                f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}. Tato oblast je podle premis {self.__pretty_print(common_numbers)} neprázdná."]
+                        elif len(common_numbers) == 1:
+                            self.__explanations[0] = [
+                                f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}. Tato oblast je podle {list(common_numbers)[0]}. premisy neprázdná."]
+                        else:
+                            self.__explanations[0] = [
+                                f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}."]
                         if len(self.__conclusion_solved[variable]) == 1:
                             solution['Exists within'][v].update(self.__conclusion_solved[variable])
                         return True
+
                 if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     if v == variable:
                         if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):
@@ -430,7 +471,7 @@ class Evaluator:
             if len_sum == 0 or len(checking) == 0:
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
                     self.__explanations[0] = [
-                        f"Závěr říká, že mají být vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}, což odpovídá výsledku."]
+                        f"Závěr vyžaduje, aby {self.__pretty_print(self.__conclusion_solved[variable])} byly nutně prázdné, což odpovídá výsledku."]
                     return True
 
             if not crossed_out.issubset(self.__conclusion_solved[variable]):
