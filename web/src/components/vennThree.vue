@@ -160,15 +160,12 @@ export default {
           return compareArrays(arr, ironPointsNames[i]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
-          console.log(this.keys, "counts!!!")
-          console.log(this.keys[ironPointsNames[i]], "counts!!!")
-
           const arr = keys[ironPointsNames[i].join(",")];
           for (let value in arr) {
               if (document.getElementById("diagonalHatch-" + ironPointsNames[i] + arr[value]) !== null){
                   g.append("path")
                     .attr("id", theId)
+                    .attr("name", ironPointsNames[i])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
@@ -182,6 +179,7 @@ export default {
 
               g.append("path")
                     .attr("id", theId)
+                    .attr("name", ironPointsNames[i])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
@@ -192,15 +190,13 @@ export default {
           console.log("dont hatch it");
           g.append("path")
               .attr("id", theId)
+              .attr("name", ironPointsNames[i])
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", ironFill)
               .attr("opacity", 0.4);
           this.areas_of_diagram.push(new Area(theId, "clear", ironFill, ironPointsNames[i]));
         }
-
-        console.log(this.universal, "universal ", ironPointsNames[i]);
-
         i++;
       }
 
@@ -210,7 +206,6 @@ export default {
           return compareArrays(arr, arr2);
         });
       });
-      console.log(hash_these, "hash these");
 
       i = 0;
       let sunFill = "#e2e2e2";
@@ -226,12 +221,12 @@ export default {
           return compareArrays(arr, sunPointsNames[i]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
           const arr = keys[sunPointsNames[i].join(",")];
           for (let value in arr) {
               if (document.getElementById("diagonalHatch-" + sunPointsNames[i] + arr[value]) !== null){
                   g.append("path")
                     .attr("id", theId)
+                    .attr("name", sunPointsNames[i])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i]  + arr[value] +")")
@@ -244,6 +239,7 @@ export default {
 
               g.append("path")
                     .attr("id", theId)
+                    .attr("name", sunPointsNames[i])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
@@ -251,9 +247,9 @@ export default {
           }
           this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("name", sunPointsNames[i])
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", sunFill)
@@ -289,6 +285,7 @@ export default {
               if (document.getElementById("diagonalHatch-" + roundedTriNames[0] + arr[value]) !== null){
                   g.append("path")
                     .attr("id", theId)
+                    .attr("name", roundedTriNames[0])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + roundedTriNames[0]  + arr[value] +")")
@@ -301,6 +298,7 @@ export default {
 
               g.append("path")
                     .attr("id", theId)
+                    .attr("name", roundedTriNames[0])
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + roundedTriNames[0] + arr[value] +")")
@@ -311,6 +309,7 @@ export default {
           console.log("dont hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+              .attr("name", roundedTriNames[0])
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "#929292")
@@ -343,26 +342,23 @@ export default {
         }
       });
 
-      var tooltip = d3.select("body")
-          .append("div")
-          .style("position", "absolute")
-          .style("z-index", "10")
-          .style("visibility", "hidden")
-          .style("background-color", "rgb(54, 54, 54)")
-          .style("padding", ".8rem");
-
-      var vis = d3.select("body").append("svg:svg")
-          .attr("width", 0)
-          .attr("height", 0);
+      let tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "bubble-thing")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("background-color", "rgb(54, 54, 54)")
+        .style("padding", ".8rem");
 
       // hover over a segment and get its description
-      /*g.selectAll("path.segment").on("mousemove", function (event) {
+      g.selectAll("path.segment").on("mousemove", function (event) {
         const svg = d3.select(this);
-        tooltip.text("ID plochy: " + svg.attr('id'));
+        tooltip.text("Oblast: " + svg.attr('name'));
         tooltip.style("visibility", "visible");
         tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
         svg.style("", "url(#drop-shadow)");
-      });*/
+      });
 
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");

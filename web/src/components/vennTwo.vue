@@ -129,7 +129,7 @@ export default {
 
       // three functions to iterate over points and append paths
       let i = 0;
-      let ironFill = "#9f9f9f";
+      let ironFill = "#eeeeee";
       for (const points of ironPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -148,6 +148,7 @@ export default {
                   g.append("path")
                     .attr("id", theId)
                     .attr("d", shape)
+                    .attr("name", ironPointsNames[i].join(","))
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
                     .attr("opacity", 0.4);
@@ -162,6 +163,7 @@ export default {
               g.append("path")
                     .attr("id", theId)
                     .attr("d", shape)
+                    .attr("name", ironPointsNames[i].join(","))
                     .attr("class", "segment")
                     .attr("opacity", 0.2)
                     .attr("fill", ironFill);
@@ -169,6 +171,7 @@ export default {
               g.append("path")
                     .attr("id", theId)
                     .attr("d", shape)
+                    .attr("name", ironPointsNames[i].join(","))
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + ironPointsNames[i] + arr[value] +")")
                     .attr("opacity", 0.4);
@@ -177,6 +180,7 @@ export default {
         } else {
           g.append("path")
               .attr("id", theId)
+              .attr("name", ironPointsNames[i].join(","))
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", ironFill)
@@ -194,7 +198,7 @@ export default {
       });
 
       i = 0;
-      let sunFill = "#e2e2e2";
+      let sunFill = "#dedede";
       for (const points of sunPoints) {
         const ptCycle = points
             .map((i) => xPoints[i - 1])
@@ -213,6 +217,7 @@ export default {
                   g.append("path")
                     .attr("id", theId)
                     .attr("d", shape)
+                    .attr("name", sunPointsNames[i])
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
                     .attr("opacity", 0.4);
@@ -226,6 +231,7 @@ export default {
               g.append("path")
                     .attr("id", theId)
                     .attr("d", shape)
+                    .attr("name", sunPointsNames[i])
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
                     .attr("opacity", 0.4);
@@ -235,6 +241,7 @@ export default {
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
               .attr("d", shape)
+              .attr("name", sunPointsNames[i])
               .attr("class", "segment")
               .attr("fill", sunFill)
               .attr("opacity", 1);
@@ -263,27 +270,23 @@ export default {
         }
       });
 
-
-      var tooltip = d3.select("body")
+       let tooltip = d3.select("body")
           .append("div")
+          .attr("class", "bubble-thing")
           .style("position", "absolute")
           .style("z-index", "10")
           .style("visibility", "hidden")
           .style("background-color", "rgb(54, 54, 54)")
           .style("padding", ".8rem");
 
-      var vis = d3.select("body").append("svg:svg")
-          .attr("width", 0)
-          .attr("height", 0);
-
       // hover over a segment and get its description
-      /*g.selectAll("path.segment").on("mousemove", function (event) {
+      g.selectAll("path.segment").on("mousemove", function (event) {
         const svg = d3.select(this);
-        tooltip.text("ID plochy: " + svg.attr('id'));
+        tooltip.text("Oblast: " + svg.attr('name'));
         tooltip.style("visibility", "visible");
         tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
         svg.style("", "url(#drop-shadow)");
-      });*/
+      });
 
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");

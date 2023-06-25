@@ -902,6 +902,8 @@ export default {
       setTimeout(() => this.$refs.why.classList.add("activated"), 100);
       setTimeout(() => this.$refs.steps.classList.add("activated"), 100);
 
+      document.querySelectorAll(".bubble-thing").forEach(el => el.remove());
+
       let predicates = []
       for (let key of Object.keys(this.values)) {
         console.log(key + " -> " + this.values[key]);

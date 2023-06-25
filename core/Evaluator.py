@@ -110,11 +110,11 @@ class Evaluator:
         for expr_tree in trees:
             if expr_tree.value == '∀':
                 """self.__explanations[expr_tree.p_index] = [
-                    f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme oblasti, které vyhovují."]"""
+                    f"Všeobecná premisa: {expr_tree.print()}. Vyškrtáme prázdné oblasti."]"""
                 new_solved = self.__universal_solve(expr_tree)
                 self.__universal_solved += new_solved
                 self.__explanations[expr_tree.p_index] = [
-                    f"Všeobecná premisa: Vyškrtáme oblasti, které vyhovují. Jedná se o {self.__pretty_print(set(new_solved))}."]
+                    f"Všeobecná premisa: Vyškrtáme prázdné oblasti. Jedná se o {self.__pretty_print(set(new_solved))}."]
                 print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
                 self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solve(expr_tree))
                 """for area in list(self.__universal_solved):
@@ -334,7 +334,10 @@ class Evaluator:
             if self.__conclusion_solved[key] != set():
                 all_ = False
         if all_ or (2**len(self.__objects) == len(self.__conclusion_solved[variable])): # tautology
-            self.__explanations[0] = [f"Pro {variable} bylo nalezeno řešení. Jedná se o tautologii."]
+            if len(self.__conclusion_solved[variable]) == 0:
+                self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení."]
+            else:
+                self.__explanations[0] = [f"Sporný závěr pro '{variable}'"]
             return True
 
         if len_sum == 0:

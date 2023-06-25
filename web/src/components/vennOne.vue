@@ -120,6 +120,7 @@ export default {
                         if (document.getElementById("diagonalHatch-" + sunPointsNames[i] + arr[value]) !== null){
                             g.append("path")
                               .attr("id", theId)
+                                .attr("name", sunPointsNames[i].join(","))
                               .attr("d", shape)
                               .attr("class", "segment")
                               .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
@@ -133,6 +134,7 @@ export default {
 
                         g.append("path")
                               .attr("id", theId)
+                              .attr("name", sunPointsNames[i].join(","))
                               .attr("d", shape)
                               .attr("class", "segment")
                               .attr("fill", "url(#diagonalHatch-" + sunPointsNames[i] + arr[value] +")")
@@ -143,6 +145,7 @@ export default {
                     console.log("dont hatch it");
                     g.append("path")
                         .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
+                        .attr("name", sunPointsNames[i].join(","))
                         .attr("d", shape)
                         .attr("class", "segment")
                         .attr("fill", sunFill)
@@ -172,183 +175,184 @@ export default {
             }
           });
 
-            let tooltip = d3.select("body")
-                .append("div")
-                .style("position", "absolute")
-                .style("z-index", "10")
-                .style("visibility", "hidden")
-                .style("background-color", "rgb(54, 54, 54)")
-                .style("padding", ".8rem");
+          let tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "bubble-thing")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .style("background-color", "rgb(54, 54, 54)")
+            .style("padding", ".8rem");
 
-            // hover over a segment and get its description
-            /*g.selectAll("path.segment").on("mousemove", function (event) {
-                const svg = d3.select(this);
-                tooltip.text("ID plochy: " + svg.attr('id'));
-                tooltip.style("visibility", "visible");
-                tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
-                svg.style("", "url(#drop-shadow)");
-            });*/
+          // hover over a segment and get its description
+          g.selectAll("path.segment").on("mousemove", function (event) {
+            const svg = d3.select(this);
+            tooltip.text("Oblast: " + svg.attr('name'));
+            tooltip.style("visibility", "visible");
+            tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+            svg.style("", "url(#drop-shadow)");
+          });
 
-            g.selectAll("path.segment").on("mouseout", function (event) {
-                tooltip.style("visibility", "hidden");
-                const svg = d3.select(this);
-            });
+          g.selectAll("path.segment").on("mouseout", function (event) {
+              tooltip.style("visibility", "hidden");
+              const svg = d3.select(this);
+          });
 
-            let __sets_identifiers = [
-                [this.sets[0]],
-            ];
+          let __sets_identifiers = [
+              [this.sets[0]],
+          ];
 
-            // positions as [x, y]; corresponds to __sets_identifiers
-            let __sets_positions = [
-                [centerX_1 + 20, centerY_1+10],
-            ];
+          // positions as [x, y]; corresponds to __sets_identifiers
+          let __sets_positions = [
+              [centerX_1 + 20, centerY_1+10],
+          ];
 
-          let position_me = (index, key, character) => {
-            const pos = __sets_positions[index];
+        let position_me = (index, key, character) => {
+          const pos = __sets_positions[index];
 
-            let el = new d3Element();
-            el.index = index;
+          let el = new d3Element();
+          el.index = index;
 
-            // this is done because a single position can be taken by multiple "x"
-            // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
-            if (key !== undefined){
-              if (this.positioned[index] === undefined || this.positioned[index].length === 0) {
-                this.positioned[index] = [];
-                this.positioned[index].push(key);
-              } else {
-                this.positioned[index].push(key);
-              }
-            } else if (this.positioned[index].length === 0){
-              return el;
+          // this is done because a single position can be taken by multiple "x"
+          // it will produce something like x_x,y,z instead of just the last one. e.g. x_z
+          if (key !== undefined){
+            if (this.positioned[index] === undefined || this.positioned[index].length === 0) {
+              this.positioned[index] = [];
+              this.positioned[index].push(key);
+            } else {
+              this.positioned[index].push(key);
             }
-
-            // background for the text
-            el.circle = g.append("circle");
-            el.circle
-                .attr("r", 14 + this.positioned[index].length * 3)
-                .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
-                .attr("class", character === "?" ? "question-background" : "set-background")
-            // the "X" or "?"
-            el.text = g.append("text");
-            el.text
-                .text(character)
-                .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
-                .attr("y", pos[1] - 5)
-                .style('fill', '#323232')
-                .attr("class", character === "?" ? "question-text" : "set-text")
-                .style('font-size', '1.2rem');
-            // the variable
-            el.var = g.append("text");
-            el.var
-                .text(character === "?" ? key : this.positioned[index])
-                .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
-                .attr("y", pos[1] - 1)
-                .style('fill', '#323232')
-                .attr("class", character === "?" ? "question-text" : "set-text")
-                .style('font-size', '.8rem');
-
-            if (character === "?"){
-              this.positioned[index].pop();
-            }
+          } else if (this.positioned[index].length === 0){
             return el;
           }
 
-            // existential
-            for (const position in __sets_identifiers){
-                for(let key in this.existential) {
-                    for (let all in this.existential[key]) {
-                        if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
-                            // if this.existential[key][any] is in bad[key] then it is a bad existential
-                            if (this.bad[key] !== undefined && this.bad[key].length > 0){
-                                for (let bad in this.bad[key]){
-                                    if (compareArrays(this.bad[key][bad], this.existential[key][all])){
-                                        position_me(position, key, "?");
-                                    }
-                                }
-                            } else if (this.emptyDict(this.bad)){
-                                position_me(position, key, "x");
-                            }
-                        }
-                    }
-                }
-            }
-
-          //user added areas
-          let user_added_areas = {};
-          let wipe = (index) => {
-            return this.wipe(index);
-          };
-
-          // this is the function that will be called when the user clicks on a segment
-          g.selectAll("path.segment").on("contextmenu", (e) => {
-            const svg = d3.select(e.currentTarget)
-            let theVar = this.entryVariable;
-            if (theVar === undefined || theVar === null || theVar.length === 0){
-              theVar = "x";
-            }
-            // check if theVar is a lowercase letter
-            if (theVar.length !== 1 || !theVar.match(/[a-z]/i)){
-              // set class of ref
-              this.$refs.entryVariableInput.classList.add("bad");
-              theVar = "x"
-              this.entryVariable = "x";
-            } else {
-              this.$refs.entryVariableInput.classList.remove("bad");
-            }
-            let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'));
-
-            let found = false;
-            if (area.questionElement.index !== -1)
-              for (let i = 0; i < this.positioned[area.questionElement.index].length; i++){
-                if (this.positioned[area.questionElement.index][i] === theVar){
-                  this.positioned[area.questionElement.index].splice(i, 1);
-                  found = true;
-                }
-              }
-
-            if (area.questionElement.circle !== null){
-              try {
-                area.questionElement.circle.remove();
-                area.questionElement.text.remove();
-                area.questionElement.var.remove();
-              } catch (e) {
-                console.log(e);
-              }
-            }
-
-            let i = 0;
-            for (const ass in __sets_identifiers){
-              console.log(ass);
-              if (compareArrays(__sets_identifiers[ass], area.assignment)){
-                area.questionElement = position_me(i, found ? undefined : theVar, "x");
-                if (found){
-                  // remove theVar from the existential
-                  for (let j = 0; j < area.existential.length; j++){
-                    if (area.existential[j] === theVar){
-                      area.existential.splice(j, 1);
-                    }
-                  }
-                } else {
-                  area.existential.push(theVar);
-                }
-              }
-              i++;
-            }
-          });
-
-          g.append("text")
-              .text("Ω")
-              .attr("x", (this.width - 30))
-              .attr("y", 50)
+          // background for the text
+          el.circle = g.append("circle");
+          el.circle
+              .attr("r", 14 + this.positioned[index].length * 3)
+              .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
+              .attr("class", character === "?" ? "question-background" : "set-background")
+          // the "X" or "?"
+          el.text = g.append("text");
+          el.text
+              .text(character)
+              .attr("x", pos[0] - (character === "?" ? 27 : 28) - (this.positioned[index].length -1)*4)
+              .attr("y", pos[1] - 5)
               .style('fill', '#323232')
-              .style('font-size', '1.5rem');
+              .attr("class", character === "?" ? "question-text" : "set-text")
+              .style('font-size', '1.2rem');
+          // the variable
+          el.var = g.append("text");
+          el.var
+              .text(character === "?" ? key : this.positioned[index])
+              .attr("x", pos[0] - (character === "?" ? 18 : 18) - (this.positioned[index].length -1)*4)
+              .attr("y", pos[1] - 1)
+              .style('fill', '#323232')
+              .attr("class", character === "?" ? "question-text" : "set-text")
+              .style('font-size', '.8rem');
 
-          g.append("text")
-              .text(this.sets[0] + "'")
-              .attr("x", centerX_1 + vennRadius - 20)
-              .attr("y", centerY_1 - vennRadius*0.8)
-              .style('fill', '#323232');
-        },
+          if (character === "?"){
+            this.positioned[index].pop();
+          }
+          return el;
+        }
+
+          // existential
+          for (const position in __sets_identifiers){
+              for(let key in this.existential) {
+                  for (let all in this.existential[key]) {
+                      if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
+                          // if this.existential[key][any] is in bad[key] then it is a bad existential
+                          if (this.bad[key] !== undefined && this.bad[key].length > 0){
+                              for (let bad in this.bad[key]){
+                                  if (compareArrays(this.bad[key][bad], this.existential[key][all])){
+                                      position_me(position, key, "?");
+                                  }
+                              }
+                          } else if (this.emptyDict(this.bad)){
+                              position_me(position, key, "x");
+                          }
+                      }
+                  }
+              }
+          }
+
+        //user added areas
+        let user_added_areas = {};
+        let wipe = (index) => {
+          return this.wipe(index);
+        };
+
+        // this is the function that will be called when the user clicks on a segment
+        g.selectAll("path.segment").on("contextmenu", (e) => {
+          const svg = d3.select(e.currentTarget)
+          let theVar = this.entryVariable;
+          if (theVar === undefined || theVar === null || theVar.length === 0){
+            theVar = "x";
+          }
+          // check if theVar is a lowercase letter
+          if (theVar.length !== 1 || !theVar.match(/[a-z]/i)){
+            // set class of ref
+            this.$refs.entryVariableInput.classList.add("bad");
+            theVar = "x"
+            this.entryVariable = "x";
+          } else {
+            this.$refs.entryVariableInput.classList.remove("bad");
+          }
+          let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'));
+
+          let found = false;
+          if (area.questionElement.index !== -1)
+            for (let i = 0; i < this.positioned[area.questionElement.index].length; i++){
+              if (this.positioned[area.questionElement.index][i] === theVar){
+                this.positioned[area.questionElement.index].splice(i, 1);
+                found = true;
+              }
+            }
+
+          if (area.questionElement.circle !== null){
+            try {
+              area.questionElement.circle.remove();
+              area.questionElement.text.remove();
+              area.questionElement.var.remove();
+            } catch (e) {
+              console.log(e);
+            }
+          }
+
+          let i = 0;
+          for (const ass in __sets_identifiers){
+            console.log(ass);
+            if (compareArrays(__sets_identifiers[ass], area.assignment)){
+              area.questionElement = position_me(i, found ? undefined : theVar, "x");
+              if (found){
+                // remove theVar from the existential
+                for (let j = 0; j < area.existential.length; j++){
+                  if (area.existential[j] === theVar){
+                    area.existential.splice(j, 1);
+                  }
+                }
+              } else {
+                area.existential.push(theVar);
+              }
+            }
+            i++;
+          }
+        });
+
+        g.append("text")
+            .text("Ω")
+            .attr("x", (this.width - 30))
+            .attr("y", 50)
+            .style('fill', '#323232')
+            .style('font-size', '1.5rem');
+
+        g.append("text")
+            .text(this.sets[0] + "'")
+            .attr("x", centerX_1 + vennRadius - 20)
+            .attr("y", centerY_1 - vennRadius*0.8)
+            .style('fill', '#323232');
+      },
     }
 }
 </script>

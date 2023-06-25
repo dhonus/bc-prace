@@ -258,6 +258,7 @@ export default {
               if (document.getElementById("diagonalHatch-" + squareNames[i] + arr[value]) !== null){
                   g.append("path")
                     .attr("id", theId)
+                    .attr("name", squareNames[i].join(","))
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + squareNames[i]  + arr[value] +")")
@@ -266,6 +267,7 @@ export default {
               }
               let pattern = g.append("pattern")
                   .attr("id", "diagonalHatch-" + squareNames[i] + arr[value])
+                  .attr("name", squareNames[i].join(","))
                   .attr("patternUnits", "userSpaceOnUse")
                   .attr("width", 12).attr("height", 12);
               pattern.append("path")
@@ -275,6 +277,7 @@ export default {
 
               g.append("path")
                     .attr("id", theId)
+                    .attr("name", squareNames[i].join(","))
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + squareNames[i] + arr[value] +")")
@@ -284,6 +287,7 @@ export default {
         } else {
           g.append("path")
               .attr("id", theId)
+              .attr("name", squareNames[i].join(","))
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", fills[i])
@@ -319,6 +323,7 @@ export default {
               if (document.getElementById("diagonalHatch-" + l_names[i] + arr[value]) !== null){
                   g.append("path")
                     .attr("id", theId)
+                    .attr("name", l_names[i].join(","))
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + l_names[i]  + arr[value] +")")
@@ -333,6 +338,7 @@ export default {
 
               g.append("path")
                     .attr("id", theId)
+                    .attr("name", l_names[i].join(","))
                     .attr("d", shape)
                     .attr("class", "segment")
                     .attr("fill", "url(#diagonalHatch-" + l_names[i] + arr[value] +")")
@@ -342,6 +348,7 @@ export default {
         } else {
           g.append("path")
               .attr("id", theId)
+              .attr("name", l_names[i].join(","))
               .attr("d", shape)
               .attr("class", "segment")
               .attr("fill", "#cccccc")
@@ -373,17 +380,24 @@ export default {
         }
       });
 
-      var tooltip = d3.select("body")
-          .append("div")
-          .style("position", "absolute")
-          .style("z-index", "10")
-          .style("visibility", "hidden")
-          .style("background-color", "rgb(54, 54, 54)")
-          .style("padding", ".8rem");
+      let tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "bubble-thing")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("background-color", "rgb(54, 54, 54)")
+        .style("padding", ".8rem");
 
-      const vis = d3.select("body").append("svg:svg")
-          .attr("width", 0)
-          .attr("height", 0);
+
+      // hover over a segment and get its description
+      g.selectAll("path.segment").on("mousemove", function (event) {
+        const svg = d3.select(this);
+        tooltip.text("Oblast: " + svg.attr('name'));
+        tooltip.style("visibility", "visible");
+        tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+        svg.style("", "url(#drop-shadow)");
+      });
 
       g.selectAll("path.segment").on("mouseout", function (event) {
         tooltip.style("visibility", "hidden");

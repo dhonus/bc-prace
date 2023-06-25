@@ -216,7 +216,6 @@ export default {
       return false;
     },
     universum_hatch_check: function (g, hatched){
-
      let keys = {};
       for (let key in this.counts) {
           for (let value in this.counts[key]) {
@@ -238,6 +237,7 @@ export default {
                 .attr("fill", "url(#uniHatch-" + arr[value] +")")
               g.append("path")
                 .attr("id", "Universum")
+                .attr("name", "Ω")
                 .attr("d", "M0,20 L" + this.width + ",20 L"
                     + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
                 .attr("class", "segment")
@@ -260,6 +260,7 @@ export default {
 
           g.append("path")
             .attr("id", "Universum")
+            .attr("name", "Ω")
             .attr("d", "M0,20 L" + this.width + ",20 L"
                 + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
             .attr("class", "segment")
@@ -279,6 +280,7 @@ export default {
             .attr("stroke", "#9782ae");
         g.append("path")
             .attr("id", "Universum")
+            .attr("name", "Ω")
             .attr("d", "M0,20 L" + this.width + ",20 L"
                 + this.width + "," + (this.height + 20) + " L0," + (this.height + 20) + " L0,20")
             .attr("class", "segment")

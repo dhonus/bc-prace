@@ -317,6 +317,8 @@ export default {
       this.$refs.why.classList.remove("bad");
       this.$refs.steps.classList.remove("activated");
 
+      document.querySelectorAll(".bubble-thing").forEach(el => el.remove());
+
       setTimeout(() => this.$refs.why.classList.add("activated"), 100);
       setTimeout(() => this.$refs.steps.classList.add("activated"), 100);
 
