@@ -61,11 +61,9 @@ class Evaluator:
             adding = item
             if adding:
                 sol_universum_accounted.append(adding)
-        print(set(sol_universum_accounted), ":DD")
 
         output = []
         for item in sorted(sol_universum_accounted):
-            print("sorted", item)
             output.append(",".join(sorted(item)))
 
         return sorted(list(set(output)))
@@ -167,12 +165,9 @@ class Evaluator:
                     self.__existential_solve(expr_tree)
                 )  # we want this to be length 1
 
-                print(adding, "adding")
                 # now, of course we do NOT want the areas that we know are hatched (universal statements)
                 orig_adding = adding.copy()
                 adding = adding - set(self.__universal_solved)
-                print (len(adding), "adding. Majorly")
-                print(adding)
 
                 if expr_tree.variable not in self.__all_solved:
                     self.__all_solved[expr_tree.variable] = adding
@@ -224,11 +219,8 @@ class Evaluator:
 
                     # this means that there is no place to put the "x" in the diagram
                     if len(adding) == 0 and len(orig_adding) != 0:
-                        print(orig_adding, "orig adding")
-                        print(self.__conclusion_solved, "conclusion solved")
                         self.__explanations[expr_tree.p_index] = [f"Všechny potenciální plochy jsou vyřazeny. Předpoklady jsou ve sporu. Oblast {self.__pretty_print(orig_adding)} je vyřazena."]
                         self.__valid_on_all = False
-                        print(adding, "addinger")
                         self.__contradiction = [True, expr_tree.p_index, "Všechny potenciální plochy jsou vyřazeny. Předpoklady jsou ve sporu."]
 
                     for var in self.__existential_solved.keys():

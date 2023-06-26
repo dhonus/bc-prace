@@ -190,13 +190,13 @@ export default {
 
       let fills = [
           "#9f9f9f",
-          "#6c6c6c",
+          "#9a9a9a",
           "#9f9f9f",
-          "#6c6c6c",
-          "#565656",
-          "#6c6c6c",
+          "#9a9a9a",
+          "#737373",
+          "#9a9a9a",
           "#9f9f9f",
-          "#6c6c6c",
+          "#9a9a9a",
           "#9f9f9f",
           "#9f9f9f",
           "#cccccc",
