@@ -13,7 +13,7 @@
       <ul>
         <li> Formule musí být uzavřené. </li>
         <li> Ve formuli se musí vyskytovat právě jedna proměnná, nebo konstanta.</li>
-        <li> Podporovány jsou unární predikátové symboly.</li>
+        <li> Podporovány jsou pouze unární predikátové symboly.</li>
         <li> Predikátové symboly mohou být nahrazeny celými slovy. Musí začínat velkým písmenem. Validní jsou např. „C“, „Člověk“.</li>
         <li> Logické spojky lze ve vstupním řetězci nahradit alternativními symboly</li>
         <li> Funkční symboly nejsou podporovány (pouze symboly konstant).</li>

@@ -135,45 +135,22 @@
               <td>Ω</td>
             </tr>
           </table>
-          <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou nebo konstantou.</p></blockquote>
-          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Musí být také <b>uzavřena hranatými závorkami</b>. Následující jsou platné premisy:</p>
+          <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou, nebo konstantou.</p></blockquote>
+          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule může, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g].</p>
           <ul>
             <li>∃x[A(x)]</li>
-            <li>∀x[B(x)]</li>
+            <li>∀x[¬B(x)]</li>
             <li>∃x [A(x) & B(x)]</li>
             <li>∀x [B(x) ⊃ C(x)]</li>
-          </ul>
-            <p><b>Literál</b> je vždy ve tvaru atomické formule, nebo její negace → <span style="background: #ececec; padding: 0 .3rem; border-radius: 7px;">Predikát(proměnná)</span>, kde proměnná je malé písmeno. Platné literály:</p>
-          <ul>
-            <li>P(x)</li>
-            <li>¬Venn(x)</li>
-            <li>Q(y)</li>
-          </ul>
-            <p>
-                Premisa může alternativně obsahovat <b>konstanty</b>. Pro ty jsou vyhrazeny znaky [a..g]. V takové premise se musí vyskytovat právě jedna konstanta. Platné premisy obsahující konstanty:
-            </p>
-          <ul>
             <li>P(a) & S(a)</li>
             <li>¬Venn(b)</li>
             <li>P(g) ⊃ ¬Q(g)</li>
-          </ul>
-          <h3>Příklad validního vstupu:</h3>
-          <ul>
-            <li>∀x [A(x) & !B(x)]</li>
-            <li>Ex [A(x) > C(x)]</li>
-          </ul>
-          <hr>
-          <ul>
-            <li>∃x[C(x)]</li>
           </ul>
           <h3>Příklad neplatného vstupu:</h3>
           <ul>
             <li>A(x) & B(x)</li>
             <li>∃x [A(x)] & ∃x [B(x)]</li>
             <li>∀x [A(x) > A(a)]</li>
-          </ul>
-          <hr>
-          <ul>
             <li>C(x)</li>
           </ul>
         </div>
@@ -417,6 +394,7 @@ export default {
               universal: universal_sorted,
               step: false,
               thisInstanceWillActAsUserInput: false,
+              area_combinations: response.data["area_combinations"]
             });
             this.resultVenn.mount('#venn');
 
@@ -473,6 +451,7 @@ export default {
                 canvasExplanation: response.data["explanations"][step.p_index][0],
                 step: true,
                 thisInstanceWillActAsUserInput: false,
+                area_combinations: response.data["area_combinations"]
               });
               this.containers[i].mount(this.container_names[i++]);
             }

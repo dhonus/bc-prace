@@ -64,6 +64,8 @@ export default {
     canvasExplanation: String,
     step: Boolean,
     thisInstanceWillActAsUserInput: Boolean,
+    area_combinations: Array
+
   },
   data: () => {
     return {
@@ -77,7 +79,7 @@ export default {
       positioned: Object,
       areas_of_diagram: [],
       // the following are used for the hatching
-      keys: Object
+      keys: Object,
     };
   },
   methods: {
@@ -309,16 +311,16 @@ export default {
     };
     switch (this.vennSize) {
       case 1:
-        this.venn1(this.thisInstanceWillActAsUserInput);
+        this.venn1(this.thisInstanceWillActAsUserInput, this.area_combinations);
         break;
       case 2:
-        this.venn2(this.thisInstanceWillActAsUserInput);
+        this.venn2(this.thisInstanceWillActAsUserInput, this.area_combinations);
         break;
       case 3:
-        this.venn3(this.thisInstanceWillActAsUserInput);
+        this.venn3(this.thisInstanceWillActAsUserInput, this.area_combinations);
         break;
       case 4:
-        this.venn4(this.thisInstanceWillActAsUserInput);
+        this.venn4(this.thisInstanceWillActAsUserInput, this.area_combinations);
         break;
       default:
         this.limit = true;

@@ -26,6 +26,7 @@ class Item(BaseModel):
     notes: str = "OK"
     steps: list[Item] = []
     p_index: int = 0
+    area_combinations: List[str] = []
 
 # this is the model by which we receive the data from the frontend
 class PostModel(BaseModel):
@@ -112,6 +113,7 @@ async def send_expression(item: PostModel):
         responseItem.explanations = evaluator.get_explanations()
         responseItem.sets = list(set(responseItem.sets))
         responseItem.predicates = predicates_to_return
+        responseItem.area_combinations = evaluator.get_combinations()
 
         for step in evaluator.get_steps():
             item = Item()

@@ -27,6 +27,7 @@ class Evaluator:
         self.__contradiction = [False, -1, ""]
         self.__contain = []
         self.__constant_jail = {}
+        self.__area_combinations = []
 
     def get_invalid_expected(self) -> bool:
         return not self.__valid_on_all
@@ -39,6 +40,35 @@ class Evaluator:
 
     def get_explanations(self):
         return self.__explanations
+
+    def get_combinations(self):
+        # [('A',), ('B',), ('Ω',), ('A', 'B'), ('A', 'Ω'), ('B', 'Ω'), ('A', 'B', 'Ω')]
+        sol_universum_accounted = list()
+        # remove universe symbol from all but just itself
+        # {'AΩ', 'Ω', 'BΩ'} -> {'A', 'Ω', 'B'}
+        for item in self.__area_combinations:
+            if item[0] == 'Ω' and len(item) == 1:
+                sol_universum_accounted.append(item)
+                continue
+            try:
+                idx = item.index('Ω')
+                if idx == 0 and len(item) == 1:
+                    sol_universum_accounted.append(item)
+                    continue
+                item = item[:idx] + item[idx + 1:]
+            except ValueError:
+                pass  # not in tuple
+            adding = item
+            if adding:
+                sol_universum_accounted.append(adding)
+        print(set(sol_universum_accounted), ":DD")
+
+        output = []
+        for item in sorted(sol_universum_accounted):
+            print("sorted", item)
+            output.append(",".join(sorted(item)))
+
+        return sorted(list(set(output)))
 
     def __get_variables(self, tree: ExpressionTree | Node):
         """ produces a list of variables in the expression tree """
@@ -63,6 +93,7 @@ class Evaluator:
         if len(self.__objects) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__objects)}")
             venn = Venn(self.__objects.copy())
+            self.__area_combinations = venn.get_combinations()
             return venn.universal(node)
         raise ValueError(f'Neočekávaný počet objektů {len(self.__objects)}. Zkontrolujte vstup.')
 
@@ -71,6 +102,7 @@ class Evaluator:
         if len(self.__objects) <= self.__sets_count_limit:
             logging.info(f"universal {len(self.__objects)}")
             venn = Venn(self.__objects.copy())
+            self.__area_combinations = venn.get_combinations()
             return venn.existential(node)
         raise ValueError(f'Neočekávaný počet objektů {len(self.__objects)}. Zkontrolujte vstup.')
 
@@ -115,6 +147,8 @@ class Evaluator:
                 self.__universal_solved += new_solved
                 self.__explanations[expr_tree.p_index] = [
                     f"Všeobecná premisa: Vyškrtáme prázdné oblasti. Jedná se o {self.__pretty_print(set(new_solved))}."]
+                if len(set(new_solved)) == 0:
+                    self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: Neovlivňuje žádnou oblast."]
                 print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
                 self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solve(expr_tree))
                 """for area in list(self.__universal_solved):
@@ -333,12 +367,28 @@ class Evaluator:
         for key in self.__conclusion_solved:
             if self.__conclusion_solved[key] != set():
                 all_ = False
-        if all_ or (2**len(self.__objects) == len(self.__conclusion_solved[variable])): # tautology
-            if len(self.__conclusion_solved[variable]) == 0:
-                self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení."]
-            else:
-                self.__explanations[0] = [f"Sporný závěr pro '{variable}'"]
-            return True
+        if self.__conclusion_existential:
+            if all_ or (2**len(self.__objects) == len(self.__conclusion_solved[variable])): # tautology
+                if len(self.__conclusion_solved[variable]) != 0:
+                    self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení. Závěr je tautologie."]
+                else:
+                    if self.__contradiction[0]:
+                        self.__explanations[0] = [self.__contradiction[2]]
+                        return True
+                    self.__explanations[0] = [f"Sporný závěr pro '{variable}'"]
+                    return False
+                return True
+        else:
+            if all_ or (2**len(self.__objects) == len(self.__conclusion_solved[variable])): # tautology
+                if len(self.__conclusion_solved[variable]) == 0:
+                    self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení. Závěr je tautologie."]
+                else:
+                    if self.__contradiction[0]:
+                        self.__explanations[0] = [self.__contradiction[2]]
+                        return True
+                    self.__explanations[0] = [f"Sporný závěr pro '{variable}'"]
+                    return False
+                return True
 
         if len_sum == 0:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
@@ -450,10 +500,10 @@ class Evaluator:
             if not var_set.isdisjoint(self.__conclusion_solved[variable]):
                 if variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     self.__explanations[0] = [
-                        f"Pro '{variable}' platí, že existuje prvek, který spadá do alespoň jednoho z {self.__pretty_print(self.__conclusion_solved[variable])}."]
+                        f"Pro '{variable}' platí, že existuje prvek, který spadá do alespoň jedné z {self.__pretty_print(self.__conclusion_solved[variable])}."]
                 else:
                     self.__explanations[0] = [
-                        f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jednoho z {self.__pretty_print(self.__conclusion_solved[variable])}."]
+                        f"Pro '{variable}' platí, že existují prvky, které spadají do alespoň jedné z {self.__pretty_print(self.__conclusion_solved[variable])}."]
 
                 return True
 
@@ -474,7 +524,7 @@ class Evaluator:
             if len_sum == 0 or len(checking) == 0:
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
                     self.__explanations[0] = [
-                        f"Závěr vyžaduje, aby {self.__pretty_print(self.__conclusion_solved[variable])} byly nutně prázdné, což odpovídá výsledku."]
+                        f"Závěr vyžaduje, aby oblasti {self.__pretty_print(self.__conclusion_solved[variable])} byly nutně prázdné, což odpovídá výsledku."]
                     return True
 
             if not crossed_out.issubset(self.__conclusion_solved[variable]):
@@ -493,10 +543,11 @@ class Evaluator:
                 return True
 
             self.__explanations[0] = [
-                f"Pro '{variable}' není řešení. Je žádané, aby byly vyškrtány {self.__pretty_print(self.__conclusion_solved[variable])}."]
+                f"Pro '{variable}' není řešení. Aby byl závěr pravdivý, je nutné, aby byly vyšrafovány oblasti {self.__pretty_print(self.__conclusion_solved[variable])}."]
             return False
 
     def __pretty_print(self, param):
+        matches = self.get_combinations()
         match param:
             case set():
                 ret = ""
@@ -509,6 +560,7 @@ class Evaluator:
                             ret += ", "
                 return ret
             case tuple():
+                return "'" + str(matches.index(",".join(sorted(param)))) + "'"
                 ret = "("
                 if len(param) == 1:
                     return ret + self.__pretty_print(param[0]) + ")"

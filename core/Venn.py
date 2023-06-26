@@ -124,3 +124,6 @@ class Venn:
 
     def get_sets(self):
         return self.sets
+
+    def get_combinations(self):
+        return self.area_combinations.copy()

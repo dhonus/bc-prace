@@ -151,45 +151,22 @@
               <td>Ω</td>
             </tr>
           </table>
-          <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou nebo konstantou.</p></blockquote>
-          <p><b>Premisa</b> se skládá z <b>literálů</b> a musí začínat kvantifikátorem a proměnnou, na kterou se váže. Musí být také <b>uzavřena hranatými závorkami</b>. Následující jsou platné premisy:</p>
+          <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou, nebo konstantou.</p></blockquote>
+          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule může, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g].</p>
           <ul>
             <li>∃x[A(x)]</li>
-            <li>∀x[B(x)]</li>
+            <li>∀x[¬B(x)]</li>
             <li>∃x [A(x) & B(x)]</li>
             <li>∀x [B(x) ⊃ C(x)]</li>
-          </ul>
-            <p><b>Literál</b> je vždy ve tvaru atomické formule, nebo její negace → <span style="background: #ececec; padding: 0 .3rem; border-radius: 7px;">Predikát(proměnná)</span>, kde proměnná je malé písmeno. Platné literály:</p>
-          <ul>
-            <li>P(x)</li>
-            <li>¬Venn(x)</li>
-            <li>Q(y)</li>
-          </ul>
-            <p>
-                Premisa může alternativně obsahovat <b>konstanty</b>. Pro ty jsou vyhrazeny znaky [a..g]. V takové premise se musí vyskytovat právě jedna konstanta. Platné premisy obsahující konstanty:
-            </p>
-          <ul>
             <li>P(a) & S(a)</li>
             <li>¬Venn(b)</li>
             <li>P(g) ⊃ ¬Q(g)</li>
-          </ul>
-          <h3>Příklad validního vstupu:</h3>
-          <ul>
-            <li>∀x [A(x) & !B(x)]</li>
-            <li>Ex [A(x) > C(x)]</li>
-          </ul>
-          <hr>
-          <ul>
-            <li>∃x[C(x)]</li>
           </ul>
           <h3>Příklad neplatného vstupu:</h3>
           <ul>
             <li>A(x) & B(x)</li>
             <li>∃x [A(x)] & ∃x [B(x)]</li>
             <li>∀x [A(x) > A(a)]</li>
-          </ul>
-          <hr>
-          <ul>
             <li>C(x)</li>
           </ul>
         </div>
@@ -208,6 +185,7 @@ import { createApp } from 'vue'
 import { h } from 'vue'
 import HelpHome from "@/components/HelpHome.vue";
 import HelpSolve from "@/components/HelpSolve.vue";
+import * as d3 from "d3";
 
 export default {
   name: 'HomeView',
@@ -235,6 +213,7 @@ export default {
       container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"],
       rootProps: {},
       solving: false,
+      areas: []
     }
   },
   methods: {
@@ -372,7 +351,8 @@ export default {
             const universalRow = document.createElement('tr');
 
             const universalCell = document.createElement('td');
-            universalCell.textContent = 'Ω';
+            universalCell.textContent = this.areas.findIndex((element) => element === 'Ω');
+
             universalRow.appendChild(universalCell);
 
             const predicateCell = document.createElement('td');
@@ -423,7 +403,8 @@ export default {
               const individualAreaRow = document.createElement('tr');
 
               const individualAreaCell = document.createElement('td');
-              individualAreaCell.textContent = curr.join('∪')
+              // individualAreaCell.textContent = curr.join(',')
+              individualAreaCell.textContent = this.areas.findIndex((element) => element === curr.join(','));
               individualAreaRow.appendChild(individualAreaCell);
 
               let predicateCell = document.createElement('td');
@@ -958,6 +939,8 @@ export default {
             this.resultVenn = null;
           }
 
+          this.areas = response.data["area_combinations"];
+
           // sort every array inside this.universal alphabetically
           let universal_sorted = response.data["universal"];
           for (let i = 0; i < universal_sorted.length; i++) universal_sorted[i].sort();
@@ -1007,6 +990,7 @@ export default {
               existential: existential_sorted,
               universal: universal_sorted,
               step: false,
+              area_combinations: response.data["area_combinations"]
             }
 
             this.resultVenn = createApp(comp, {
@@ -1021,6 +1005,7 @@ export default {
               universal: [],
               step: false,
               thisInstanceWillActAsUserInput: true,
+              area_combinations: response.data["area_combinations"]
             });
             // mount the instance to the DOM element with the id 'venn'
             this.resultVenn.mount('#venn');
@@ -1078,6 +1063,7 @@ export default {
                 canvasPredicate: response.data["predicates"][step.p_index],
                 canvasExplanation: response.data["explanations"][step.p_index][0],
                 step: true,
+                area_combinations: response.data["area_combinations"]
               });
               this.containers[i].mount(this.container_names[i++]);
             }

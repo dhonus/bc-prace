@@ -7,7 +7,7 @@ import d3Element from "@/components/d3Element";
 export default {
   name: "vennThree",
   methods: {
-    venn3: function(thisInstanceWillActAsUserInput){
+    venn3: function(thisInstanceWillActAsUserInput, area_combinations){
       let g = this.prepare();
       // center of first circle
       const centerX_1 = 220;
@@ -353,8 +353,9 @@ export default {
 
       // hover over a segment and get its description
       g.selectAll("path.segment").on("mousemove", function (event) {
+        const finding = (element) => element === svg.attr("name");
         const svg = d3.select(this);
-        tooltip.text("Oblast: " + svg.attr('name'));
+        tooltip.text("Oblast: " + area_combinations.findIndex(finding));
         tooltip.style("visibility", "visible");
         tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
         svg.style("", "url(#drop-shadow)");
