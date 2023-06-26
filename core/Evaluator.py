@@ -533,7 +533,7 @@ class Evaluator:
                 print (self.__conclusion_solved[variable] - crossed_out, "crossed out - conclusion solved")
                 if len(self.__conclusion_solved[variable] - crossed_out) > 0:
                     self.__explanations[0] = [
-                        f"Pro '{variable}' není řešení. Nelze zaručit, že {self.__pretty_print(self.__conclusion_solved[variable] - crossed_out)} jsou prázdné."]
+                        f"Pro '{variable}' není řešení. Nelze zaručit, že oblasti {self.__pretty_print(self.__conclusion_solved[variable] - crossed_out)} jsou prázdné."]
                     return False
                 # if not var_set.issubset(set(self.__conclusion_solved[variable])):
                 #     self.__explanations[0] = [f"Pro '{variable}' není řešení. Existují prvky mimo výběr. {set(self.__conclusion_solved[variable]) - crossed_out}"]
