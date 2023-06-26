@@ -310,6 +310,13 @@ export default {
         [centerX_1 - 110, centerY_1 + 110]
       ];
 
+      let __name_positions = [
+        [centerX_1 - vennRadius + 8, centerY_1 + vennRadius*0.5],
+        [centerX_2 + vennRadius - 14, centerY_1 + vennRadius*0.5],
+        [x_intersect_1 - 4, y_intersect_1 + 8],
+        [(this.width - 25), 65], //
+      ];
+
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
@@ -442,6 +449,23 @@ export default {
           i++;
         }
       });
+
+      for (const i in __sets_identifiers) {
+          g.append("rect")
+              .attr("width", 10).attr("height", 16)
+              .attr("class", "set-background")
+              .attr("x", __name_positions[i][0] - 1.5)
+              .attr("y", __name_positions[i][1] - 12)
+              .attr("rx", 2)
+              .attr("ry", 2)
+              .attr("class", "number-background")
+          g.append("text")
+            .text(area_combinations.findIndex((element) => element === __sets_identifiers[i].sort().join(",")))
+            .attr("x", __name_positions[i][0])
+            .attr("y", __name_positions[i][1])
+            .style('fill', '#323232')
+            .style('font-size', '12px')
+      }
 
       g.append("text")
           .text("Ω")

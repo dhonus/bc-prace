@@ -560,7 +560,7 @@ class Evaluator:
                             ret += ", "
                 return ret
             case tuple():
-                return str(matches.index(",".join(sorted(param))))
+                return "(" + str(matches.index(",".join(sorted(param)))) + ")"
                 ret = "("
                 if len(param) == 1:
                     return ret + self.__pretty_print(param[0]) + ")"

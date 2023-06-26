@@ -450,6 +450,28 @@ export default {
         [x_intersect_16 + vennRadius/2 + 8, y_intersect_17 + 45],
       ]
 
+      let __name_positions = [
+        [x_intersect_10 + vennRadius*1.2 - 3, y_intersect_18 + 45],
+        [x_intersect_14 + vennRadius/2 + 8, y_intersect_25 + 17],
+        [x_intersect_11 + vennRadius/2 + 8, y_intersect_8 + 45],
+        [x_intersect_23 + vennRadius/2 + 8, y_intersect_24 + 45],
+        [(this.width - 29.5), 50],
+
+        [x_intersect_1 + vennRadius/2 + 8, origin["y"] + 45],
+        [x_intersect_18 + vennRadius/2 + 8, y_intersect_20 + 45],
+        [x_intersect_19 + vennRadius/2 + 8, y_intersect_11 + 45],
+        [x_intersect_22 + vennRadius/2 + 8, y_intersect_23 + 45],
+        [x_intersect_3 + vennRadius/2 + 8, y_intersect_13 + 45],
+        [x_intersect_5 + vennRadius/2 + 8, y_intersect_10 + 45],
+
+        [x_intersect_15 + vennRadius/2 + 8, y_intersect_16 + 45],
+        [x_intersect_14 + vennRadius/2 + 8, y_intersect_5 + 45],
+        [x_intersect_17 + vennRadius/2 + 8, y_intersect_18 + 45],
+        [x_intersect_13 + vennRadius/2 + 8, y_intersect_19 + 45],
+
+        [x_intersect_16 + vennRadius/2 + 8, y_intersect_17 + 45],
+      ]
+
         console.log(__sets_identifiers);
 
       let position_me = (index, key, character) => {
@@ -734,6 +756,30 @@ export default {
           .attr("y", y_intersect_26)
           .style('fill', '#323232');
 */
+      for (const i in __sets_identifiers) {
+          const index = area_combinations.findIndex((element) => element === __sets_identifiers[i].sort().join(","));
+        g.append("rect")
+            .attr("width", (index > 9) ? 16 : 10).attr("height", 16)
+            .attr("class", "set-background")
+            .attr("x", __name_positions[i][0] - 1.5 + ((index < 10) ? 8 : 2))
+            .attr("y", __name_positions[i][1] - 12 + 20)
+            .attr("rx", 2)
+            .attr("ry", 2)
+            .attr("class", "number-background")
+        g.append("text")
+          .text(index)
+          .attr("x", __name_positions[i][0] + ((index < 10) ? 8 : 1))
+          .attr("y", __name_positions[i][1] + 20)
+          .style('fill', '#323232')
+          .style('font-size', '12px')
+      }
+
+      g.append("text")
+          .text("Ω")
+          .attr("x", (this.width - 30))
+          .attr("y", 50)
+          .style('fill', '#323232')
+          .style('font-size', '1.5rem');
       g.append("text")
           .text(this.sets[0] + "'")
           .attr("x", origin["x"] + vennRadius*3.7)

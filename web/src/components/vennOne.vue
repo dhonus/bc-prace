@@ -89,6 +89,7 @@ export default {
             let sunPointsNames = [
                 [this.sets[0]],
             ]
+
             const compareArrays = (arr1, arr2) => {
                 return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
             }
@@ -201,11 +202,18 @@ export default {
 
           let __sets_identifiers = [
               [this.sets[0]],
+              ["Ω"]
           ];
 
           // positions as [x, y]; corresponds to __sets_identifiers
           let __sets_positions = [
               [centerX_1 + 20, centerY_1+10],
+              [centerX_1 + 160, centerY_1 + 140]
+          ];
+
+          let __name_positions = [
+            [centerX_1 - vennRadius + 8, centerY_1 + vennRadius*0.5],
+            [(this.width - 25), 65], //
           ];
 
         let position_me = (index, key, character) => {
@@ -340,6 +348,23 @@ export default {
             i++;
           }
         });
+
+        for (const i in __sets_identifiers) {
+          g.append("rect")
+              .attr("width", 10).attr("height", 16)
+              .attr("class", "set-background")
+              .attr("x", __name_positions[i][0] - 1.5)
+              .attr("y", __name_positions[i][1] - 12)
+              .attr("rx", 2)
+              .attr("ry", 2)
+              .attr("class", "number-background")
+          g.append("text")
+            .text(area_combinations.findIndex((element) => element === __sets_identifiers[i].sort().join(",")))
+            .attr("x", __name_positions[i][0])
+            .attr("y", __name_positions[i][1])
+            .style('fill', '#323232')
+            .style('font-size', '12px')
+      }
 
         g.append("text")
             .text("Ω")

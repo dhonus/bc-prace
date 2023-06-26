@@ -20,15 +20,6 @@
         <li> Lze používat hranaté a jednoduché závorky.</li>
       </ul>
       <p>K dispozici je virtuální klávesnice logických spojek. Lze také využít alternativních znaků popsaných v tabulce.</p>
-
-      <h3>Označení oblastí</h3>
-        <p>Pro jednoduchost jsou oblasti ve výstupu označovány následovně:</p>
-        <ul>
-            <li>Universum je označeno znakem „Ω“</li>
-            <li>„A“ reprezentuje množinu prvků, které náleží A' a žádné jiné množině</li>
-            <li>„A ∩ B“ označuje oblast, která náleží A' i B'</li>
-        </ul>
-
       <h3>Příklad zadání</h3>
       <img src="../assets/help_home.gif" alt="Nápověda" />
       <h3>Výstup</h3>
