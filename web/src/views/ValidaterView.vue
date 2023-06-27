@@ -152,7 +152,7 @@
             </tr>
           </table>
           <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou, nebo konstantou.</p></blockquote>
-          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule může, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g].</p>
+          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule může, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g]. Validní formule:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[¬B(x)]</li>
