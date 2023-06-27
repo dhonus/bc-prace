@@ -28,6 +28,7 @@ class Evaluator:
         self.__contain = []
         self.__constant_jail = {}
         self.__area_combinations = []
+        self.__invalid = False
 
     def get_invalid_expected(self) -> bool:
         return not self.__valid_on_all
@@ -117,7 +118,8 @@ class Evaluator:
         self.__get_variables(conclusion_tree)
         if existential_validate == 0 and conclusion_tree.value == '∃':
             self.__valid_on_all = False
-            raise LogicException('Nesprávný úsudek. Ze všeobecných premis nemůže vyplývat existence.')
+            self.__invalid = True
+            print("Invalid: conclusion is existential, but there are no existential predicates.")
 
         # there is a limit to how many sets we can draw. This checks if we have exceeded said limit.
         if len(self.__objects) > self.__sets_count_limit:  # +1 for quantifier
@@ -328,7 +330,7 @@ class Evaluator:
             self.__explanations[0] = [self.__contradiction[2]]
             return True
 
-        if not self.__valid_on_all:
+        if not self.__valid_on_all and not self.__invalid:
             return False
 
         ret = True
@@ -356,6 +358,7 @@ class Evaluator:
         print(len(self.__conclusion_solved[variable]))
 
         all_ = True
+
         for key in self.__conclusion_solved:
             if self.__conclusion_solved[key] != set():
                 all_ = False
@@ -364,6 +367,8 @@ class Evaluator:
                 if len(self.__conclusion_solved[variable]) != 0:
                     self.__explanations[0] = [f"Pro '{variable}' bylo nalezeno řešení. Závěr je tautologie."]
                 else:
+                    if self.__invalid:
+                        raise LogicException('Nesprávný úsudek. Ze všeobecných premis nemůže vyplývat existence.')
                     if self.__contradiction[0]:
                         self.__explanations[0] = [self.__contradiction[2]]
                         return True
@@ -386,6 +391,8 @@ class Evaluator:
             self.__explanations[0] = [f"Pro {variable} nebylo nalezeno řešení. Nebyl zadán predikát pro {variable}."]
 
         if self.__conclusion_existential:
+            if self.__invalid:
+                raise LogicException('Nesprávný úsudek. Ze všeobecných premis nemůže vyplývat existence.')
             major_set = set()
             all_have_in_common = set()
             if len(self.__contain) > 0:

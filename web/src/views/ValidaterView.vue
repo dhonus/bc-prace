@@ -29,7 +29,7 @@
       <div class="predicates bubble">
         <div v-for="key in count" :key="key">
           <Transition>
-            <input @focus="focusOnMe(key)" :rel="'predicate'+key" :ref="'predicate'+key"  type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print">
+            <input @focus="focusOnMe(key)" :rel="'predicate'+key" :ref="'predicate'+key"  type="text" v-model="values['dynamic-field-'+key]" :placeholder="key+'. premisa'" :id="'predicate'+key" class="input-print" @input="handleTyping">
           </Transition>
         </div>
         <div class="controls" style="justify-content: right; display: flex;">
@@ -781,48 +781,71 @@ export default {
       }
       console.log(areas_of_diagram_proxy);
     },
-    // sets the active input field to the one that was clicked on
-    focusOnMe: function(key){
-      let orig;
-      if(key === -1){
-        orig = this.focused;
-        this.focused = document.getElementById("zaver");
-        if (orig != null) {
-          return;
-        }
-      }
-      if (this.focused !== null && this.focused.value === ""){
-        this.focused.classList.remove("invalid");
-      }
-      if (this.focused !== null && this.focused.value !== ""){
-        if (!orig) orig = this.focused;
-        try {
-          axios.post('/val', {
-            predicate: this.focused.value.toString(),
-          }).then(response => {
-           if (response.data.valid) {
-             // good
-              orig.classList.remove("invalid");
-              this.$refs.why.classList.remove("bad");
-              this.Explanation = "";
-           }
-           else {
-             // color red
-              orig.classList.add("invalid");
-              console.log(orig);
-              this.Explanation = response.data.err;
-              this.validity = "";
-              this.$refs.why.classList.add("activated");
-              this.$refs.why.classList.add("bad");
+    handleTyping() {
+            // Clear the previous timeout
+            clearTimeout(this.typingTimeout);
+            // Set a new timeout of 3 seconds
+            this.typingTimeout = setTimeout(() => {
+                const invalids = document.getElementsByClassName("input-print")
+                for (let i = 0; i < invalids.length; i++) {
+                    if (invalids[i].value === "") continue;
+                    this.check(invalids[i].value, invalids[i]);
+                }
+            }, 1000);
+        },
+        check: function (value, inp) {
+            const check = function (value, inp) {
+                try {
+                    axios.post('/val', {
+                        predicate: value.toString(),
+                    }).then(response => {
+                        if (response.data.valid) {
+                            // good
+                            inp.classList.remove("invalid");
+                            this.$refs.why.classList.remove("bad");
+                            this.Explanation = "";
+                        } else {
+                            // color red
+                            inp.classList.add("invalid");
+                            //console.log(inp);
+                            this.Explanation = response.data.err;
+                            this.validity = "";
+                            this.$refs.why.classList.add("activated");
+                            this.$refs.why.classList.add("bad");
+                        }
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
+            }.bind(this);
 
-           }
-          });
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      this.focused = document.getElementById("predicate"+key);
-    },
+            check(value, inp);
+        },
+    // sets the active input field to the one that was clicked on
+    focusOnMe: function (key) {
+            console.log(key);
+            let orig;
+            if (key === -1) {
+                orig = this.focused;
+                this.focused = document.getElementById("zaver");
+                if (orig != null) {
+                    return;
+                }
+            }
+            if (this.focused !== null && this.focused.value === "") {
+                this.focused.classList.remove("invalid");
+            }
+
+            if (this.focused !== null && this.focused.value !== "") {
+                if (!orig) orig = this.focused;
+                setTimeout(() => {
+                    if (this.focused.value === "") return;
+                    this.check(this.focused.value, orig);
+                }, 200);
+            }
+            this.focused = document.getElementById("predicate" + key);
+        },
+
     // adds a new input field 
     addP: function(){
       if (this.count < 4)

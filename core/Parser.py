@@ -165,7 +165,6 @@ class Parser:
                 variable = self.__current
                 if not variable:
                     raise ValueError('Chybí proměnná.')
-
                 if not variable.islower() and self.__pedantic:
                     raise ValueError('Proměnná by měla být malé písmeno. Možná jste zapomněli na závorku?')
                 self.__current = next(self.__expression_generator)
@@ -265,6 +264,9 @@ class Parser:
         set_name_length_limit = 15
         elem = self.__current
         self.__current = next(self.__expression_generator)
+        if not elem:
+            raise ValueError(f"Chybí jméno objektu na pozici {self.__position}."
+                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
         if not elem.isupper():
             if elem.islower():
                 raise TypeError(f"Jméno objektu musí začínat velkým písmenem. Neznámý znak '{elem}' na pozici {self.__position}."
@@ -273,6 +275,8 @@ class Parser:
                             f"\n{self.__pretty_error(self.__expression, self.__position)}")
         length = 0
         while not self.__match('('):
+            if not self.__current:
+                raise ValueError(f"Chybí proměnná, nebo konstanta na pozici {self.__position}.")
             if not self.__current.islower():
                 logging.warning("f_rule violated uppercase")
                 if self.__expression[0] not in ["A", "E", "∀", "∃"]:
@@ -288,6 +292,8 @@ class Parser:
             if length == set_name_length_limit:
                 raise ValueError(f"Maximální přípustná délka názvu objektu je {set_name_length_limit} znaků. "
                                  f"Překročeno, nebo chybějící závorka.\n{self.__pretty_error(self.__expression, self.__position)}")
+        if not self.__current:
+            raise ValueError(f"Chybějící znak na pozici {self.__position}. Nechybí vám proměnná, nebo konstanta?")
         if not self.__current.islower():
             logging.warning("f_rule violated lowercase")
             if self.__pedantic:
