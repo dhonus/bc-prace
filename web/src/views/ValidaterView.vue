@@ -152,7 +152,7 @@
             </tr>
           </table>
           <blockquote><p>Na vstupu mohou být uzavřené formule s právě jednou proměnnou, nebo konstantou.</p></blockquote>
-          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule může, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g]. Validní formule:</p>
+          <p>Proměnná ve <b>vstupní formuli</b> musí být vázána kvantifikátorem. Formule musí, v případě že neobsahuje žádnou <b>proměnnou</b>, obsahovat <b>konstantu</b>. Ta v tomto případě není kvantifikována. Pro konstanty jsou vyhrazeny znaky [a..g]. Validní formule:</p>
           <ul>
             <li>∃x[A(x)]</li>
             <li>∀x[¬B(x)]</li>
@@ -213,7 +213,8 @@ export default {
       container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"],
       rootProps: {},
       solving: false,
-      areas: []
+      areas: [],
+      typing: false
     }
   },
   methods: {
@@ -782,10 +783,12 @@ export default {
       console.log(areas_of_diagram_proxy);
     },
     handleTyping() {
+            this.typing = true;
             // Clear the previous timeout
             clearTimeout(this.typingTimeout);
             // Set a new timeout of 3 seconds
             this.typingTimeout = setTimeout(() => {
+                if (!this.typing) return;
                 const invalids = document.getElementsByClassName("input-print")
                 for (let i = 0; i < invalids.length; i++) {
                     if (invalids[i].value === "") continue;
@@ -899,6 +902,8 @@ export default {
     },
     // submits the form and requests the data from the API
     async submit(steps){
+
+      this.typing = false;
 
       this.$refs.why.classList.remove("activated");
       this.$refs.steps.classList.remove("activated");

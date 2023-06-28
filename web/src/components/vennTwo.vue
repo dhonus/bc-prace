@@ -311,9 +311,9 @@ export default {
       ];
 
       let __name_positions = [
-        [centerX_1 - vennRadius + 8, centerY_1 + vennRadius*0.5],
-        [centerX_2 + vennRadius - 14, centerY_1 + vennRadius*0.5],
-        [x_intersect_1 - 4, y_intersect_1 + 8],
+        [centerX_1 - vennRadius + 20, centerY_1 + vennRadius*0.5],
+        [centerX_2 + vennRadius - 26, centerY_1 + vennRadius*0.5],
+        [x_intersect_1 - 4, y_intersect_1 + 20],
         [(this.width - 25), 65], //
       ];
 

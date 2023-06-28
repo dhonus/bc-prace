@@ -394,16 +394,16 @@ export default {
       ]
 
       let __name_positions = [
-        [centerX_1 - vennRadius + 8, centerY_1 + vennRadius*0.5],
-        [centerX_2 + vennRadius - 14, centerY_1 + vennRadius*0.5],
-        [centerX_3, centerY_3 + vennRadius],
+        [centerX_1 - vennRadius + 20, centerY_1 + vennRadius*0.5],
+        [centerX_2 + vennRadius - 26, centerY_1 + vennRadius*0.5],
+        [x_intersect_4 - 3.5, centerY_3 + vennRadius*0.93],
         [(this.width - 25), 65], //
 
-        [x_intersect_1 - 4, y_intersect_1 + 8],
-        [x_intersect_3 - 18, y_intersect_3],
-        [x_intersect_2 + 12, y_intersect_2],
+        [x_intersect_1 - 3.5, y_intersect_1 + 20],
+        [x_intersect_3 - 18, y_intersect_3 - 5],
+        [x_intersect_2 + 12, y_intersect_2 - 5],
 
-        [x_intersect_4 - 4, y_intersect_4 - 6],
+        [x_intersect_4 - 3.5, y_intersect_4 - 10],
       ]
 
       console.log(__sets_identifiers);

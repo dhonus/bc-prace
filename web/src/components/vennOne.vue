@@ -212,7 +212,7 @@ export default {
           ];
 
           let __name_positions = [
-            [centerX_1 - vennRadius + 8, centerY_1 + vennRadius*0.5],
+            [centerX_1 - 3, centerY_1 + vennRadius*0.9],
             [(this.width - 25), 65], //
           ];
 

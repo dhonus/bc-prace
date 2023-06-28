@@ -209,7 +209,7 @@ class Evaluator:
                     # so if we DO NOT know where to put the "x", we will tell the user
                     # self.__valid_on_all = False
                     self.__explanations[expr_tree.p_index] = [
-                        f"{expr_tree.p_index}. premisa: Pro '{expr_tree.variable}' nevíme, na kterou z ploch {self.__pretty_print(adding)} umístit křížek."]
+                        f"{expr_tree.p_index}. premisa: Pro '{expr_tree.variable}' nevíme, na kterou z oblastí {self.__pretty_print(adding)} umístit křížek."]
                     # check for contradiction
                     # if adding is empty, that means that we have a contradiction
                     # if orig_adding is not empty, that means that we have a contradiction
@@ -506,7 +506,20 @@ class Evaluator:
 
                 return True
 
-            print(self.__all_solved)
+            if len(c[1]) > 0:
+                # get those in c[1] but not in conclusion
+                extras = set(c[1]).difference(self.__conclusion_solved[variable])
+                if len(extras) > 0:
+                    if len(extras) == 1:
+                        self.__explanations[0] = [
+                            f"Podle {c[0]}. premisy existuje možnost umístění '{variable}' do oblasti {self.__pretty_print(extras)}, kde budou pravdivé předpoklady, ale nepravdivý závěr."]
+                    else:
+                        self.__explanations[0] = [
+                            f"Podle {c[0]}. premisy existuje možnost umístění '{variable}' do oblastí {self.__pretty_print(extras)}, kde budou pravdivé předpoklady, ale nepravdivý závěr."]
+                    return False
+
+            print(self.__all_solved, "all solved")
+            # tell the user which are is extra and makes the argument invalid
             self.__explanations[0] = [
                 f"Pro '{variable}' neexistují žádné prvky, které by splňovaly závěr."]
 
