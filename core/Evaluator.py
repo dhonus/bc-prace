@@ -438,8 +438,15 @@ class Evaluator:
                 if v in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] and variable in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
                     if v == variable:
                         if self.__all_solved[v].issubset(set(self.__conclusion_solved[variable])):
-                            self.__explanations[0] = [
-                                f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}."]
+                            if len(common_numbers) > 1:
+                                self.__explanations[0] = [
+                                    f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}. Tato oblast je podle premis {self.__pretty_print(common_numbers)} neprázdná."]
+                            elif len(common_numbers) == 1:
+                                self.__explanations[0] = [
+                                    f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}. Tato oblast je podle {list(common_numbers)[0]}. premisy neprázdná."]
+                            else:
+                                self.__explanations[0] = [
+                                    f"Pro '{variable}' bylo nalezeno řešení. Existenciální predikát pro '{variable}' byl vhodný - nachází se v {self.__pretty_print(self.__all_solved[v])}."]
                             if len(self.__conclusion_solved[variable]) == 1:
                                 solution['Exists within'][v].update(self.__conclusion_solved[variable])
                             return True
