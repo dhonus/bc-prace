@@ -535,8 +535,12 @@ class Evaluator:
 
             if len_sum == 0 or len(checking) == 0:
                 if set(self.__conclusion_solved[variable]).issubset(crossed_out):
-                    self.__explanations[0] = [
-                        f"Závěr vyžaduje, aby oblasti {self.__pretty_print(self.__conclusion_solved[variable])} byly nutně prázdné, což odpovídá výsledku."]
+                    if len(self.__conclusion_solved[variable]) == 1:
+                        self.__explanations[0] = [
+                            f"Závěr vyžaduje, aby oblast {self.__pretty_print(self.__conclusion_solved[variable])} byla nutně prázdná, což odpovídá výsledku."]
+                    else:
+                        self.__explanations[0] = [
+                            f"Závěr vyžaduje, aby oblasti {self.__pretty_print(self.__conclusion_solved[variable])} byly nutně prázdné, což odpovídá výsledku."]
                     return True
 
             if not crossed_out.issubset(self.__conclusion_solved[variable]):
@@ -544,8 +548,12 @@ class Evaluator:
                 print(self.__conclusion_solved[variable], "conclusion solved")
                 print (self.__conclusion_solved[variable] - crossed_out, "crossed out - conclusion solved")
                 if len(self.__conclusion_solved[variable] - crossed_out) > 0:
-                    self.__explanations[0] = [
-                        f"Pro '{variable}' není řešení. Nelze zaručit, že oblasti {self.__pretty_print(self.__conclusion_solved[variable] - crossed_out)} jsou prázdné."]
+                    if len(self.__conclusion_solved[variable] - crossed_out) == 1:
+                        self.__explanations[0] = [
+                            f"Pro '{variable}' není řešení. Nelze zaručit, že oblast {self.__pretty_print(self.__conclusion_solved[variable] - crossed_out)} je prázdná."]
+                    else:
+                        self.__explanations[0] = [
+                            f"Pro '{variable}' není řešení. Nelze zaručit, že oblasti {self.__pretty_print(self.__conclusion_solved[variable] - crossed_out)} jsou prázdné."]
                     return False
                 # if not var_set.issubset(set(self.__conclusion_solved[variable])):
                 #     self.__explanations[0] = [f"Pro '{variable}' není řešení. Existují prvky mimo výběr. {set(self.__conclusion_solved[variable]) - crossed_out}"]
