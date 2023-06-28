@@ -198,7 +198,7 @@ export default {
             Explanation: '',
             containers: [null, null, null, null, null, null],
             container_names: ["#venn_one", "#venn_two", "#venn_three", "#venn_four", "#venn_five", "#venn_six"],
-            typing: false
+            typing: true
         }
     },
     methods: {
