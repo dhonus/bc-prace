@@ -247,7 +247,6 @@ export default {
 
                     // Define the areas list
                     const areas = this.currentResponse.sets;
-                    console.log(areas, "THE AREAS")
                     //const areas = ['A', 'B', 'C'];
 
                     // Create the table element
@@ -310,7 +309,6 @@ export default {
                             for (let universal in this.currentResponse.steps[step].universal) {
                                 if (this.currentResponse.steps[step].universal[universal].length === findMe.length
                                     && this.currentResponse.steps[step].universal[universal].every((v, i) => v === findMe[i])) {
-                                    console.log("returning", this.currentResponse.steps[step].explanations)
                                     return {
                                         explanation: this.currentResponse.steps[step].explanations[1],
                                         p_index: this.currentResponse.steps[step].p_index,
@@ -352,7 +350,6 @@ export default {
                     for (const obj in areas_of_diagram_proxy) {
                         if (areas_of_diagram_proxy[obj].id === 'Universum') {
                             found = areas_of_diagram_proxy[obj];
-                            console.log("found universum", found);
                             break;
                         }
                     }
@@ -402,7 +399,6 @@ export default {
                             if (areas_of_diagram_proxy[obj].assignment.length === curr.length
                                 && areas_of_diagram_proxy[obj].assignment.every((v, i) => v === curr[i])) {
                                 found = areas_of_diagram_proxy[obj];
-                                console.log("found", found);
                                 break;
                             }
                         }
@@ -442,7 +438,6 @@ export default {
                         individualAreaRow.appendChild(explanationCell);
 
                         let correctCell = document.createElement('td');
-                        console.log(found, "found")
                         let checkBox = document.createElement('input');
                         checkBox.type = "checkbox";
                         checkBox.checked = (foundState === (found.state === "hashed"));
@@ -472,12 +467,8 @@ export default {
                         let correctVarsDict = {};
 
                         // for each key in this.currentResponse.existential
-                        console.log(this.currentResponse.existential, "existential")
-                        console.log(curr, 'curr');
                         for (const key in this.currentResponse.existential) {
-                            console.log(key, "key", this.currentResponse.existential[key], "value")
                             for (const obj in this.currentResponse.existential[key]) {
-                                console.log(this.currentResponse.existential[key][obj], "obj")
                                 if (this.currentResponse.existential[key][obj].length === curr.length
                                     && this.currentResponse.existential[key][obj].every((v, i) => v === curr[i])) {
                                     correctVars.push(key);
@@ -487,14 +478,10 @@ export default {
                             }
                         }
 
-                        console.log("correctVars", correctVars)
-                        console.log("correctVarsDict", correctVarsDict)
                         stateCell.textContent = (correctVars.length === 0) ? "" : "(" + correctVars.toString() + ")";
                         existentialRow.appendChild(stateCell);
 
                         explanationCell = document.createElement('td');
-
-                        console.log(areas_of_diagram_proxy, "areas_of_diagram_proxy");
 
                         let lacking = [];
                         let extras = [];
@@ -503,10 +490,8 @@ export default {
                                 || !areas_of_diagram_proxy[obj].assignment.every((v, i) => v === curr[i])) {
                                 continue;
                             }
-                            console.log("checking", areas_of_diagram_proxy[obj]);
                             for (let ex in areas_of_diagram_proxy[obj].existential) {
                                 const finding = areas_of_diagram_proxy[obj].existential[ex];
-                                console.log("under", finding);
                                 // if the area is in the correct vars
                                 if (!correctVars.includes(finding)) {
                                     extras.push(finding);
@@ -517,9 +502,6 @@ export default {
                         }
 
                         lacking = correctVars.filter(n => !lacking.includes(n));
-
-                        console.log("lacking", lacking);
-                        console.log("extras", extras);
 
                         if (lacking.length === 0 && extras.length === 0) {
                             explanationCell.textContent = "Všechny proměnné / konstanty jsou vyplněny správně.";
@@ -537,7 +519,6 @@ export default {
                         existentialRow.classList.add(lacking.length === 0 && extras.length === 0 ? 'correct-row' : 'incorrect-row');
 
                         correctCell = document.createElement('td');
-                        console.log(found, "found")
                         checkBox = document.createElement('input');
                         checkBox.type = "checkbox";
                         checkBox.checked = (lacking.length === 0 && extras.length === 0);
@@ -568,7 +549,6 @@ export default {
             if (areas_of_diagram_proxy && this.currentResponse !== null) {
                 try {
                     this.solving = true;
-                    console.log(areas_of_diagram_proxy, "areas_of_diagram");
                     try {
                         this.solvedVenn.unmount();
                         this.$refs.solutionTable.innerHTML = '';
@@ -585,8 +565,6 @@ export default {
 
                     // Define the areas list
                     const areas = this.currentResponse.sets;
-                    console.log(areas, "THE AREAS")
-                    //const areas = ['A', 'B', 'C'];
 
                     // Create the table element
                     const table = document.createElement('table');
@@ -634,7 +612,6 @@ export default {
                             for (let universal in this.currentResponse.steps[step].universal) {
                                 if (this.currentResponse.steps[step].universal[universal].length === findMe.length
                                     && this.currentResponse.steps[step].universal[universal].every((v, i) => v === findMe[i])) {
-                                    console.log("returning", this.currentResponse.steps[step].explanations)
                                     return {
                                         explanation: this.currentResponse.steps[step].explanations[1],
                                         p_index: this.currentResponse.steps[step].p_index,
@@ -659,7 +636,6 @@ export default {
                             if (areas_of_diagram_proxy[obj].assignment.length === 1
                                 && areas_of_diagram_proxy[obj].assignment[0] === areas[i]) {
                                 found = areas_of_diagram_proxy[obj];
-                                console.log("found", found);
                                 break;
                             }
                         }
@@ -698,7 +674,6 @@ export default {
                         individualAreaRow.appendChild(explanationCell);
 
                         const correctCell = document.createElement('td');
-                        console.log(found, "found")
                         let checkBox = document.createElement('input');
                         checkBox.type = "checkbox";
                         checkBox.checked = (foundState === (found.state === "hashed"));
@@ -719,7 +694,6 @@ export default {
                             for (const obj in areas_of_diagram_proxy) {
                                 if (areas_of_diagram_proxy[obj].assignment.length === 2 && areas_of_diagram_proxy[obj].assignment.every((v, i) => v === areaCombination[i])) {
                                     found = areas_of_diagram_proxy[obj];
-                                    console.log("found this", found);
                                     break;
                                 }
                             }
@@ -741,7 +715,6 @@ export default {
 
                             let foundState = false;
                             for (const obj in this.currentResponse.universal) {
-                                console.log(this.currentResponse.universal[obj], "this.currentResponse.universal[obj]")
                                 if (this.currentResponse.universal[obj].length === 2) {
                                     // if arrays are identical
                                     if (this.currentResponse.universal[obj].every((v, i) => v === areaCombination[i])) {
@@ -750,7 +723,6 @@ export default {
                                     }
                                 }
                             }
-                            console.log("foundState", foundState)
 
                             const stateCell = document.createElement('td');
                             stateCell.textContent = (expl.p_index === "-") ? 'prázdná' : 'vyškrtaná';
@@ -762,7 +734,6 @@ export default {
                             row.appendChild(explanationCell);
 
                             const correctCell = document.createElement('td');
-                            console.log(found, "found")
                             let checkBox = document.createElement('input');
                             checkBox.type = "checkbox";
                             checkBox.checked = (foundState === (found.state === "hashed"));
@@ -786,7 +757,6 @@ export default {
                     console.log(error);
                 }
             }
-            console.log(areas_of_diagram_proxy);
         },
         handleTyping() {
             this.typing = true;
@@ -816,7 +786,6 @@ export default {
                         } else {
                             // color red
                             inp.classList.add("invalid");
-                            //console.log(inp);
                             this.Explanation = response.data.err;
                             this.validity = "";
                             this.$refs.why.classList.add("activated");
@@ -832,7 +801,6 @@ export default {
         },
         // sets the active input field to the one that was clicked on
         focusOnMe: function (key) {
-            console.log(key);
             let orig;
             if (key === -1) {
                 orig = this.focused;
@@ -921,7 +889,6 @@ export default {
 
             let predicates = []
             for (let key of Object.keys(this.values)) {
-                console.log(key + " -> " + this.values[key]);
                 if (this.values[key].length !== 0)
                     predicates.push(this.values[key]);
             }
@@ -943,8 +910,6 @@ export default {
                         return qs.stringify(params)
                     }
                 }).then((response) => {
-                    console.log(response);
-
                     this.currentResponse = response.data;
                     this.$refs.solutionTable.innerHTML = '';
 
@@ -959,7 +924,6 @@ export default {
                     } else {
                         const max = Object.keys(response.data["explanations"]).length;
                         this.Explanation = String(response.data["explanations"][max]);
-                        //console.log(max);
                     }
 
                     let theData = []
@@ -982,7 +946,6 @@ export default {
 
                     // sort dict entries
                     for (let [key, value] of Object.entries(response.data["existential"])) {
-                        console.log(key, value, "key value");
                         for (let i = 0; i < value.length; i++) value[i].sort();
 
                         existential_sorted[key] = value.sort();
@@ -990,7 +953,6 @@ export default {
 
                     // sort counts keys
                     let counts_sorted = {};
-                    console.log(response.data["counts"]);
                     for (let [key, value] of Object.entries(response.data["counts"])) {
                         for (let i = 0; i < value.length; i++) value[i].sort();
                         counts_sorted[key] = value.sort();
@@ -1051,7 +1013,6 @@ export default {
                         // for each in steps
                         let i = 1;
                         for (const step of response.data["steps"]) {
-                            //console.log(step, i);
                             if (this.containers[i] != null)
                                 this.containers[i].unmount();
 
@@ -1063,7 +1024,6 @@ export default {
                             let l_existential_sorted = {};
                             // sort dict entries
                             for (let [key, value] of Object.entries(step.existential)) {
-                                //console.log(key, value, "key value");
                                 for (let i = 0; i < value.length; i++) value[i].sort();
                                 l_existential_sorted[key] = value.sort();
                             }
@@ -1071,7 +1031,6 @@ export default {
                             let l_bad_sorted = {};
                             // sort dict entries
                             for (let [key, value] of Object.entries(step.bad)) {
-                                //console.log(key, value, "key value");
                                 for (let i = 0; i < value.length; i++) value[i].sort();
                                 l_bad_sorted[key] = value.sort();
                             }

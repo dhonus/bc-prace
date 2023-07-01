@@ -85,12 +85,10 @@ export default {
   methods: {
     emitSolve: function (){
       this.$emit('solve', this.areas_of_diagram);
-      console.log("emitted")
     },
     smallOrNot: function() {
       // get ref entryVariableInput
       //check if entryVariable is lowercase
-      console.log(this.entryVariable)
       if (this.entryVariable.toLowerCase() !== this.entryVariable) {
         this.entryVariable = "";
       }
@@ -113,7 +111,6 @@ export default {
         this.mouseHatching = true;
       }
       this.currentModifierButton = button;
-      console.log(this.currentModifierButton);
     },
     prepare: function() {
       let svg = d3.select(this.$refs.canvas);
@@ -132,7 +129,6 @@ export default {
       this.generateHatching(svg);
 
       const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      console.log(g);
       return g;
     },
     emptyDict: function(dict) {
@@ -146,9 +142,7 @@ export default {
           keys.push(key);
         }
       }*/
-      console.log(this.counts, "COUNTS");
       for (let key in this.counts) {
-          console.log(key, "KEY")
           for (let value in this.counts[key]) {
               if (keys[this.counts[key][value]] === undefined) {
                   keys[this.counts[key][value]] = [];
@@ -197,15 +191,12 @@ export default {
                 .attr("transform", "rotate(" + angle + ")");
           }
       }*/
-      console.log(keys, "KEY KEYS");
       this.keys = keys;
     },
     wipe: function(i){
-      console.log("hey", this.positioned[i]);
       // remove all elements from the array
       this.positioned[i].length = 0;
       this.positioned[i] = [];
-      console.log("hey", this.positioned[i]);
       return true;
     },
     checkVar: function (i, variable){
@@ -291,7 +282,6 @@ export default {
       };
       // if universum is hashed
       if (this.universal.flat().includes('Ω')) {
-        console.log("so flat", this.universal.flat());
         return new Area("Universum", "hashed", "#fbfbfb", "A 0 20 0 0 1 " + this.width + " " + this.height);
       }
       else {
@@ -326,7 +316,6 @@ export default {
         this.limit = true;
         console.log("no type specified");
     }
-    console.log("created venn of size " + this.vennSize);
   },
 };
 </script>

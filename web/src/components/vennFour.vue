@@ -29,7 +29,6 @@ export default {
       this.areas_of_diagram.push(this.universum_hatch_check(g, !thisInstanceWillActAsUserInput));
 
       let keys = {};
-      console.log(this.counts, "COUNTS");
       for (let key in this.counts) {
           for (let value in this.counts[key]) {
               if (keys[this.counts[key][value]] === undefined) {
@@ -73,7 +72,6 @@ export default {
       let origin = {"x": centerX_1 - vennRadius, "y": centerY_1-vennRadius};
       const x_intersect_1 = origin["x"];
       const y_intersect_1 = origin["y"]
-      console.log(center)
 
       // this looks more complicated than it is.
       const row_2_X = origin["x"] + vennRadius*3*1.5/2 - vennRadius*1.5;
@@ -213,14 +211,10 @@ export default {
         [this.sets[1]]
       ]
 
-      console.log(squareNames.length, squareAreas.length)
-
       const compareArrays = (arr1, arr2) => {
         return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
       }
 
-      console.log("our universal friends are ", this.universal)
-      console.log("the things are", squareNames)
       // find common
       let hash_these = squareNames.filter((arr) => {
         return this.universal.some((arr2) => {
@@ -228,14 +222,11 @@ export default {
         });
       });
 
-      console.log(hash_these, "hash these");
-
        const intersectionOfTwoArea = ([x2, x1, x3, x4, y1, y2, y3, y4]) => {
         return `M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4} Z`;
       };
 
        const createLShapePath = ([x1, x2, x3, x4, x5, x6, y1, y2, y3, y4, y5, y6]) => {
-           console.log("creating L shape path", x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6)
           return `M ${x1} ${y1} L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4} L ${x5} ${y5} L ${x6} ${y6} Z`;
        };
 
@@ -364,8 +355,6 @@ export default {
           return;
         }
         const svg = d3.select(e.currentTarget)
-        console.log(svg);
-        console.log(svg.attr('id'));
         if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
           let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
@@ -472,8 +461,6 @@ export default {
         [x_intersect_16 + vennRadius/2 + 8, y_intersect_17 + 45],
       ]
 
-        console.log(__sets_identifiers);
-
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
@@ -493,10 +480,8 @@ export default {
           return el;
         }
 
-        console.log(index, "pos, key, index");
         // background for the text
         el.circle = g.append("circle");
-        console.log(this.positioned[index].length)
         el.circle
             .attr("r", 14 + this.positioned[index].length * 3)
             .attr("transform", "translate(" + (pos[0] - 20) + "," + (pos[1] - 10) + ")")
@@ -527,15 +512,10 @@ export default {
       }
 
       // existential
-      console.log(this.existential, "existential");
       for (const position in __sets_identifiers){
         for(let key in this.existential) {
-          console.log("the size is: " + this.existential[key].length);
-
           for (let all in this.existential[key]) {
             if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
-              console.log(this.existential[key][all], __sets_identifiers[position]);
-              console.log("bad", this.bad);
               // if this.existential[key][any] is in bad[key] then it is a bad existential
               if (this.bad[key] !== undefined && this.bad[key].length > 0){
                 for (let bad in this.bad[key]){
@@ -561,8 +541,6 @@ export default {
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("contextmenu", (e) => {
         const svg = d3.select(e.currentTarget)
-        console.log(svg);
-        console.log(svg.attr('id'));
 
         let theVar = this.entryVariable;
         if (theVar === undefined || theVar === null || theVar.length === 0){
@@ -600,10 +578,8 @@ export default {
         }
 
         let i = 0;
-        for (const ass in __sets_identifiers){
-          console.log(ass);
-          if (compareArrays(__sets_identifiers[ass], area.assignment)){
-            console.log("found it at index: " + i);
+        for (const ident in __sets_identifiers){
+          if (compareArrays(__sets_identifiers[ident], area.assignment)){
             area.questionElement = position_me(i, found ? undefined : theVar, "x");
             if (found){
               // remove theVar from the existential
@@ -618,144 +594,8 @@ export default {
           }
           i++;
         }
-
-        console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
       });
-/*
-      g.append("text")
-          .text("1")
-          .attr("x", x_intersect_1)
-          .attr("y", y_intersect_1)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("2")
-          .attr("x", x_intersect_2)
-          .attr("y", y_intersect_2)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("3")
-          .attr("x", x_intersect_3)
-          .attr("y", y_intersect_3)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("4")
-          .attr("x", x_intersect_4)
-          .attr("y", y_intersect_4)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("5")
-          .attr("x", x_intersect_5)
-          .attr("y", y_intersect_5)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("6")
-          .attr("x", x_intersect_6)
-          .attr("y", y_intersect_6)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("7")
-          .attr("x", x_intersect_7)
-          .attr("y", y_intersect_7)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("8")
-          .attr("x", x_intersect_8)
-          .attr("y", y_intersect_8)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("9")
-          .attr("x", x_intersect_9)
-          .attr("y", y_intersect_9)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("10")
-          .attr("x", x_intersect_10)
-          .attr("y", y_intersect_10)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("11")
-          .attr("x", x_intersect_11)
-          .attr("y", y_intersect_11)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("12")
-          .attr("x", x_intersect_12)
-          .attr("y", y_intersect_12)
-          .style('fill', '#323232');
 
-      g.append("text")
-          .text("13")
-          .attr("x", x_intersect_13)
-          .attr("y", y_intersect_13)
-          .style('fill', '#323232');
-
-      g.append("text")
-          .text("14")
-          .attr("x", x_intersect_14)
-          .attr("y", y_intersect_14)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("15")
-          .attr("x", x_intersect_15)
-          .attr("y", y_intersect_15)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("16")
-          .attr("x", x_intersect_16)
-          .attr("y", y_intersect_16)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("17")
-          .attr("x", x_intersect_17)
-          .attr("y", y_intersect_17)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("18")
-          .attr("x", x_intersect_18)
-          .attr("y", y_intersect_18)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("19")
-          .attr("x", x_intersect_19)
-          .attr("y", y_intersect_19)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("20")
-          .attr("x", x_intersect_20)
-          .attr("y", y_intersect_20)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("21")
-          .attr("x", x_intersect_21)
-          .attr("y", y_intersect_21)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("24")
-          .attr("x", x_intersect_24)
-          .attr("y", y_intersect_24)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("22")
-          .attr("x", x_intersect_22)
-          .attr("y", y_intersect_22)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("23")
-          .attr("x", x_intersect_23)
-          .attr("y", y_intersect_23)
-          .style('fill', '#323232');
-
-      g.append("text")
-          .text("25")
-          .attr("x", x_intersect_25)
-          .attr("y", y_intersect_25)
-          .style('fill', '#323232');
-      g.append("text")
-          .text("26")
-          .attr("x", x_intersect_26)
-          .attr("y", y_intersect_26)
-          .style('fill', '#323232');
-*/
       for (const i in __sets_identifiers) {
           const index = area_combinations.findIndex((element) => element === __sets_identifiers[i].sort().join(","));
         g.append("rect")

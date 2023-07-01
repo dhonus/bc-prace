@@ -394,10 +394,7 @@ class Evaluator:
             if self.__invalid:
                 raise LogicException('Nesprávný úsudek. Ze všeobecných premis nemůže vyplývat existence.')
             major_set = set()
-            all_have_in_common = set()
-            if len(self.__contain) > 0:
-                if variable == self.__contain[0][2] or self.__contain[0][2] in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-                    print(all_have_in_common, "all have in common!!")
+
             # this is for the case of
             # Ax[A(x) | B(x)]
             # A(a)
@@ -405,14 +402,12 @@ class Evaluator:
             # ---
             # Ex[B(x) & A(x)]
             for v in self.__all_solved:
-                print(v, "v")
-                print(self.__all_solved)
-                print(self.__all_solved_by_whom, "whom")
-                common = set(self.__all_solved[v])
+                common = set(self.__conclusion_solved[variable])
                 common_numbers = set()
-                print(common)
 
                 for c in common:
+                    if not self.__all_solved_by_whom.get(c):
+                        continue
                     if len(common_numbers) == 0:
                         common_numbers.update(set(self.__all_solved_by_whom[c]))
                     else:
@@ -569,6 +564,10 @@ class Evaluator:
                                           f"Platí že {self.__pretty_print(var_set)} není vyškrtáno a splňuje tím podmínku závěru."]
                 return True
 
+            if len(self.__conclusion_solved[variable]) == 1:
+                self.__explanations[0] = [
+                    f"Pro '{variable}' není řešení. Aby byl závěr pravdivý, je nutné, aby byla vyšrafována oblast {self.__pretty_print(self.__conclusion_solved[variable])}."]
+                return False
             self.__explanations[0] = [
                 f"Pro '{variable}' není řešení. Aby byl závěr pravdivý, je nutné, aby byly vyšrafovány oblasti {self.__pretty_print(self.__conclusion_solved[variable])}."]
             return False

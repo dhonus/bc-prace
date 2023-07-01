@@ -132,18 +132,12 @@ export default {
         return arr1.length === arr2.length && arr1.every((val, index) => val === arr2[index]);
       }
 
-      console.log("our universal friends are ", this.universal)
-      console.log("the things are", ironPointsNames)
       // find common
       let hash_these = ironPointsNames.filter((arr) => {
         return this.universal.some((arr2) => {
           return compareArrays(arr, arr2);
         });
       });
-
-      console.log(hash_these, "hash these");
-
-      console.log(this.keys, "keeys")
 
       // three functions to iterate over points and append paths
       let i = 0;
@@ -187,7 +181,6 @@ export default {
           }
           this.areas_of_diagram.push(new Area(theId, "hashed", ironFill, ironPointsNames[i]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
               .attr("id", theId)
               .attr("name", ironPointsNames[i])
@@ -265,7 +258,6 @@ export default {
           return compareArrays(arr, arr2);
         });
       });
-      console.log(hash_these, "hash these !");
 
       for (const points of roundedTriPoints) {
         const ptCycle = points
@@ -279,7 +271,6 @@ export default {
           return compareArrays(arr, roundedTriNames[0]);
         })) {
           // they are the same, so we need to hatch it
-          console.log("hatch it");
           const arr = keys[roundedTriNames[0].join(",")];
           for (let value in arr) {
               if (document.getElementById("diagonalHatch-" + roundedTriNames[0] + arr[value]) !== null){
@@ -306,7 +297,6 @@ export default {
           }
           this.areas_of_diagram.push(new Area(theId, "hashed", "#929292", roundedTriNames[0]));
         } else {
-          console.log("dont hatch it");
           g.append("path")
               .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
               .attr("name", roundedTriNames[0])
@@ -318,16 +308,12 @@ export default {
         }
       }
 
-      console.log(this.areas_of_diagram);
-
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("click", (e) => {
         if (!this.thisInstanceWillActAsUserInput) {
           return;
         }
         const svg = d3.select(e.currentTarget)
-        console.log(svg);
-        console.log(svg.attr('id'));
         if (this.areas_of_diagram.find(e => e.id === svg.attr('id')).state === "hashed"){
           let area = this.areas_of_diagram.find(e => e.id === svg.attr('id'))
           area.state = "clear";
@@ -406,8 +392,6 @@ export default {
         [x_intersect_4 - 3.5, y_intersect_4 - 10],
       ]
 
-      console.log(__sets_identifiers);
-
       let position_me = (index, key, character) => {
         const pos = __sets_positions[index];
 
@@ -427,7 +411,6 @@ export default {
           return el;
         }
 
-        console.log(index, "pos, key, index");
         // background for the text
         el.circle = g.append("circle");
         el.circle
@@ -460,15 +443,10 @@ export default {
       }
 
       // existential
-      console.log(this.existential, "existential");
       for (const position in __sets_identifiers){
         for(let key in this.existential) {
-          console.log("the size is: " + this.existential[key].length);
-
           for (let all in this.existential[key]) {
             if (compareArrays(this.existential[key][all], __sets_identifiers[position])) {
-              console.log(this.existential[key][all], __sets_identifiers[position]);
-              console.log("bad", this.bad);
               // if this.existential[key][any] is in bad[key] then it is a bad existential
               if (this.bad[key] !== undefined && this.bad[key].length > 0){
                 for (let bad in this.bad[key]){
@@ -484,8 +462,6 @@ export default {
         }
       }
 
-      console.log(this.existential instanceof Array)
-
       //user added areas
       let user_added_areas = {};
       let wipe = (index) => {
@@ -495,9 +471,6 @@ export default {
       // this is the function that will be called when the user clicks on a segment
       g.selectAll("path.segment").on("contextmenu", (e) => {
         const svg = d3.select(e.currentTarget)
-        console.log(svg);
-        console.log(svg.attr('id'));
-
         let theVar = this.entryVariable;
         if (theVar === undefined || theVar === null || theVar.length === 0){
           theVar = "x";
@@ -534,10 +507,8 @@ export default {
         }
 
         let i = 0;
-        for (const ass in __sets_identifiers){
-          console.log(ass);
-          if (compareArrays(__sets_identifiers[ass], area.assignment)){
-            console.log("found it at index: " + i);
+        for (const ident in __sets_identifiers){
+          if (compareArrays(__sets_identifiers[ident], area.assignment)){
             area.questionElement = position_me(i, found ? undefined : theVar, "x");
             if (found){
               // remove theVar from the existential
@@ -552,8 +523,6 @@ export default {
           }
           i++;
         }
-
-        console.log(this.areas_of_diagram, " <- has been modified and our friend is ");
       });
 
       for (const i in __sets_identifiers) {

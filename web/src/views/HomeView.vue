@@ -230,7 +230,6 @@ export default {
                         } else {
                             // color red
                             inp.classList.add("invalid");
-                            //console.log(inp);
                             this.Explanation = response.data.err;
                             this.validity = "";
                             this.$refs.why.classList.add("activated");
@@ -246,7 +245,6 @@ export default {
         },
         // sets the active input field to the one that was clicked on
         focusOnMe: function (key) {
-            console.log(key);
             let orig;
             if (key === -1) {
                 orig = this.focused;
@@ -341,7 +339,6 @@ export default {
 
             let predicates = []
             for (let key of Object.keys(this.values)) {
-                console.log(key + " -> " + this.values[key]);
                 if (this.values[key].length !== 0)
                     predicates.push(this.values[key]);
             }
@@ -356,7 +353,7 @@ export default {
                         return qs.stringify(params)
                     }
                 }).then((response) => {
-                    console.log(response);
+                    // console.log(response);
 
                     this.APIErrorMessage = response.data['notes'] !== "OK" ? response.data['notes'] : "";
                     this.validity = response.data["valid"];
@@ -369,7 +366,6 @@ export default {
                     } else {
                         const max = Object.keys(response.data["explanations"]).length;
                         this.Explanation = String(response.data["explanations"][max]);
-                        //console.log(max);
                     }
 
                     let theData = []
@@ -390,7 +386,6 @@ export default {
 
                     // sort dict entries
                     for (let [key, value] of Object.entries(response.data["existential"])) {
-                        console.log(key, value, "key value");
                         for (let i = 0; i < value.length; i++) value[i].sort();
 
                         existential_sorted[key] = value.sort();
@@ -405,7 +400,6 @@ export default {
 
                     // sort counts keys
                     let counts_sorted = {};
-                    console.log(response.data["counts"]);
                     for (let [key, value] of Object.entries(response.data["counts"])) {
                         for (let i = 0; i < value.length; i++) value[i].sort();
                         counts_sorted[key] = value.sort();
@@ -438,7 +432,6 @@ export default {
                         // for each in steps
                         let i = 1;
                         for (const step of response.data["steps"]) {
-                            //console.log(step, i);
                             if (this.containers[i] != null)
                                 this.containers[i].unmount();
 
@@ -450,7 +443,6 @@ export default {
                             let l_existential_sorted = {};
                             // sort dict entries
                             for (let [key, value] of Object.entries(step.existential)) {
-                                //console.log(key, value, "key value");
                                 for (let i = 0; i < value.length; i++) value[i].sort();
                                 l_existential_sorted[key] = value.sort();
                             }
@@ -458,7 +450,6 @@ export default {
                             let l_bad_sorted = {};
                             // sort dict entries
                             for (let [key, value] of Object.entries(step.bad)) {
-                                //console.log(key, value, "key value");
                                 for (let i = 0; i < value.length; i++) value[i].sort();
                                 l_bad_sorted[key] = value.sort();
                             }
@@ -495,7 +486,6 @@ export default {
                 });
             } catch (err) {
                 // uh oh, didn't work, time for plan B
-                console.log("?????");
             }
         },
     },

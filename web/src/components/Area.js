@@ -21,7 +21,6 @@ export default class Area {
           keys.push(key);
         }
       }
-      console.log(keys, "KEY KEYS");
       return keys;
     }
 }

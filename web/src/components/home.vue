@@ -29,7 +29,6 @@ export default {
     },
     change() {
       this.optional = !this.optional
-      console.log(this.optional)
     }
   },
   created() {

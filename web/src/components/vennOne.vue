@@ -115,7 +115,6 @@ export default {
                     return compareArrays(arr, sunPointsNames[i]);
                 })) {
                     // they are the same, so we need to hatch it
-                    console.log("hatch it");
                     const arr = keys[sunPointsNames[i].join(",")];
                     for (let value in arr) {
                         if (document.getElementById("diagonalHatch-" + sunPointsNames[i] + arr[value]) !== null){
@@ -143,7 +142,6 @@ export default {
                     }
                     this.areas_of_diagram.push(new Area(theId, "hashed", sunFill, sunPointsNames[i]));
                 } else {
-                    console.log("dont hatch it");
                     g.append("path")
                         .attr("id", String(points[0]) + String(points[1]) + String(points[2]))
                         .attr("name", sunPointsNames[i].join(","))
@@ -330,9 +328,8 @@ export default {
           }
 
           let i = 0;
-          for (const ass in __sets_identifiers){
-            console.log(ass);
-            if (compareArrays(__sets_identifiers[ass], area.assignment)){
+          for (const ident in __sets_identifiers){
+            if (compareArrays(__sets_identifiers[ident], area.assignment)){
               area.questionElement = position_me(i, found ? undefined : theVar, "x");
               if (found){
                 // remove theVar from the existential
