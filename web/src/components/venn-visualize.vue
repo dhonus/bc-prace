@@ -137,11 +137,7 @@ export default {
     generateHatching(svg){
       // given a dictionary, where the key is a number and the value is an array of tuples, generate list of keys in which the given tuple is present
       let keys = {};
-      /*for (let key in area_dict){
-        if (area_dict[key].includes(tuple)){
-          keys.push(key);
-        }
-      }*/
+
       for (let key in this.counts) {
           for (let value in this.counts[key]) {
               if (keys[this.counts[key][value]] === undefined) {
@@ -149,48 +145,7 @@ export default {
               }
               keys[this.counts[key][value]].push(key);
           }
-          // sort
-
       }
-
-      // generate hatching pattern for each key. The dictionary is for example "A,B": [1,2,3]
-      /*for (let key in keys){
-          const concat = keys[key].join(",");
-          // if such a pattern already exists, don't generate it again
-          if (document.getElementById("diagonalHatch-" + concat) !== null){
-              continue;
-          }
-          let pattern = svg.append("pattern").attr("id", "diagonalHatch-" + concat).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-          for (let i = 0; i < keys[key].length; i++){
-              console.log(i)
-              let angle = 35 * (i+1); // Replace 'i' with your desired angle value
-
-              // rotate the pattern by 45 degrees for each increment
-              let p = pattern.append("pattern").attr("id", "diagonalHatch-" + concat + "-" + i).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-              p.append("path").attr("d", "M-2,2 l4,-4 M0,8 l8,-8 M6,10 l4,-4").attr("style", "stroke: #3f3f3f; stroke-width: 2px;")
-
-              pattern.append("rect").attr("width", 8).attr("height", 8).attr("fill", "url(#diagonalHatch-" + concat + "-" + i + ")")
-              pattern.attr("patternTransform", "rotate(" + angle + ")");
-
-          }*/
-/*
-          let pattern = svg.append("pattern").attr("id", "diagonalHatch-" + concat).attr("patternUnits", "userSpaceOnUse").attr("width", 8).attr("height", 8);
-
-          for (let i = 0; i < keys[key].length; i++){
-              if (document.getElementById("comp-" + keys[key][i]) !== null){
-                  continue;
-              }
-              let angle = 35 * i; // Replace 'i' with your desired angle value
-
-              let pathString = "M0,0 l8,8 M8,0 l-8,8";
-
-              pattern
-                .append("path")
-                .attr("d", pathString)
-                .attr("style", "stroke: #3f3f3f; stroke-width: 2px;")
-                .attr("transform", "rotate(" + angle + ")");
-          }
-      }*/
       this.keys = keys;
     },
     wipe: function(i){

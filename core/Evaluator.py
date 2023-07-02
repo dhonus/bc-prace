@@ -151,12 +151,6 @@ class Evaluator:
                     self.__explanations[expr_tree.p_index] = [f"Všeobecná premisa: Neovlivňuje žádnou oblast."]
                 print (set(self.__universal_solved), "universal solved NOTE", expr_tree.p_index)
                 self.__universal_solved_counts[expr_tree.p_index] = set(self.__universal_solve(expr_tree))
-                """for area in list(self.__universal_solved):
-                    if set(area) not in self.__universal_solved_counts:
-                        self.__universal_solved_counts[area] = set(expr_tree.p_index)
-                    else:
-                        self.__universal_solved_counts[area].add(expr_tree.p_index)
-                print(self.__universal_solved_counts, "universal solved counts")"""
 
             elif expr_tree.value == '∃':
                 self.__existential_count += 1
@@ -343,19 +337,8 @@ class Evaluator:
         var_set = set(solution['Exists within'][variable])
         crossed_out = set(solution['Crossed out'])
 
-        print(self.__contain, "contains")
-        print(var_set, "var set")
-
-        print("-------\nall the good things:")
-        print (self.__all_solved)
-        print("-------")
-
         # if an element in var_set is in crossed_out remove it from var_set
         var_set.difference_update(crossed_out)
-        print(var_set, "var set")
-        print(self.__conclusion_solved[variable], "conclusion solved")
-        print(len(self.__objects)**2)
-        print(len(self.__conclusion_solved[variable]))
 
         all_ = True
 
